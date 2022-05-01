@@ -67,7 +67,17 @@ class _HomePageState extends State<HomePage> {
             children: [
               const Text('Expense this month'),
               const SizedBox(height: 16,),
-              Text('Rp.55.610.000', style: _theme.textTheme.headline3,),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Text('Rp.55.610.000', style: _theme.textTheme.headline3,)
+                  ),
+                  IconButton(onPressed: (){
+
+                  }, icon: Icon(Icons.arrow_drop_down, color: _theme.colorScheme.onPrimary,))
+                ],
+              ),
               const SizedBox(height: 16,),
               SizedBox(
                 width: double.infinity,
