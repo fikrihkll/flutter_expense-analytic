@@ -1,7 +1,5 @@
-import 'package:expense_app/features/domain/entities/expense_categroy.dart';
-import 'package:expense_app/features/presentation/pages/category_list_widget.dart';
-import 'package:expense_app/features/presentation/pages/input_expense_section.dart';
-import 'package:expense_app/features/presentation/pages/recent_expense_list_section.dart';
+import 'package:expense_app/features/presentation/pages/home/input_expense/input_expense_section.dart';
+import 'package:expense_app/features/presentation/pages/home/recent_expense_list/recent_expense_list_section.dart';
 import 'package:expense_app/features/presentation/widgets/circle_image.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
