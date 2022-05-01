@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> {
               _buildExpenseThisMonth(),
               const SizedBox(height: 16,),
               const InputExpenseSection(),
-              const SizedBox(height: 16,),
+              const SizedBox(height: 32,),
               const RecentExpenseListSection()
             ],
           ),

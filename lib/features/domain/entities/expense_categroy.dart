@@ -1,9 +1,14 @@
-import 'package:flutter/material.dart';
 
-class ExpenseCategory{
+import 'package:equatable/equatable.dart';
+
+class ExpenseCategory extends Equatable{
 
   final String name;
-  final IconData icon;
 
-  ExpenseCategory({required this.name, required this.icon});
+  const ExpenseCategory({required this.name});
+
+  @override
+  List<Object?> get props => [
+    name
+  ];
 }

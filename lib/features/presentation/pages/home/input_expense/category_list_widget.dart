@@ -1,3 +1,4 @@
+import 'package:expense_app/core/util/icon_util.dart';
 import 'package:expense_app/features/domain/entities/expense_categroy.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,7 @@ class CategoryListWidget extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            expenseCategory.icon,
+            IconUtil.getIconFromString(expenseCategory.name),
             color: _theme.colorScheme.onPrimary,
             size: 16,
           ),

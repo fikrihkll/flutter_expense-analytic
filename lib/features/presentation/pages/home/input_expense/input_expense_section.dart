@@ -15,9 +15,9 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
   late ThemeData _theme;
 
   final List<ExpenseCategory> _listCategory = [
-    ExpenseCategory(name: 'Yuhu', icon: Icons.fastfood_rounded),
-    ExpenseCategory(name: 'Yuhu', icon: Icons.fastfood_rounded),
-    ExpenseCategory(name: 'Yuhu', icon: Icons.fastfood_rounded),
+    ExpenseCategory(name: 'Meal'),
+    ExpenseCategory(name: 'Meal'),
+    ExpenseCategory(name: 'Meal'),
   ];
 
   int _selectedItemPosition = -1;
