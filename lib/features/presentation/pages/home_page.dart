@@ -1,3 +1,6 @@
+import 'package:expense_app/features/domain/entities/expense_categroy.dart';
+import 'package:expense_app/features/presentation/pages/category_list_widget.dart';
+import 'package:expense_app/features/presentation/pages/input_expense_section.dart';
 import 'package:expense_app/features/presentation/widgets/circle_image.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +17,6 @@ class _HomePageState extends State<HomePage> {
   late ThemeData _theme;
 
   final String _profileUrl = 'https://assets.pikiran-rakyat.com/crop/0x159:1080x864/x/photo/2022/04/03/941016597.jpeg';
-
-  final TextEditingController _controllerTitle = TextEditingController();
-  final TextEditingController _controllerDesc = TextEditingController();
 
   Widget _buildHeader(){
     return // ------------------------------- Header
@@ -43,6 +43,7 @@ class _HomePageState extends State<HomePage> {
     return // ------------------------------- Money left
       FloatingContainer(
           shadowEnabled: false,
+          splashEnabled: false,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -61,6 +62,7 @@ class _HomePageState extends State<HomePage> {
       FloatingContainer(
           width: double.infinity,
           shadowEnabled: false,
+          splashEnabled: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -89,42 +91,6 @@ class _HomePageState extends State<HomePage> {
     // ------------------------------- Expense This Month
   }
 
-  Widget _buildInputExpense(){
-    return FloatingContainer(
-        shadowEnabled: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Insert your expense'),
-            const SizedBox(height: 16,),
-            TextField(
-              controller: _controllerTitle,
-              style: _theme.textTheme.bodyText1,
-              keyboardType: const TextInputType.numberWithOptions(decimal: false),
-              textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
-                  labelText: 'Amount',
-                  prefix: Text('Rp.'),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12)))
-              ),
-            ),
-            const SizedBox(height: 16,),
-            TextField(
-              controller: _controllerDesc,
-              style: _theme.textTheme.bodyText1,
-              textInputAction: TextInputAction.newline,
-              decoration: const InputDecoration(
-                  labelText: 'Description',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12)))
-              ),
-            ),
-          ],
-        )
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     _theme = Theme.of(context);
@@ -141,7 +107,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 16,),
               _buildExpenseThisMonth(),
               const SizedBox(height: 16,),
-              _buildInputExpense()
+              const InputExpenseSection()
             ],
           ),
         ),
