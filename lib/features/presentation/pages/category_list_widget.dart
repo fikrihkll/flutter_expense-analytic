@@ -22,10 +22,13 @@ class CategoryListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     _theme = Theme.of(context);
     return FloatingContainer(
+      // Shadow will be vanished if the item is selected
       shadowEnabled: !isSelected,
       onTap: (){
+        // Give callback with the item position parameter to the list
         onAreaClicked(itemPosition);
       },
+      // Border will be shown if the item is selected
       border: isSelected ? Border.all(
           color: _theme.colorScheme.primary,
           width: 1
