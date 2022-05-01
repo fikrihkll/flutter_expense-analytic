@@ -1,6 +1,7 @@
 import 'package:expense_app/features/domain/entities/expense_categroy.dart';
 import 'package:expense_app/features/presentation/pages/category_list_widget.dart';
 import 'package:expense_app/features/presentation/pages/input_expense_section.dart';
+import 'package:expense_app/features/presentation/pages/recent_expense_list_section.dart';
 import 'package:expense_app/features/presentation/widgets/circle_image.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
@@ -99,6 +100,7 @@ class _HomePageState extends State<HomePage> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 24,),
               _buildHeader(),
@@ -107,7 +109,9 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 16,),
               _buildExpenseThisMonth(),
               const SizedBox(height: 16,),
-              const InputExpenseSection()
+              const InputExpenseSection(),
+              const SizedBox(height: 16,),
+              const RecentExpenseListSection()
             ],
           ),
         ),

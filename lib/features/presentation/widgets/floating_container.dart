@@ -57,7 +57,7 @@ class FloatingContainer extends StatelessWidget {
     return InkWell(
         customBorder: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
-        splashColor: splashColor ?? MyTheme.graySoft,
+        splashColor: splashColor ?? MyTheme.primary,
         onTap: (){
           if(onTap != null){
             onTap!();

@@ -98,6 +98,22 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
             const SizedBox(height: 16,),
             const Text('Category'),
             _buildCategoryList(),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        )
+                    ),
+                  ),
+                  onPressed: (){
+
+                  },
+                  child: Text('Save',)
+              ),
+            )
           ],
         )
     );
