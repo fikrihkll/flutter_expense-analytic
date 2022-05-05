@@ -5,14 +5,22 @@ import 'package:expense_app/features/domain/entities/log.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
 
-class RecentExpenseListSection extends StatefulWidget {
-  const RecentExpenseListSection({Key? key}) : super(key: key);
-
-  @override
-  State<RecentExpenseListSection> createState() => _RecentExpenseListSectionState();
+enum LogsListType{
+  RECENT,
+  ALL
 }
 
-class _RecentExpenseListSectionState extends State<RecentExpenseListSection> {
+class LogsListSection extends StatefulWidget {
+
+  final LogsListType listType;
+
+  const LogsListSection({Key? key, required this.listType}) : super(key: key);
+
+  @override
+  State<LogsListSection> createState() => _LogsListSectionState();
+}
+
+class _LogsListSectionState extends State<LogsListSection> {
 
   late ThemeData _theme;
 
@@ -62,10 +70,9 @@ class _RecentExpenseListSectionState extends State<RecentExpenseListSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Recent Expenses',
-          style: _theme.textTheme.headline4,
-        ),
+        widget.listType == LogsListType.RECENT ?
+        Text('Recent Expenses', style: _theme.textTheme.headline4,)
+        : const SizedBox(),
         ListView.builder(
           primary: false,
           shrinkWrap: true,

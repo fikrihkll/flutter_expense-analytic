@@ -1,5 +1,5 @@
 import 'package:expense_app/features/presentation/pages/home/input_expense/input_expense_section.dart';
-import 'package:expense_app/features/presentation/pages/home/recent_expense_list/recent_expense_list_section.dart';
+import 'package:expense_app/features/presentation/sections/logs_list/recent_expense_list_section.dart';
 import 'package:expense_app/features/presentation/widgets/circle_image.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 16,),
               const InputExpenseSection(),
               const SizedBox(height: 32,),
-              const RecentExpenseListSection()
+              const LogsListSection(listType: LogsListType.RECENT,)
             ],
           ),
         ),
