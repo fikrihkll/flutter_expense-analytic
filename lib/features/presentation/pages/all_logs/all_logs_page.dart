@@ -1,5 +1,5 @@
 import 'package:expense_app/features/presentation/pages/date_selection/date_selection_bottomsheet.dart';
-import 'package:expense_app/features/presentation/sections/logs_list/recent_expense_list_section.dart';
+import 'package:expense_app/features/presentation/sections/logs_list/logs_list_section.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

@@ -1,4 +1,3 @@
-import 'package:expense_app/features/data/datasources/localdatasource/query_result/log_detail_result.dart';
 import 'package:expense_app/features/domain/entities/log_detail.dart';
 
 class LogDetailModel extends LogDetail{
@@ -14,8 +13,11 @@ class LogDetailModel extends LogDetail{
     nominal: nominal
   );
 
-  factory LogDetailModel.fromEntity(LogDetailResult entity){
-    return LogDetailModel(category: entity.category, nominal: entity.total);
+  factory LogDetailModel.fromMap(Map<String, dynamic> map){
+    return LogDetailModel(
+        category: map['category'],
+        nominal: map['nominal']
+    );
   }
 
   @override

@@ -29,16 +29,16 @@ dependencies:
   provider: ^6.0.1
   # shimmer
   shimmer: ^2.0.0
-  # Floor
-  floor: ^1.2.0
+  # Get db path or another path
+  path: ^1.8.0
+  # Store persistence data
+  sqflite: ^2.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^1.0.0
-  floor_generator: ^1.2.0
-  build_runner: ^2.1.2
 
 flutter:
 

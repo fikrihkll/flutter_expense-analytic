@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:expense_app/core/error/failure.dart';
 import 'package:expense_app/features/data/datasources/localdatasource/localdatasource.dart';
-import 'package:expense_app/features/data/models/log_detail_model.dart';
 import 'package:expense_app/features/data/models/log_model.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
 import 'package:expense_app/features/domain/entities/log_detail.dart';
@@ -41,8 +40,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   Future<Either<Failure, List<LogDetail>>> getLogsDetailInMonth(int month, int year) async {
     try{
       var result = await localDataSource.getLogsDetailInMonth(month, year);
-      var convertedData = result.map((e) => LogDetailModel.fromEntity(e)).toList();
-      return Right(convertedData);
+      return Right(result);
     }catch(e){
       debugPrint(e.toString());
       return Left(CacheFailure());
@@ -53,8 +51,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   Future<Either<Failure, List<Log>>> getLogsInMonth(int month, int year, int limit) async {
     try{
       var result = await localDataSource.getLogsInMonth(month, year, limit);
-      var convertedData = result.map((e) => LogModel.fromEntity(e)).toList();
-      return Right(convertedData);
+      return Right(result);
     }catch(e){
       debugPrint(e.toString());
       return Left(CacheFailure());
@@ -65,8 +62,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   Future<Either<Failure, List<Log>>> getLatestLogs() async {
     try{
       var result = await localDataSource.getLatestLogs();
-      var convertedData = result.map((e) => LogModel.fromEntity(e)).toList();
-      return Right(convertedData);
+      return Right(result);
     }catch(e){
       debugPrint(e.toString());
       return Left(CacheFailure());
@@ -76,7 +72,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   @override
   Future<Either<Failure, bool>> insertLog(Log data) async {
     try{
-      var packedData = LogModel.toEntity(data);
+      var packedData = LogModel.toMap(data);
       await localDataSource.insertLogs(packedData);
       return const Right(true);
     }catch(e){

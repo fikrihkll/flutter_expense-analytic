@@ -1,8 +1,10 @@
+import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/input_expense_section.dart';
-import 'package:expense_app/features/presentation/sections/logs_list/recent_expense_list_section.dart';
+import 'package:expense_app/features/presentation/sections/logs_list/logs_list_section.dart';
 import 'package:expense_app/features/presentation/widgets/circle_image.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,6 +14,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  // Bloc or Presenter
+  late RecentLogsBloc _recentLogsBloc;
 
   late ThemeData _theme;
 
@@ -98,6 +103,15 @@ class _HomePageState extends State<HomePage> {
           )
       );
     // ------------------------------- Expense This Month
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    _recentLogsBloc = BlocProvider.of<RecentLogsBloc>(context);
+    _recentLogsBloc.add(GetRecentLogsEvent());
   }
 
   @override

@@ -1,70 +1,61 @@
 import 'package:expense_app/features/data/datasources/localdatasource/dao/expense_dao.dart';
-import 'package:expense_app/features/data/datasources/localdatasource/query_result/log_detail_result.dart';
-import 'package:expense_app/features/data/datasources/localdatasource/tables/log_table.dart';
-import 'package:expense_app/features/data/datasources/localdatasource/tables/user_table.dart';
+import 'package:expense_app/features/data/datasources/localdatasource/database_handler.dart';
+import 'package:expense_app/features/data/models/log_detail_model.dart';
+import 'package:expense_app/features/data/models/log_model.dart';
 
 abstract class LocalDataSource{
 
-  Future<void> insertLogs(LogTable data);
+  Future<void> insertLogs(Map<String, dynamic> data);
 
-  Future<void> createUser(UserTable data);
+  // Future<void> createUser(UserTable data);
 
-  Future<List<LogTable>> getLatestLogs();
+  Future<List<LogModel>> getLatestLogs();
 
   Future<int> getMonthExpense(int month, int year);
 
-  Future<List<LogTable>> getLogsInMonth(int month, int year, int limit);
+  Future<List<LogModel>> getLogsInMonth(int month, int year, int limit);
 
   Future<void> deleteLog(int id);
 
-  Future<List<LogDetailResult>> getLogsDetailInMonth(int month, int year);
+  Future<List<LogDetailModel>> getLogsDetailInMonth(int month, int year);
 
 }
 
 class LocalDataSourceImpl extends LocalDataSource{
 
-  final ExpenseDao expenseDao;
+  final DatabaseHandler databaseHandler;
 
-
-  LocalDataSourceImpl({required this.expenseDao});
-
-  @override
-  Future<void> createUser(UserTable data) async {
-    await expenseDao.createUser(data);
-  }
+  LocalDataSourceImpl({required this.databaseHandler});
 
   @override
   Future<void> deleteLog(int id) async {
-    await expenseDao.deleteLog(id);
+    await databaseHandler.deleteLog(id);
   }
 
   @override
-  Future<List<LogTable>> getLatestLogs() async {
-    var result = await expenseDao.getLatestLogs();
+  Future<List<LogModel>> getLatestLogs() async {
+    var result = await databaseHandler.getRecentLogs();
     return result;
   }
 
   @override
-  Future<List<LogDetailResult>> getLogsDetailInMonth(int month, int year) async {
-    var result = await expenseDao.getLogsDetailInMonth(month, year);
-    return result;
+  Future<List<LogDetailModel>> getLogsDetailInMonth(int month, int year) async {
+    throw Exception('');
   }
 
   @override
-  Future<List<LogTable>> getLogsInMonth(int month, int year, int limit) async {
-    var result = await expenseDao.getLogsInMonth(month, year, limit);
-    return result;
+  Future<List<LogModel>> getLogsInMonth(int month, int year, int limit) async {
+    throw Exception('');
   }
 
   @override
   Future<int> getMonthExpense(int month, int year) async {
-    var result = await expenseDao.getMonthExpense(month, year);
-    return result != null ? result.total : 0;
+    throw Exception('');
   }
 
   @override
-  Future<void> insertLogs(LogTable data) async {
-    await expenseDao.insertLogs(data);
+  Future<void> insertLogs(Map<String, dynamic> data) async {
+    await databaseHandler.insertLog(data);
   }
 
 }

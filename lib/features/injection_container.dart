@@ -1,4 +1,4 @@
-import 'package:expense_app/features/data/datasources/localdatasource/app_database.dart';
+import 'package:expense_app/features/data/datasources/localdatasource/database_handler.dart';
 import 'package:expense_app/features/data/datasources/localdatasource/localdatasource.dart';
 import 'package:expense_app/features/data/repositories/expense_repository_impl.dart';
 import 'package:expense_app/features/domain/repositories/expense_repository.dart';
@@ -30,10 +30,9 @@ Future<void> init() async {
   // Data sources
   sl.registerLazySingleton<LocalDataSource>(
           () => LocalDataSourceImpl(
-          expenseDao: sl()
+          databaseHandler: sl()
       ));
 
   // External
-  var localDb = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
-  sl.registerLazySingleton(() async => localDb.expenseDao);
+  sl.registerLazySingleton<DatabaseHandler>(() => DatabaseHandler());
 }

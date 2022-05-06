@@ -91,7 +91,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
         id: -1,
         category: _listCategory[_selectedCategoryPosition].name,
         desc: _controllerDesc.text,
-        date: DateUtil.dateTimeFormat.format(DateTime.now()),
+        date: DateUtil.dbFormat.format(DateTime.now()),
         month: DateTime.now().month,
         year: DateTime.now().year,
         nominal: int.parse(nonDecimalNominal),
@@ -125,7 +125,11 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
       await _insertLogPresenter.insertLogEvent(_buildData());
       // Then update Recent Log List data...
       _recentLogsBloc.add(GetRecentLogsEvent());
-      
+
+      // Clear Edit Text
+      _controllerNominal.text = '';
+      _controllerDesc.text = '';
+
       _isSaveButtonEnabled = true;
       setState(() {});
     }else{
