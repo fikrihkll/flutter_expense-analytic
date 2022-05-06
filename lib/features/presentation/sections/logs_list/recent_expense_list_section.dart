@@ -2,8 +2,11 @@ import 'package:expense_app/core/util/date_util.dart';
 import 'package:expense_app/core/util/icon_util.dart';
 import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
+import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum LogsListType{
   RECENT,
@@ -73,22 +76,29 @@ class _LogsListSectionState extends State<LogsListSection> {
         widget.listType == LogsListType.RECENT ?
         Text('Recent Expenses', style: _theme.textTheme.headline4,)
         : const SizedBox(),
-        ListView.builder(
-          primary: false,
-          shrinkWrap: true,
-          itemCount: 3,
-          itemBuilder: (context, position){
-            return _buildRecentExpenseItem(Log(
-              id: 1,
-              category: 'Meal',
-              desc: 'Yakinku Grill',
-              date: '2022-10-22 20:20',
-              month: 10,
-              year: 2022,
-              nominal: 275000,
-              userId: 1
-            ));
-          }
+        BlocBuilder<RecentLogsBloc, RecentLogsState>(
+            builder: (context, state){
+              if(state is RecentLogsLoading){
+                return const CupertinoActivityIndicator();
+              }else if(state is RecentLogsLoaded){
+                return ListView.builder(
+                    primary: false,
+                    shrinkWrap: true,
+                    itemCount: state.listData.length,
+                    itemBuilder: (context, position){
+                      return _buildRecentExpenseItem(state.listData[position]);
+                    }
+                );
+              }else if(state is RecentLogsError){
+                return Center(
+                  child: Text('There is something wrong/n${state.message}'),
+                );
+              }else{
+                return const Center(
+                  child: Text(':D'),
+                );
+              }
+            }
         )
       ],
     );

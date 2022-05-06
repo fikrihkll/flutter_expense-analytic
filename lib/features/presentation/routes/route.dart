@@ -1,8 +1,11 @@
 
+import 'package:expense_app/features/injection_container.dart';
 import 'package:expense_app/features/presentation/pages/all_logs/all_logs_page.dart';
 import 'package:expense_app/features/presentation/pages/date_selection/date_selection_bottomsheet.dart';
+import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 const homePage = 'home_page';
 const allLogsPage = 'all_logs_page';
@@ -12,7 +15,14 @@ Route<dynamic> controller(RouteSettings settings) {
   switch (settings.name) {
     case homePage:
       return MaterialPageRoute(
-          builder: (context) => const HomePage()
+          builder: (context) => MultiBlocProvider(
+              providers: [
+                BlocProvider<RecentLogsBloc>(
+                    create: (context)=> sl<RecentLogsBloc>()
+                )
+              ],
+              child: const HomePage()
+          )
       );
     case dateSelectionPage:
       return MaterialPageRoute(

@@ -7,10 +7,10 @@ class LogDetailResult{
   @ColumnInfo(name: 'category')
   final String category;
   @ColumnInfo(name: 'total')
-  final int nominal;
+  final int total;
 
   LogDetailResult({
     required this.category,
-    required this.nominal
+    required this.total
   });
 }

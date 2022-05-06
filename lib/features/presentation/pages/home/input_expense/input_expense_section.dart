@@ -1,12 +1,19 @@
+import 'package:expense_app/core/util/date_util.dart';
 import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/core/util/theme_util.dart';
 import 'package:expense_app/features/domain/entities/expense_categroy.dart';
+import 'package:expense_app/features/domain/entities/log.dart';
+import 'package:expense_app/features/injection_container.dart';
+import 'package:expense_app/features/presentation/pages/home/bloc/insert_log_presenter.dart';
+import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/category_list_widget.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class InputExpenseSection extends StatefulWidget {
+
   const InputExpenseSection({Key? key}) : super(key: key);
 
   @override
@@ -15,16 +22,20 @@ class InputExpenseSection extends StatefulWidget {
 
 class _InputExpenseSectionState extends State<InputExpenseSection> {
 
+  // Bloc or Presenter
+  late InsertLogPresenter _insertLogPresenter;
+  late RecentLogsBloc _recentLogsBloc;
+  
+  bool _isSaveButtonEnabled = true;
   late ThemeData _theme;
-
   final List<ExpenseCategory> _listCategory = [
     ExpenseCategory(name: 'Meal'),
     ExpenseCategory(name: 'Meal'),
     ExpenseCategory(name: 'Meal'),
   ];
+  int _selectedCategoryPosition = -1;
 
-  int _selectedItemPosition = -1;
-
+  // Edit Text Controller
   final TextEditingController _controllerNominal = TextEditingController();
   final TextEditingController _controllerDesc = TextEditingController();
 
@@ -52,11 +63,11 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
       padding: const EdgeInsets.only(left: 4, right: 4),
       child: CategoryListWidget(
         itemPosition: position,
-        isSelected: _selectedItemPosition == position,
+        isSelected: _selectedCategoryPosition == position,
         expenseCategory: _listCategory[position],
         onAreaClicked: (itemPosition){
           // Change selected item
-          _selectedItemPosition = itemPosition;
+          _selectedCategoryPosition = itemPosition;
           setState(() {
           });
         },
@@ -73,6 +84,20 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
 
     }
   }
+  
+  Log _buildData(){
+    String nonDecimalNominal = _controllerNominal.text.replaceAll('.', '');
+    return Log(
+        id: -1,
+        category: _listCategory[_selectedCategoryPosition].name,
+        desc: _controllerDesc.text,
+        date: DateUtil.dateTimeFormat.format(DateTime.now()),
+        month: DateTime.now().month,
+        year: DateTime.now().year,
+        nominal: int.parse(nonDecimalNominal),
+        userId: 1
+    );
+  }
 
   bool isInputDataValid(){
     bool isValid = true;
@@ -80,20 +105,41 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     if(_controllerNominal.text.isEmpty){
       isValid = false;
     }
-    if(_selectedItemPosition == -1){
+    if(_selectedCategoryPosition == -1){
+      isValid = false;
+    }
+    if(!_isSaveButtonEnabled){
       isValid = false;
     }
 
     return isValid;
   }
 
-  void _saveExpenseData(){
+  void _saveExpenseData()async{
     FocusManager.instance.primaryFocus?.unfocus();
     if(isInputDataValid()){
+      _isSaveButtonEnabled = false;
+      setState(() {});
+
+      // Insert data...
+      await _insertLogPresenter.insertLogEvent(_buildData());
+      // Then update Recent Log List data...
+      _recentLogsBloc.add(GetRecentLogsEvent());
       
+      _isSaveButtonEnabled = true;
+      setState(() {});
     }else{
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Some fields are required'), backgroundColor: MyTheme.red,));
     }
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _insertLogPresenter = sl<InsertLogPresenter>();
+    _recentLogsBloc = BlocProvider.of<RecentLogsBloc>(context);
   }
 
   @override
@@ -142,15 +188,18 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        )
-                    ),
+                style: ButtonStyle(
+                  backgroundColor: _isSaveButtonEnabled 
+                      ? MaterialStateProperty.all(_theme.colorScheme.primary) 
+                      : MaterialStateProperty.all(MyTheme.gray),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                    )
                   ),
-                  onPressed: _saveExpenseData,
-                  child: const Text('Save',)
+                ),
+                onPressed: _saveExpenseData,
+                child: const Text('Save',)
               ),
             )
           ],

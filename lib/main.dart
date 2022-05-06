@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
             darkTheme: MyTheme.darkTheme,
             theme: MyTheme.darkTheme,
             onGenerateRoute: route.controller,
-            initialRoute: route.allLogsPage,
+            initialRoute: route.homePage,
           );
         },
     );

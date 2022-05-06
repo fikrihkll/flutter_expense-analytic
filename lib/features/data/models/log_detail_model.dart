@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:expense_app/features/data/datasources/localdatasource/query_result/log_detail_result.dart';
 import 'package:expense_app/features/domain/entities/log_detail.dart';
 
@@ -16,7 +15,7 @@ class LogDetailModel extends LogDetail{
   );
 
   factory LogDetailModel.fromEntity(LogDetailResult entity){
-    return LogDetailModel(category: entity.category, nominal: entity.nominal);
+    return LogDetailModel(category: entity.category, nominal: entity.total);
   }
 
   @override

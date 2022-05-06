@@ -137,7 +137,7 @@ class _$ExpenseDao extends ExpenseDao {
   @override
   Future<List<LogTable>> getLatestLogs() async {
     return _queryAdapter.queryList(
-        'SELECT*FROM logs_table ORDER BY date DESC LIMIT 10',
+        'SELECT*FROM LogTable ORDER BY date DESC LIMIT 10',
         mapper: (Map<String, Object?> row) => LogTable(
             id: row['id'] as int,
             category: row['category'] as String,
@@ -152,14 +152,14 @@ class _$ExpenseDao extends ExpenseDao {
   @override
   Future<MonthExpenseResult?> getMonthExpense(int month, int year) async {
     await _queryAdapter.queryNoReturn(
-        'SELECT SUM(nominal) as total FROM logs_table WHERE month = ?1 AND year = ?2',
+        'SELECT SUM(nominal) as total FROM LogTable WHERE month = ?1 AND year = ?2',
         arguments: [month, year]);
   }
 
   @override
   Future<List<LogTable>> getLogsInMonth(int month, int year, int limit) async {
     return _queryAdapter.queryList(
-        'SELECT*FROM logs_table WHERE month = ?1 AND year = ?2 ORDER BY date DESC LIMIT 10 OFFSET ?3',
+        'SELECT*FROM LogTable WHERE month = ?1 AND year = ?2 ORDER BY date DESC LIMIT 10 OFFSET ?3',
         mapper: (Map<String, Object?> row) => LogTable(id: row['id'] as int, category: row['category'] as String, desc: row['desc'] as String, date: row['date'] as String, month: row['month'] as int, year: row['year'] as int, nominal: row['nominal'] as int, userId: row['userId'] as int),
         arguments: [month, year, limit]);
   }
@@ -167,14 +167,14 @@ class _$ExpenseDao extends ExpenseDao {
   @override
   Future<void> deleteLog(int id) async {
     await _queryAdapter
-        .queryNoReturn('DELETE FROM logs_table WHERE id = ?1', arguments: [id]);
+        .queryNoReturn('DELETE FROM LogTable WHERE id = ?1', arguments: [id]);
   }
 
   @override
   Future<List<LogDetailResult>> getLogsDetailInMonth(
       int month, int year) async {
     await _queryAdapter.queryNoReturn(
-        'SELECT category, SUM(nominal) as total FROM logs_table WHERE month = ?1 AND year = ?2 GROUP BY category',
+        'SELECT category, SUM(nominal) as total FROM LogTable WHERE month = ?1 AND year = ?2 GROUP BY category',
         arguments: [month, year]);
   }
 
