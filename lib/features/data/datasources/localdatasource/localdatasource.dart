@@ -50,7 +50,8 @@ class LocalDataSourceImpl extends LocalDataSource{
 
   @override
   Future<int> getMonthExpense(int month, int year) async {
-    throw Exception('');
+    var result = await databaseHandler.getExpenseInMonth(month, year);
+    return result;
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'package:expense_app/core/util/money_util.dart';
+import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/input_expense_section.dart';
 import 'package:expense_app/features/presentation/sections/logs_list/logs_list_section.dart';
@@ -17,6 +19,7 @@ class _HomePageState extends State<HomePage> {
 
   // Bloc or Presenter
   late RecentLogsBloc _recentLogsBloc;
+  late ExpenseMonthBloc _expenseMonthBloc;
 
   late ThemeData _theme;
 
@@ -76,7 +79,15 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
-                      child: Text('Rp.55.610.000', style: _theme.textTheme.headline3,)
+                      child: BlocBuilder<ExpenseMonthBloc, ExpenseMonthState>(
+                        builder: (context, state){
+                          if(state is ExpenseMonthLoaded){
+                            return Text('Rp.${MoneyUtil.getReadableMoney(state.nominal)}', style: _theme.textTheme.headline3,);
+                          }else{
+                            return Text('Rp.0', style: _theme.textTheme.headline3,);
+                          }
+                        },
+                      )
                   ),
                   IconButton(onPressed: (){
 
@@ -110,8 +121,10 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
+    _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
     _recentLogsBloc = BlocProvider.of<RecentLogsBloc>(context);
     _recentLogsBloc.add(GetRecentLogsEvent());
+    _expenseMonthBloc.add(GetExpenseMonthEvent(month: DateTime.now().month, year: DateTime.now().year));
   }
 
   @override

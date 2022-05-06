@@ -2,6 +2,7 @@
 import 'package:expense_app/features/injection_container.dart';
 import 'package:expense_app/features/presentation/pages/all_logs/all_logs_page.dart';
 import 'package:expense_app/features/presentation/pages/date_selection/date_selection_bottomsheet.dart';
+import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,9 @@ Route<dynamic> controller(RouteSettings settings) {
               providers: [
                 BlocProvider<RecentLogsBloc>(
                     create: (context)=> sl<RecentLogsBloc>()
+                ),
+                BlocProvider<ExpenseMonthBloc>(
+                    create: (context)=> sl<ExpenseMonthBloc>()
                 )
               ],
               child: const HomePage()

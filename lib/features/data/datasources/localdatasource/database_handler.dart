@@ -1,4 +1,5 @@
 import 'package:expense_app/features/data/models/log_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -56,6 +57,7 @@ class DatabaseHandler{
     int result = 0;
     final Database db = await _getDatabase();
 
+    data['id'] = null;
     // Insert TodoModel to database which model that has been converted to map
     result = await db.insert(_tableLog, data);
     return result;
@@ -67,6 +69,17 @@ class DatabaseHandler{
     final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT*FROM $_tableLog ORDER BY date DESC LIMIT 10');
     // Convert from map to model then will be converted to list
     return queryResult.map((e) => LogModel.fromMap(e)).toList();
+  }
+
+  Future<int> getExpenseInMonth(int month, int year) async {
+    final Database db = await _getDatabase();
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT SUM(nominal) as nominal FROM $_tableLog WHERE month = $month AND year = $year');
+    String log='';
+    queryResult.forEach((element) {
+      log+=element.toString();
+    });
+    // Convert from map to model then will be converted to list
+    return queryResult[0]['nominal'];
   }
 
   Future<void> deleteLog(int id) async {
