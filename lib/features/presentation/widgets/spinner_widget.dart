@@ -8,10 +8,18 @@ class SpinnerWidget extends StatefulWidget {
   SpinnerWidget({Key? key,
     required this.listData,
     required this.onItemSelectedListener
-  }) : super(key: key);
+  }) : super(key: key){
+    state = _SpinnerWidgetState();
+  }
+
+  late _SpinnerWidgetState state;
+
+  void updateSelectedItem(int index){
+    state.updateSelectedItem(index);
+  }
 
   @override
-  State<SpinnerWidget> createState() => _SpinnerWidgetState();
+  State<SpinnerWidget> createState() => state;
 }
 
 class _SpinnerWidgetState extends State<SpinnerWidget> {
@@ -19,7 +27,6 @@ class _SpinnerWidgetState extends State<SpinnerWidget> {
   String _dropDownValue = '';
   int _dropDownIndex = -1;
   late ThemeData _theme;
-
 
   @override
   void initState() {
@@ -30,6 +37,19 @@ class _SpinnerWidgetState extends State<SpinnerWidget> {
       _dropDownIndex = 0;
     }
 
+  }
+
+  void updateSelectedItem(int index){
+    try{
+      String value = widget.listData[index];
+      _dropDownValue = value;
+      _dropDownIndex = index;
+      setState(() {
+
+      });
+    }catch(e){
+
+    }
   }
 
   @override

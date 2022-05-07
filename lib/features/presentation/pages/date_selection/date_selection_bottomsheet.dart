@@ -1,3 +1,5 @@
+import 'package:expense_app/core/util/date_util.dart';
+import 'package:expense_app/features/presentation/widgets/button_widget.dart';
 import 'package:expense_app/features/presentation/widgets/spinner_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -10,11 +12,35 @@ class DateSelectionBottomSheet extends StatefulWidget {
 
 class _DateSelectionBottomSheetState extends State<DateSelectionBottomSheet> {
 
+  int _monthSelectedValue = 1;
+  int _yearSelectedValue = 2022;
+
   late ThemeData _theme;
+  late SpinnerWidget _monthSpinner;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _monthSelectedValue = DateTime.now().month;
+    _yearSelectedValue = DateTime.now().year;
+  }
 
   @override
   Widget build(BuildContext context) {
     _theme = Theme.of(context);
+
+    _monthSpinner = SpinnerWidget(
+        listData: DateUtil.listMonth,
+        onItemSelectedListener: (value, index){
+          _monthSelectedValue = index+1;
+        }
+    );
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _monthSpinner.updateSelectedItem(DateTime.now().month-1);
+    });
+
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -34,25 +60,38 @@ class _DateSelectionBottomSheetState extends State<DateSelectionBottomSheet> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SpinnerWidget(listData: [
-                  'Jaunary',
-                  'February',
-                  'March',
-                ], onItemSelectedListener: (value, index){
-
-                }),
-                SpinnerWidget(listData: [
-                  '2020',
-                  '2021',
-                  '2022',
-                ], onItemSelectedListener: (value, index){
-
-                })
+                _monthSpinner,
+                SpinnerWidget(
+                    listData: DateUtil.listYear,
+                    onItemSelectedListener: (value, index){
+                      _yearSelectedValue = int.parse(DateUtil.listYear[index]);
+                    }
+                )
               ],
+            ),
+            const SizedBox(height: 16,),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ButtonWidget(
+                onPressed: (){
+                  debugPrint('pressed');
+                  Navigator.pop(context, MonthYearSelectionArgs(year: _yearSelectedValue, month: _monthSelectedValue));
+                },
+                text: 'Finish',
+              ),
             )
           ],
         ),
       ),
     );
   }
+}
+
+class MonthYearSelectionArgs{
+
+  final int year;
+  final int month;
+
+  MonthYearSelectionArgs({required this.year, required this.month});
+
 }

@@ -13,7 +13,7 @@ abstract class LocalDataSource{
 
   Future<int> getMonthExpense(int month, int year);
 
-  Future<List<LogModel>> getLogsInMonth(int month, int year, int limit);
+  Future<List<LogModel>> getLogsInMonth(int month, int year, int limit, int page);
 
   Future<void> deleteLog(int id);
 
@@ -44,8 +44,9 @@ class LocalDataSourceImpl extends LocalDataSource{
   }
 
   @override
-  Future<List<LogModel>> getLogsInMonth(int month, int year, int limit) async {
-    throw Exception('');
+  Future<List<LogModel>> getLogsInMonth(int month, int year, int limit, int page) async {
+    var result = await databaseHandler.getLogsInMonth(month, year, page, limit);
+    return result;
   }
 
   @override

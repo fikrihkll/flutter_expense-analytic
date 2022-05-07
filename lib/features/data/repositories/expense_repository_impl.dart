@@ -48,9 +48,9 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   }
 
   @override
-  Future<Either<Failure, List<Log>>> getLogsInMonth(int month, int year, int limit) async {
+  Future<Either<Failure, List<Log>>> getLogsInMonth(int month, int year, int limit, int page) async {
     try{
-      var result = await localDataSource.getLogsInMonth(month, year, limit);
+      var result = await localDataSource.getLogsInMonth(month, year, limit, page);
       return Right(result);
     }catch(e){
       debugPrint(e.toString());

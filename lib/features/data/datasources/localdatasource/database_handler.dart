@@ -1,3 +1,4 @@
+import 'package:expense_app/features/data/models/log_detail_model.dart';
 import 'package:expense_app/features/data/models/log_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
@@ -71,15 +72,28 @@ class DatabaseHandler{
     return queryResult.map((e) => LogModel.fromMap(e)).toList();
   }
 
+  Future<List<LogModel>> getLogsInMonth(int month, int year, int page, int limit) async {
+    final Database db = await _getDatabase();
+    int offset = (page-1) * limit;
+    String query = 'SELECT*FROM $_tableLog WHERE month = $month AND year = $year ORDER BY date DESC LIMIT $limit OFFSET $offset';
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery(query);
+    // Convert from map to model then will be converted to list
+    return queryResult.map((e) => LogModel.fromMap(e)).toList();
+  }
+
+  Future<List<LogDetailModel>> getLogsDetailInMonth(int month, int year) async {
+    final Database db = await _getDatabase();
+    String query = 'SELECT category, SUM(nominal) as nominal FROM $_tableLog WHERE month = $month AND year = $year GROUP BY category';
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery(query);
+    // Convert from map to model then will be converted to list
+    return queryResult.map((e) => LogDetailModel.fromMap(e)).toList();
+  }
+
   Future<int> getExpenseInMonth(int month, int year) async {
     final Database db = await _getDatabase();
     final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT SUM(nominal) as nominal FROM $_tableLog WHERE month = $month AND year = $year');
-    String log='';
-    queryResult.forEach((element) {
-      log+=element.toString();
-    });
     // Convert from map to model then will be converted to list
-    return queryResult[0]['nominal'];
+    return queryResult.first['nominal'];
   }
 
   Future<void> deleteLog(int id) async {

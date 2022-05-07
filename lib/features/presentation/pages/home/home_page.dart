@@ -2,11 +2,12 @@ import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/input_expense_section.dart';
-import 'package:expense_app/features/presentation/sections/logs_list/logs_list_section.dart';
+import 'package:expense_app/features/presentation/pages/home/logs_list/logs_list_section.dart';
 import 'package:expense_app/features/presentation/widgets/circle_image.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:expense_app/features/presentation/routes/route.dart' as route;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -106,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     onPressed: (){
-
+                      Navigator.pushNamed(context, route.allLogsPage);
                     }, child: const Text('All Logs')
                 ),
               )
@@ -146,7 +147,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 16,),
               const InputExpenseSection(),
               const SizedBox(height: 32,),
-              const LogsListSection(listType: LogsListType.RECENT,)
+              const LogsListSection()
             ],
           ),
         ),

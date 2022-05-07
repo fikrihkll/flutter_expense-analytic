@@ -8,6 +8,7 @@ import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_
 import 'package:expense_app/features/presentation/pages/home/bloc/insert_log_presenter.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/category_list_widget.dart';
+import 'package:expense_app/features/presentation/widgets/button_widget.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -195,20 +196,11 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
             _buildCategoryList(),
             Align(
               alignment: Alignment.centerRight,
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: _isSaveButtonEnabled 
-                      ? MaterialStateProperty.all(_theme.colorScheme.primary) 
-                      : MaterialStateProperty.all(MyTheme.gray),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    )
-                  ),
-                ),
-                onPressed: _saveExpenseData,
-                child: const Text('Save',)
-              ),
+              child: ButtonWidget(
+                onPressed: () async => _saveExpenseData(),
+                isButtonEnabled: _isSaveButtonEnabled,
+                text: 'Save',
+              )
             )
           ],
         )

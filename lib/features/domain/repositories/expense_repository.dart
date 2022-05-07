@@ -6,7 +6,7 @@ import 'package:expense_app/features/domain/entities/log_detail.dart';
 abstract class ExpenseRepository{
   Future<Either<Failure, int>> getExpenseInMonth(int month, int year);
   Future<Either<Failure, List<Log>>> getLatestLogs();
-  Future<Either<Failure, List<Log>>> getLogsInMonth(int month, int year, int limit);
+  Future<Either<Failure, List<Log>>> getLogsInMonth(int month, int year, int limit, int page);
   Future<Either<Failure, bool>> insertLog(Log data);
   Future<Either<Failure, bool>> deleteLog(int id);
   Future<Either<Failure, List<LogDetail>>> getLogsDetailInMonth(int month, int year);
