@@ -5,6 +5,7 @@ import 'package:expense_app/core/error/failure.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
 import 'package:expense_app/features/domain/usecases/delete_log_usecase.dart';
 import 'package:expense_app/features/domain/usecases/get_logs_in_month_usecase.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 part 'all_logs_event.dart';
@@ -22,9 +23,8 @@ class AllLogsBloc extends Bloc<AllLogsEvent, AllLogsState> {
 
   AllLogsBloc({required this.getLogsInMonthUseCase, required this.deleteLogUseCase}) : super(AllLogsInitial()) {
     on<GetAllLogsEvent>((event, emit) async {
-      emit(AllLogsLoading());
-
       if(state is AllLogsInitial || event.isRefreshing){
+        emit(AllLogsLoading());
         _page = 1;
         listData.clear();
         var result = await getLogsInMonthUseCase

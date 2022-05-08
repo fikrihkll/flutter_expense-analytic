@@ -14,14 +14,18 @@ class IconUtil{
         return Icons.style;
       case 'E-Money':
         return Icons.credit_card;
-      case 'E-Wallet':
-        return Icons.monetization_on;
+      case 'Transportation':
+        return Icons.directions_train_sharp;
       case 'Tools':
         return Icons.home_repair_service;
       case 'Toiletries':
         return Icons.shower;
       case 'Electricity':
         return Icons.bolt;
+      case 'Daily Needs':
+        return Icons.backpack;
+      case 'Subscription':
+        return Icons.subscriptions;
       case 'Shopping':
         return Icons.shopping_bag;
       case 'Others':

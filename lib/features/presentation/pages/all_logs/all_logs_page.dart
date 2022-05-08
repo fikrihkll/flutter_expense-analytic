@@ -44,7 +44,7 @@ class _AllLogsPageState extends State<AllLogsPage> {
     if(currentScroll == maxScroll){
       if(!_isLoading){
         _allLogsBloc.add(GetAllLogsEvent(
-            isRefreshing: true,
+            isRefreshing: false,
             month: _selectedMonth,
             year: _selectedYear
         ));
@@ -72,10 +72,11 @@ class _AllLogsPageState extends State<AllLogsPage> {
   Widget _buildLogsListSection(){
     return BlocBuilder<AllLogsBloc, AllLogsState>(
         builder: (context, state){
-          _isLoading = false;
+
           if(state is AllLogsLoading){
             return const CupertinoActivityIndicator();
           }else if(state is AllLogsLoaded){
+            _isLoading = false;
             return ListView.builder(
                 primary: false,
                 shrinkWrap: true,
@@ -91,6 +92,7 @@ class _AllLogsPageState extends State<AllLogsPage> {
                 }
             );
           }else if(state is AllLogsError){
+            _isLoading = false;
             return Center(
               child: Text('There is something wrong/n${state.message}'),
             );

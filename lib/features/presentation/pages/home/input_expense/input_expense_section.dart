@@ -37,10 +37,11 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     ExpenseCategory(name: 'Drink'),
     ExpenseCategory(name: 'Laundry'),
     ExpenseCategory(name: 'E-Money'),
-    ExpenseCategory(name: 'E-Wallet'),
+    ExpenseCategory(name: 'Transportation'),
     ExpenseCategory(name: 'Tools'),
     ExpenseCategory(name: 'Toiletries'),
     ExpenseCategory(name: 'Electricity'),
+    ExpenseCategory(name: 'Daily Needs'),
     ExpenseCategory(name: 'Shopping'),
     ExpenseCategory(name: 'Others'),
   ];
