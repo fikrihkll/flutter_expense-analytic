@@ -138,7 +138,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 24,),
+              const SizedBox(height: 40,),
               _buildHeader(),
               const SizedBox(height: 32,),
               _buildMoneyLeft(),
