@@ -106,6 +106,7 @@ class _AllLogsPageState extends State<AllLogsPage> {
   void _onDateTap() async {
     var result = await showCupertinoModalPopup(
       context: context,
+      barrierDismissible: true,
       builder: (context) => SingleChildScrollView(
         controller: ScrollController(),
         child: const DateSelectionBottomSheet()

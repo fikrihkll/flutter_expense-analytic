@@ -3,6 +3,7 @@ import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_
 import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/input_expense_section.dart';
 import 'package:expense_app/features/presentation/pages/home/logs_list/logs_list_section.dart';
+import 'package:expense_app/features/presentation/pages/profile_expand/profile_expand_dialog.dart';
 import 'package:expense_app/features/presentation/widgets/circle_image.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
@@ -38,9 +39,18 @@ class _HomePageState extends State<HomePage> {
               Text('Hey, glad to see you back', style: _theme.textTheme.headline4,),
             ],
           ),
-          CircleImage(
-            size: 44,
-            url: _profileUrl,
+          GestureDetector(
+            onTap: (){
+              showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (context) => ProfileExpandDialog()
+              );
+            },
+            child: CircleImage(
+              size: 44,
+              url: _profileUrl,
+            ),
           )
         ],
       );
