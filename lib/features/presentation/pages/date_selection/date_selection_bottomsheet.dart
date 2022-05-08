@@ -79,7 +79,8 @@ class _DateSelectionBottomSheetState extends State<DateSelectionBottomSheet> {
                 },
                 text: 'Finish',
               ),
-            )
+            ),
+            const SizedBox(height: 32,),
           ],
         ),
       ),
