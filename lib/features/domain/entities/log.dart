@@ -5,6 +5,7 @@ class Log extends Equatable{
   final String category;
   final String desc;
   final String date;
+  final int day;
   final int month;
   final int year;
   final int nominal;
@@ -15,6 +16,7 @@ class Log extends Equatable{
     required this.category,
     required this.desc,
     required this.date,
+    required this.day,
     required this.month,
     required this.year,
     required this.nominal,

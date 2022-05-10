@@ -1,8 +1,10 @@
 import 'package:expense_app/core/util/money_util.dart';
+import 'package:expense_app/features/presentation/pages/home/bloc/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/input_expense_section.dart';
 import 'package:expense_app/features/presentation/pages/home/logs_list/logs_list_section.dart';
+import 'package:expense_app/features/presentation/pages/input_expense_limit/input_expense_limit_dialog.dart';
 import 'package:expense_app/features/presentation/pages/profile_expand/profile_expand_dialog.dart';
 import 'package:expense_app/features/presentation/widgets/circle_image.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
@@ -22,6 +24,7 @@ class _HomePageState extends State<HomePage> {
   // Bloc or Presenter
   late RecentLogsBloc _recentLogsBloc;
   late ExpenseMonthBloc _expenseMonthBloc;
+  late BalanceLeftBloc _balanceLeftBloc;
 
   late ThemeData _theme;
 
@@ -61,14 +64,26 @@ class _HomePageState extends State<HomePage> {
     return // ------------------------------- Money left
       FloatingContainer(
           shadowEnabled: false,
-          splashEnabled: false,
+          splashEnabled: true,
+          onTap: ()async{
+            await showDialog(context: context, builder: (context) => InputExpenseLimitDialog());
+            _balanceLeftBloc.add(GetBalanceLeftEvent());
+          },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Balance remaining today'),
               const SizedBox(width: 16,),
-              Text('Rp.12.000.000', style: _theme.textTheme.headline5,)
+              BlocBuilder<BalanceLeftBloc, BalanceLeftState>(
+                builder: (context, state){
+                  if(state is BalanceLeftLoaded){
+                    return Text('Rp.${MoneyUtil.getReadableMoney(state.data)} 😘', style: _theme.textTheme.headline5,);
+                  }else{
+                    return Text('🥰', style: _theme.textTheme.headline5,);
+                  }
+                },
+              )
             ],
           )
       );
@@ -134,8 +149,10 @@ class _HomePageState extends State<HomePage> {
 
     _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
     _recentLogsBloc = BlocProvider.of<RecentLogsBloc>(context);
+    _balanceLeftBloc = BlocProvider.of<BalanceLeftBloc>(context);
     _recentLogsBloc.add(GetRecentLogsEvent());
     _expenseMonthBloc.add(GetExpenseMonthEvent(month: DateTime.now().month, year: DateTime.now().year));
+    _balanceLeftBloc.add(GetBalanceLeftEvent());
   }
 
   @override

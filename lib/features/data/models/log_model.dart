@@ -5,6 +5,7 @@ class LogModel extends Log{
   final String category;
   final String desc;
   final String date;
+  final int day;
   final int month;
   final int year;
   final int nominal;
@@ -15,6 +16,7 @@ class LogModel extends Log{
     required this.category,
     required this.desc,
     required this.date,
+    required this.day,
     required this.month,
     required this.year,
     required this.nominal,
@@ -24,6 +26,7 @@ class LogModel extends Log{
     category: category,
     desc: desc,
     date: date,
+    day: day,
     month: month,
     year: year,
     nominal: nominal,
@@ -36,6 +39,7 @@ class LogModel extends Log{
         category: map['category'],
         desc: map['desc'],
         date: map['date'],
+        day: map['day'],
         month: map['month'],
         year: map['year'],
         nominal: map['nominal'],
@@ -49,6 +53,7 @@ class LogModel extends Log{
       'category': data.category,
       'desc': data.desc,
       'date': data.date,
+      'day': data.day,
       'month': data.month,
       'year': data.year,
       'nominal': data.nominal,
@@ -62,6 +67,7 @@ class LogModel extends Log{
     category,
     desc,
     date,
+    day,
     month,
     year,
     nominal,

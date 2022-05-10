@@ -1,5 +1,6 @@
 import 'package:expense_app/features/data/datasources/localdatasource/dao/expense_dao.dart';
 import 'package:expense_app/features/data/datasources/localdatasource/database_handler.dart';
+import 'package:expense_app/features/data/models/expense_limit_model.dart';
 import 'package:expense_app/features/data/models/log_detail_model.dart';
 import 'package:expense_app/features/data/models/log_model.dart';
 
@@ -19,6 +20,13 @@ abstract class LocalDataSource{
 
   Future<List<LogDetailModel>> getLogsDetailInMonth(int month, int year);
 
+  Future<int> getTodayExpense(int day, int month, int year);
+
+  Future<int> getTodayLimit(int month, int year, bool isWeekdays);
+
+  Future<void> insertExpenseLimit(Map<String, dynamic> data);
+
+  Future<ExpenseLimitModel> getExpenseLimit(int month, int year);
 }
 
 class LocalDataSourceImpl extends LocalDataSource{
@@ -58,6 +66,26 @@ class LocalDataSourceImpl extends LocalDataSource{
   @override
   Future<void> insertLogs(Map<String, dynamic> data) async {
     await databaseHandler.insertLog(data);
+  }
+
+  @override
+  Future<int> getTodayExpense(int day, int month, int year) async {
+    return await databaseHandler.getTodayExpense(day, month, year);
+  }
+
+  @override
+  Future<int> getTodayLimit(int month, int year, bool isWeekdays) async {
+    return await databaseHandler.getTodayLimit(isWeekdays, month, year);
+  }
+
+  @override
+  Future<void> insertExpenseLimit(Map<String, dynamic> data) async {
+    await databaseHandler.insertExpenseLimit(data);
+  }
+
+  @override
+  Future<ExpenseLimitModel> getExpenseLimit(int month, int year) async {
+    return await databaseHandler.getExpenseLimit(month, year);
   }
 
 }

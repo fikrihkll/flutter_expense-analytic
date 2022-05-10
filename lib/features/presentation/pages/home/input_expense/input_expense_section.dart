@@ -4,6 +4,7 @@ import 'package:expense_app/core/util/theme_util.dart';
 import 'package:expense_app/features/domain/entities/expense_categroy.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
 import 'package:expense_app/features/injection_container.dart';
+import 'package:expense_app/features/presentation/pages/home/bloc/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/insert_log_presenter.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
@@ -28,6 +29,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
   late InsertLogPresenter _insertLogPresenter;
   late RecentLogsBloc _recentLogsBloc;
   late ExpenseMonthBloc _expenseMonthBloc;
+  late BalanceLeftBloc _balanceLeftBloc;
   
   bool _isSaveButtonEnabled = true;
   late ThemeData _theme;
@@ -104,6 +106,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
         category: _listCategory[_selectedCategoryPosition].name,
         desc: _controllerDesc.text,
         date: DateUtil.dbFormat.format(DateTime.now()),
+        day: DateTime.now().day,
         month: DateTime.now().month,
         year: DateTime.now().year,
         nominal: int.parse(nonDecimalNominal),
@@ -138,6 +141,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
       // Then update Recent Log List data and others...
       _recentLogsBloc.add(GetRecentLogsEvent());
       _expenseMonthBloc.add(GetExpenseMonthEvent(month: DateTime.now().month, year: DateTime.now().year));
+      _balanceLeftBloc.add(GetBalanceLeftEvent());
 
       // Clear Edit Text
       _controllerNominal.text = '';
@@ -158,6 +162,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     _insertLogPresenter = sl<InsertLogPresenter>();
     _recentLogsBloc = BlocProvider.of<RecentLogsBloc>(context);
     _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
+    _balanceLeftBloc = BlocProvider.of<BalanceLeftBloc>(context);
   }
 
   @override
