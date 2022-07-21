@@ -66,7 +66,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       var result = await localDataSource.getLatestLogs();
       return Right(result);
     }catch(e){
-      debugPrint(e.toString());
+      debugPrint("LATEST => "+e.toString());
       return Left(CacheFailure());
     }
   }

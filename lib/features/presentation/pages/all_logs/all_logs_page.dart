@@ -1,5 +1,6 @@
 import 'package:expense_app/core/util/date_util.dart';
 import 'package:expense_app/core/util/money_util.dart';
+import 'package:expense_app/features/data/datasources/localdatasource/database_handler.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
 import 'package:expense_app/features/presentation/pages/all_logs/bloc/all_logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/all_logs/bloc/selected_date_bloc.dart';
@@ -213,6 +214,8 @@ class _AllLogsPageState extends State<AllLogsPage> {
     );
 
     _selectedDateBloc = BlocProvider.of<SelectedDateBloc>(context);
+
+
   }
 
   @override
