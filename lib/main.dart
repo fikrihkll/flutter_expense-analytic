@@ -1,9 +1,16 @@
 import 'package:expense_app/core/util/theme_util.dart';
+import 'package:expense_app/features/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_app/features/presentation/routes/route.dart' as route;
 
-void main() {
+void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Inject Dependencies
+  await init();
+
   runApp(const MyApp());
 }
 
