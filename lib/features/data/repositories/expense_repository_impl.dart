@@ -87,7 +87,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   Future<Either<Failure, int>> getTodayBalanceLeft() async {
     try{
       DateTime now = DateTime.now();
-      bool isWeekdays = now.weekday >= 1 && now.weekday <= 5;
+      bool isWeekdays = now.weekday >= 1 && now.weekday <= 4;
 
       var todayLimit = localDataSource.getTodayLimit(now.month, now.year, isWeekdays);
       var todayExpense = localDataSource.getTodayExpense(now.day, now.month, now.year);
