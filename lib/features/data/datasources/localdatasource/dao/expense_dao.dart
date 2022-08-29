@@ -1,6 +1,6 @@
 
 
-abstract class ExpenseDao {
+abstract class ExpenseDaoSQFLite {
   //
   // @insert
   // Future<void> insertLogs(LogTable data);

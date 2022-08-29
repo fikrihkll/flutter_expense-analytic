@@ -6,6 +6,7 @@ import 'package:expense_app/features/presentation/pages/all_logs/bloc/selected_d
 import 'package:expense_app/features/presentation/pages/date_selection/date_selection_bottomsheet.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_bloc.dart';
+import 'package:expense_app/features/presentation/pages/home/bloc/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,9 @@ Route<dynamic> controller(RouteSettings settings) {
                 ),
                 BlocProvider<BalanceLeftBloc>(
                     create: (context)=> sl<BalanceLeftBloc>()
+                ),
+                BlocProvider<FundSourceBloc>(
+                    create: (context)=> sl<FundSourceBloc>()
                 )
               ],
               child: const HomePage()

@@ -31,8 +31,8 @@ class _LogsListSectionState extends State<LogsListSection> {
         onItemDeleted: (log) async {
           await BlocProvider.of<RecentLogsBloc>(context).deleteLog(log.id);
           BlocProvider.of<ExpenseMonthBloc>(context).add(GetExpenseMonthEvent(
-              month: DateTime.now().month,
-              year: DateTime.now().year
+              dateStart: DateTime.now(),
+              dateEnd: DateTime.now()
           ));
         },
       )

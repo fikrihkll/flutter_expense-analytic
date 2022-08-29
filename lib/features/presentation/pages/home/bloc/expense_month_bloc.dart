@@ -15,7 +15,7 @@ class ExpenseMonthBloc extends Bloc<ExpenseMonthEvent, ExpenseMonthState> {
     on<GetExpenseMonthEvent>((event, emit) async {
       emit(ExpenseMonthLoading());
 
-      var result = await getExpenseInMonthUseCase.call(GetExpenseInMonthUseCaseParams(month: event.month, year: event.year));
+      var result = await getExpenseInMonthUseCase.call(GetExpenseInMonthUseCaseParams(dateStart: event.dateStart, dateEnd: event.dateEnd));
 
       emit(
         result.fold((l) => ExpenseMonthError(''), (r) => ExpenseMonthLoaded(r))

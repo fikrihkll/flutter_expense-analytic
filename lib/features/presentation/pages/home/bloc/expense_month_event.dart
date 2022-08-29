@@ -4,7 +4,8 @@ part of 'expense_month_bloc.dart';
 abstract class ExpenseMonthEvent {}
 
 class GetExpenseMonthEvent extends ExpenseMonthEvent {
-  final int month, year;
+  final DateTime dateStart;
+  final DateTime dateEnd;
 
-  GetExpenseMonthEvent({required this.month, required this.year});
+  GetExpenseMonthEvent({required this.dateStart, required this.dateEnd});
 }

@@ -1,5 +1,6 @@
 import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/features/data/datasources/localdatasource/database_handler.dart';
+import 'package:expense_app/features/data/repositories/dummy_repository_impl.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
@@ -24,7 +25,6 @@ class _HomePageState extends State<HomePage> {
 
   // Bloc or Presenter
   late RecentLogsBloc _recentLogsBloc;
-  late ExpenseMonthBloc _expenseMonthBloc;
   late BalanceLeftBloc _balanceLeftBloc;
 
   late ThemeData _theme;
@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Balance remaining today'),
+              const Text('Query masi gagal\nSaran gw rombak ulang ERD\nBalance remaining today'),
               const SizedBox(width: 16,),
               BlocBuilder<BalanceLeftBloc, BalanceLeftState>(
                 builder: (context, state){
@@ -148,12 +148,25 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
     _recentLogsBloc = BlocProvider.of<RecentLogsBloc>(context);
     _balanceLeftBloc = BlocProvider.of<BalanceLeftBloc>(context);
     _recentLogsBloc.add(GetRecentLogsEvent());
-    _expenseMonthBloc.add(GetExpenseMonthEvent(month: DateTime.now().month, year: DateTime.now().year));
     _balanceLeftBloc.add(GetBalanceLeftEvent());
+
+    // loadDummy();
+
+  }
+
+  void loadDummy() async {
+    var dummy = DummyRepositoryImpl();
+    await dummy.initDb();
+
+    // await dummy.insertDummyData();
+
+    await dummy.insertUser();
+
+    debugPrint("TOTAL FUND ${(await dummy.db!.fundSourceDao.getFundSources()).length}");
+    debugPrint("TOTAL EXP ${(await dummy.db!.userDao.getUsers()).length}");
   }
 
   @override

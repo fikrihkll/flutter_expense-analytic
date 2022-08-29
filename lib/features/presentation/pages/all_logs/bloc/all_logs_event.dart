@@ -5,11 +5,12 @@ abstract class AllLogsEvent {}
 
 class GetAllLogsEvent extends AllLogsEvent {
   final bool isRefreshing;
-  final int month, year;
+  final DateTime dateStart;
+  final DateTime dateEnd;
 
   GetAllLogsEvent({
     required this.isRefreshing,
-    required this.month,
-    required this.year
+    required this.dateStart,
+    required this.dateEnd
   });
 }

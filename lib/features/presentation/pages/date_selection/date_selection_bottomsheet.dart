@@ -12,8 +12,8 @@ class DateSelectionBottomSheet extends StatefulWidget {
 
 class _DateSelectionBottomSheetState extends State<DateSelectionBottomSheet> {
 
-  int _monthSelectedValue = 1;
-  int _yearSelectedValue = 2022;
+  late DateTime _selectedStart;
+  late DateTime _selectedEnd;
 
   late ThemeData _theme;
   late SpinnerWidget _monthSpinner;
@@ -22,22 +22,15 @@ class _DateSelectionBottomSheetState extends State<DateSelectionBottomSheet> {
   void initState() {
     super.initState();
 
-    _monthSelectedValue = DateTime.now().month;
-    _yearSelectedValue = DateTime.now().year;
+    _selectedStart = DateTime.now().add(const Duration(days: -31));
+    _selectedEnd = DateTime.now();
   }
 
   @override
   Widget build(BuildContext context) {
     _theme = Theme.of(context);
 
-    _monthSpinner = SpinnerWidget(
-        listData: DateUtil.listMonth,
-        onItemSelectedListener: (value, index){
-          _monthSelectedValue = index+1;
-        }
-    );
-
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _monthSpinner.updateSelectedItem(DateTime.now().month-1);
     });
 
@@ -57,25 +50,48 @@ class _DateSelectionBottomSheetState extends State<DateSelectionBottomSheet> {
           children: [
             Text('Select Date', style: _theme.textTheme.headline3,),
             const SizedBox(height: 16,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _monthSpinner,
-                SpinnerWidget(
-                    listData: DateUtil.listYear,
-                    onItemSelectedListener: (value, index){
-                      _yearSelectedValue = int.parse(DateUtil.listYear[index]);
-                    }
-                )
-              ],
+            const Text('Start'),
+            GestureDetector(
+              onTap: () async {
+                var result = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2002),
+                    lastDate: DateTime.now()
+                );
+                if (result != null && result.isBefore(_selectedEnd)) {
+                  _selectedStart = result;
+                }
+              },
+              child: Text(DateUtil.dateFormat.format(_selectedStart)),
+            ),
+            const Text('End'),
+            GestureDetector(
+              onTap: () async {
+                var result = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2002),
+                    lastDate: DateTime.now()
+                );
+                if (result != null && result.isAfter(_selectedStart)) {
+                  _selectedEnd = result;
+                }
+              },
+              child: Text(DateUtil.dateFormat.format(_selectedEnd)),
             ),
             const SizedBox(height: 16,),
             Align(
               alignment: Alignment.centerRight,
               child: ButtonWidget(
                 onPressed: (){
-                  debugPrint('pressed');
-                  Navigator.pop(context, MonthYearSelectionArgs(year: _yearSelectedValue, month: _monthSelectedValue));
+                  Navigator.pop(
+                      context,
+                      MonthYearSelectionArgs(
+                          selectedStart: _selectedStart,
+                          selectedEnd: _selectedEnd
+                      )
+                  );
                 },
                 text: 'Finish',
               ),
@@ -90,9 +106,9 @@ class _DateSelectionBottomSheetState extends State<DateSelectionBottomSheet> {
 
 class MonthYearSelectionArgs{
 
-  final int year;
-  final int month;
+  final DateTime selectedStart;
+  final DateTime selectedEnd;
 
-  MonthYearSelectionArgs({required this.year, required this.month});
+  MonthYearSelectionArgs({required this.selectedStart, required this.selectedEnd});
 
 }

@@ -2,13 +2,16 @@ import 'package:expense_app/core/util/date_util.dart';
 import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/core/util/theme_util.dart';
 import 'package:expense_app/features/domain/entities/expense_categroy.dart';
+import 'package:expense_app/features/domain/entities/fund_source_entity.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
 import 'package:expense_app/features/injection_container.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_bloc.dart';
+import 'package:expense_app/features/presentation/pages/home/bloc/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/insert_log_presenter.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/category_list_widget.dart';
+import 'package:expense_app/features/presentation/pages/home/input_expense/fund_list_widget.dart';
 import 'package:expense_app/features/presentation/widgets/button_widget.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +31,8 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
   // Bloc or Presenter
   late InsertLogPresenter _insertLogPresenter;
   late RecentLogsBloc _recentLogsBloc;
-  late ExpenseMonthBloc _expenseMonthBloc;
   late BalanceLeftBloc _balanceLeftBloc;
+  late FundSourceBloc _fundSourceBloc;
   
   bool _isSaveButtonEnabled = true;
   late ThemeData _theme;
@@ -48,6 +51,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     ExpenseCategory(name: 'Others'),
   ];
   int _selectedCategoryPosition = -1;
+  int _selectedFundPosition = -1;
 
   // Edit Text Controller
   final TextEditingController _controllerNominal = TextEditingController();
@@ -72,6 +76,32 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     );
   }
 
+  Widget _buildFundList(){
+    return Material(
+      color: Colors.transparent,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 16, bottom: 16),
+        child: SizedBox(
+          height: 48,
+          child: BlocBuilder<FundSourceBloc, FundSourceState>(
+            builder: (builder, state) {
+              if (state is FundSourceLoaded) {
+                return ListView.builder(
+                    itemCount: state.listData.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, position){
+                      return _buildItemFundList(state.listData[position], position);
+                    }
+                );
+              }
+              return Text("error");
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildItemList(int position){
     return Padding(
       padding: const EdgeInsets.only(left: 4, right: 4),
@@ -82,6 +112,23 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
         onAreaClicked: (itemPosition){
           // Change selected item
           _selectedCategoryPosition = itemPosition;
+          setState(() {
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildItemFundList(FundSource fund, int position){
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, right: 4),
+      child: FundListWidget(
+        itemPosition: position,
+        isSelected: _selectedFundPosition == position,
+        item: fund,
+        onAreaClicked: (itemPosition){
+          // Change selected item
+          _selectedFundPosition = itemPosition;
           setState(() {
           });
         },
@@ -110,7 +157,8 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
         month: DateTime.now().month,
         year: DateTime.now().year,
         nominal: int.parse(nonDecimalNominal),
-        userId: 1
+        userId: 1,
+        fundSourceId: _fundSourceBloc.list[_selectedFundPosition].id
     );
   }
 
@@ -121,6 +169,9 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
       isValid = false;
     }
     if(_selectedCategoryPosition == -1){
+      isValid = false;
+    }
+    if(_selectedFundPosition == -1){
       isValid = false;
     }
     if(!_isSaveButtonEnabled){
@@ -140,7 +191,6 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
       await _insertLogPresenter.insertLogEvent(_buildData());
       // Then update Recent Log List data and others...
       _recentLogsBloc.add(GetRecentLogsEvent());
-      _expenseMonthBloc.add(GetExpenseMonthEvent(month: DateTime.now().month, year: DateTime.now().year));
       _balanceLeftBloc.add(GetBalanceLeftEvent());
 
       // Clear Edit Text
@@ -161,8 +211,10 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     
     _insertLogPresenter = sl<InsertLogPresenter>();
     _recentLogsBloc = BlocProvider.of<RecentLogsBloc>(context);
-    _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
     _balanceLeftBloc = BlocProvider.of<BalanceLeftBloc>(context);
+    _fundSourceBloc = BlocProvider.of<FundSourceBloc>(context);
+
+    _fundSourceBloc.add(LoadFundSourceEvent());
   }
 
   @override
@@ -208,6 +260,9 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
             const SizedBox(height: 16,),
             const Text('Category'),
             _buildCategoryList(),
+            const SizedBox(height: 8,),
+            const Text('Fund Source'),
+            _buildFundList(),
             Align(
               alignment: Alignment.centerRight,
               child: ButtonWidget(

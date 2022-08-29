@@ -116,21 +116,21 @@ class DatabaseHandler{
     return queryResult.first[isWeekdays ? 'weekdays_limit' : 'weekend_limit'];
   }
 
-  Future<List<LogModel>> getRecentLogs() async {
-    final Database db = await _getDatabase();
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT*FROM $_tableLog ORDER BY date DESC LIMIT 10');
-    // Convert from map to model then will be converted to list
-    return queryResult.map((e) => LogModel.fromMap(e)).toList();
-  }
-
-  Future<List<LogModel>> getLogsInMonth(int month, int year, int page, int limit) async {
-    final Database db = await _getDatabase();
-    int offset = (page-1) * limit;
-    String query = 'SELECT*FROM $_tableLog WHERE month = $month AND year = $year ORDER BY date DESC LIMIT $limit OFFSET $offset';
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery(query);
-    // Convert from map to model then will be converted to list
-    return queryResult.map((e) => LogModel.fromMap(e)).toList();
-  }
+  // Future<List<LogModel>> getRecentLogs() async {
+  //   final Database db = await _getDatabase();
+  //   final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT*FROM $_tableLog ORDER BY date DESC LIMIT 10');
+  //   // Convert from map to model then will be converted to list
+  //   return queryResult.map((e) => LogModel.fromMap(e)).toList();
+  // }
+  //
+  // Future<List<LogModel>> getLogsInMonth(String dateStart, String dateEnd, int page, int limit) async {
+  //   final Database db = await _getDatabase();
+  //   int offset = (page-1) * limit;
+  //   String query = 'SELECT*FROM $_tableLog WHERE date >= $dateStart AND date <= $dateEnd ORDER BY date DESC LIMIT $limit OFFSET $offset';
+  //   final List<Map<String, dynamic>> queryResult = await db.rawQuery(query);
+  //   // Convert from map to model then will be converted to list
+  //   return queryResult.map((e) => LogModel.fromMap(e)).toList();
+  // }
 
   Future<ExpenseLimitModel> getExpenseLimit(int month, int year) async {
     final Database db = await _getDatabase();
@@ -148,9 +148,9 @@ class DatabaseHandler{
     return queryResult.map((e) => LogDetailModel.fromMap(e)).toList();
   }
 
-  Future<int> getExpenseInMonth(int month, int year) async {
+  Future<int> getExpenseInMonth(String dateStart, String dateEnd) async {
     final Database db = await _getDatabase();
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT SUM(nominal) as nominal FROM $_tableLog WHERE month = $month AND year = $year');
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT SUM(nominal) as nominal FROM $_tableLog WHERE date >= $dateStart AND date <= $dateEnd');
     // Convert from map to model then will be converted to list
     return queryResult.first['nominal'];
   }

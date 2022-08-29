@@ -30,8 +30,8 @@ class AllLogsBloc extends Bloc<AllLogsEvent, AllLogsState> {
         var result = await getLogsInMonthUseCase
             .call(
             GetLogsInMonthUseCaseParams(
-              month: event.month,
-              year: event.year,
+              dateStart: event.dateStart,
+              dateEnd: event.dateEnd,
               limit: _limit,
               page: _page
             )
@@ -51,8 +51,8 @@ class AllLogsBloc extends Bloc<AllLogsEvent, AllLogsState> {
         var result = await getLogsInMonthUseCase
             .call(
             GetLogsInMonthUseCaseParams(
-              month: event.month,
-              year: event.year,
+              dateStart: event.dateStart,
+              dateEnd: event.dateEnd,
               limit: _limit,
               page: _page
             )

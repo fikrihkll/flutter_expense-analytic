@@ -7,6 +7,7 @@ import 'package:expense_app/features/presentation/pages/all_logs/bloc/selected_d
 import 'package:expense_app/features/presentation/pages/date_selection/date_selection_bottomsheet.dart';
 import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/widgets/center_padding_widget.dart';
+import 'package:expense_app/features/presentation/widgets/column_padding.dart';
 import 'package:expense_app/features/presentation/widgets/confirmation_dialog.dart';
 import 'package:expense_app/features/presentation/widgets/log_list_item_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,8 +35,8 @@ class _AllLogsPageState extends State<AllLogsPage> {
   bool _isLoading = false;
 
   // Params
-  int _selectedMonth = -1;
-  int _selectedYear = -1;
+  late DateTime _selectedStart;
+  late DateTime _selectedEnd;
 
 
   void _onScroll(){
@@ -46,8 +47,8 @@ class _AllLogsPageState extends State<AllLogsPage> {
       if(!_isLoading){
         _allLogsBloc.add(GetAllLogsEvent(
             isRefreshing: false,
-            month: _selectedMonth,
-            year: _selectedYear
+            dateStart: _selectedStart,
+            dateEnd: _selectedEnd
         ));
         _isLoading = true;
       }
@@ -62,8 +63,8 @@ class _AllLogsPageState extends State<AllLogsPage> {
         onItemDeleted: (log) async {
           await _allLogsBloc.deleteLog(log.id);
           _expenseMonthBloc.add(GetExpenseMonthEvent(
-              month: _selectedMonth,
-              year: _selectedYear
+              dateStart: _selectedStart,
+              dateEnd: _selectedEnd
           ));
         },
       )
@@ -118,24 +119,40 @@ class _AllLogsPageState extends State<AllLogsPage> {
 
     // Check whether result is success or not
     if(result != null && result is MonthYearSelectionArgs){
-      _selectedMonth = result.month;
-      _selectedYear = result.year;
+      _selectedStart = result.selectedStart;
+      _selectedEnd = result.selectedEnd;
 
       // Request data
       _allLogsBloc.add(GetAllLogsEvent(
           isRefreshing: true,
-          month: _selectedMonth,
-          year: _selectedYear
-      ));
-      _selectedDateBloc.add(SetSelectedDateEvent(
-          month: _selectedMonth,
-          year: _selectedYear
+          dateStart: _selectedStart,
+          dateEnd: _selectedEnd
       ));
       _expenseMonthBloc.add(GetExpenseMonthEvent(
-          month: _selectedMonth,
-          year: _selectedYear
+          dateStart: _selectedStart,
+          dateEnd: _selectedEnd
       ));
     }
+  }
+
+  Widget _buildDateSelectionButton() {
+    return Material(
+      color: Colors.transparent,
+      child: ColumnPadding(
+        right: true,
+        child: Row(
+          children: [
+            IconButton(
+                onPressed: () {
+                  _onDateTap();
+                },
+                icon: const Icon(Icons.date_range)
+            ),
+            Text("${DateUtil.dateFormat.format(_selectedStart)} - ${DateUtil.dateFormat.format(_selectedEnd)}")
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildHeader(){
@@ -143,52 +160,53 @@ class _AllLogsPageState extends State<AllLogsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'All Logs',
+          'Analytics',
           style: _theme.textTheme.headline1,
         ),
         const SizedBox(
           height: 16,
         ),
-        GestureDetector(
-          onTap: _onDateTap,
-          child: Row(
+        Container(
+          padding: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: _theme.cardColor,
+            borderRadius: BorderRadius.circular(12)
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: BlocBuilder<ExpenseMonthBloc, ExpenseMonthState>(
-                  builder: (context, state){
-                    if(state is ExpenseMonthLoaded){
-                      return Text(
-                        'Rp.${MoneyUtil.getReadableMoney(state.nominal)}',
-                      );
-                    }else{
-                      return const Text(
-                        'Rp.0',
-                      );
-                    }
-                  },
-                )
+              _buildDateSelectionButton(),
+              const SizedBox(
+                height: 8,
               ),
-              Row(
-                children: [
-                  BlocBuilder<SelectedDateBloc, SelectedDateState>(
-                    builder: (context, state) {
-                      if(state is SelectedDateSet){
-                        return Text(
-                            DateUtil.monthFormat.format(DateTime(state.year, state.month))
-                        );
-                      }else{
-                        return Text(
-                            DateUtil.monthFormat.format(DateTime(_selectedYear, _selectedMonth))
-                        );
-                      }
-                    }
-                  ),
-                  Icon(Icons.arrow_drop_down, color: _theme.colorScheme.onPrimary,)
-                ],
+              ColumnPadding(
+                  child: const Text("Total")
+              ),
+              ColumnPadding(
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: BlocBuilder<ExpenseMonthBloc, ExpenseMonthState>(
+                          builder: (context, state){
+                            if(state is ExpenseMonthLoaded){
+                              return Text(
+                                'Rp.${MoneyUtil.getReadableMoney(state.nominal)}',
+                                style: _theme.textTheme.headline3
+                              );
+                            }else{
+                              return const Text(
+                                'Rp.0',
+                              );
+                            }
+                          },
+                        )
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-        )
+        ),
       ],
     );
   }
@@ -197,20 +215,21 @@ class _AllLogsPageState extends State<AllLogsPage> {
   void initState() {
     super.initState();
 
-    _selectedMonth = DateTime.now().month;
-    _selectedYear = DateTime.now().year;
+    _selectedStart = DateTime.now().add(const Duration(days: -31));
+    _selectedEnd = DateTime.now();
 
     _allLogsBloc = BlocProvider.of<AllLogsBloc>(context);
     _allLogsBloc.add(GetAllLogsEvent(
         isRefreshing: true,
-        month: _selectedMonth,
-        year: _selectedYear
+        dateStart: _selectedStart,
+        dateEnd: _selectedEnd
     ));
 
     _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
     _expenseMonthBloc.add(GetExpenseMonthEvent(
-        month: _selectedMonth,
-        year: _selectedYear)
+        dateStart: _selectedStart,
+        dateEnd: _selectedEnd
+    )
     );
 
     _selectedDateBloc = BlocProvider.of<SelectedDateBloc>(context);

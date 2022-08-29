@@ -11,19 +11,19 @@ class GetExpenseInMonthUseCase extends UseCase<int, GetExpenseInMonthUseCasePara
 
   @override
   Future<Either<Failure, int>> call(GetExpenseInMonthUseCaseParams params) async {
-    return await repo.getExpenseInMonth(params.month, params.year);
+    return await repo.getExpenseInMonth(params.dateStart, params.dateEnd);
   }
 
 }
 
 class GetExpenseInMonthUseCaseParams {
 
-  final int month;
-  final int year;
+  DateTime dateStart;
+  DateTime dateEnd;
 
   GetExpenseInMonthUseCaseParams({
-    required this.month,
-    required this.year
+    required this.dateStart,
+    required this.dateEnd
   });
 
 

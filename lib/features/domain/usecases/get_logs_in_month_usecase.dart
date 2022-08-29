@@ -12,15 +12,17 @@ class GetLogsInMonthUseCase extends UseCase<List<Log>, GetLogsInMonthUseCasePara
 
   @override
   Future<Either<Failure, List<Log>>> call(GetLogsInMonthUseCaseParams params) async {
-    return await repo.getLogsInMonth(params.month, params.year, params.limit, params.page);
+    return await repo.getLogsInMonth(params.dateStart, params.dateEnd, params.limit, params.page);
   }
 
 }
 
 class GetLogsInMonthUseCaseParams {
 
-  final int month, year, limit, page;
+  final DateTime dateStart;
+  final DateTime dateEnd;
+  final int limit, page;
 
-  GetLogsInMonthUseCaseParams({required this.month, required this.year, required this.limit, required this.page});
+  GetLogsInMonthUseCaseParams({required this.dateStart, required this.dateEnd, required this.limit, required this.page});
 
 }
