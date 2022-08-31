@@ -1,9 +1,10 @@
-import 'package:dartz/dartz.dart';
+
+import 'package:either_dart/either.dart';
 import 'package:expense_app/core/error/failure.dart';
 import 'package:expense_app/core/usecase/usecase.dart';
 import 'package:expense_app/features/domain/repositories/expense_repository.dart';
 
-class DeleteLogUseCase extends UseCase<void, DeleteLogUseCaseParams>{
+class DeleteLogUseCase extends UseCase<bool, DeleteLogUseCaseParams>{
 
   final ExpenseRepository repo;
 
@@ -11,7 +12,7 @@ class DeleteLogUseCase extends UseCase<void, DeleteLogUseCaseParams>{
   DeleteLogUseCase({required this.repo});
 
   @override
-  Future<Either<Failure, void>> call(DeleteLogUseCaseParams params) async {
+  Future<Either<Failure, bool>> call(DeleteLogUseCaseParams params) async {
     return await repo.deleteLog(params.id);
   }
 

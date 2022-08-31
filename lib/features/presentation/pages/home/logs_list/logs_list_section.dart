@@ -1,11 +1,5 @@
-import 'package:expense_app/core/util/date_util.dart';
-import 'package:expense_app/core/util/icon_util.dart';
-import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
-import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_bloc.dart';
-import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
-import 'package:expense_app/features/presentation/widgets/confirmation_dialog.dart';
-import 'package:expense_app/features/presentation/widgets/floating_container.dart';
+import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/widgets/log_list_item_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,11 +23,7 @@ class _LogsListSectionState extends State<LogsListSection> {
       child: LogListItemWidget(
         log: log,
         onItemDeleted: (log) async {
-          await BlocProvider.of<RecentLogsBloc>(context).deleteLog(log.id);
-          BlocProvider.of<ExpenseMonthBloc>(context).add(GetExpenseMonthEvent(
-              month: DateTime.now().month,
-              year: DateTime.now().year
-          ));
+          BlocProvider.of<LogsBloc>(context).add(DeleteLogEvent(id: log.id));
         },
       )
     );
@@ -46,7 +36,11 @@ class _LogsListSectionState extends State<LogsListSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Recent Expenses', style: _theme.textTheme.headline4,),
-        BlocBuilder<RecentLogsBloc, RecentLogsState>(
+        BlocBuilder<LogsBloc, LogsState>(
+            buildWhen: (context, state) =>
+                state is RecentLogsLoading ||
+                state is RecentLogsLoaded ||
+                state is RecentLogsError,
             builder: (context, state){
               if(state is RecentLogsLoading){
                 return const CupertinoActivityIndicator();

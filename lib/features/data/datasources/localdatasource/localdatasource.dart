@@ -1,32 +1,35 @@
-import 'package:expense_app/features/data/datasources/localdatasource/dao/expense_dao.dart';
 import 'package:expense_app/features/data/datasources/localdatasource/database_handler.dart';
-import 'package:expense_app/features/data/models/expense_limit_model.dart';
-import 'package:expense_app/features/data/models/log_detail_model.dart';
-import 'package:expense_app/features/data/models/log_model.dart';
 
 abstract class LocalDataSource{
 
-  Future<void> insertLogs(Map<String, dynamic> data);
+  Future<void> insertDummyUser();
 
-  // Future<void> createUser(UserTable data);
+  Future<void> insertExpense(Map<String, dynamic> log);
 
-  Future<List<LogModel>> getLatestLogs();
+  Future<void> updateExpense(Map<String, dynamic> log);
 
-  Future<int> getMonthExpense(int month, int year);
+  Future<void> updateFundSource(Map<String, dynamic> fundSource);
 
-  Future<List<LogModel>> getLogsInMonth(int month, int year, int limit, int page);
+  Future<void> insertFundSource(Map<String, dynamic> fundSource);
+
+  Future<int> getTodayExpense(String date);
+
+  Future<int> getTodayLimit(bool isWeekend);
+
+  Future<List<Map<String, dynamic>>> getRecentLogs();
+
+  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page);
+
+  Future<List<Map<String, dynamic>>> getFundSources();
+
+  Future<List<Map<String, dynamic>>> getTotalBasedOnCategory(String fromDate, String untilDate);
+
+  Future<List<Map<String, dynamic>>> getDetailExpenseIntMonth(String fromDate, String untilDate);
+
+  Future<int> getExpenseInMonth(String fromDate, String untilDate);
 
   Future<void> deleteLog(int id);
 
-  Future<List<LogDetailModel>> getLogsDetailInMonth(int month, int year);
-
-  Future<int> getTodayExpense(int day, int month, int year);
-
-  Future<int> getTodayLimit(int month, int year, bool isWeekdays);
-
-  Future<void> insertExpenseLimit(Map<String, dynamic> data);
-
-  Future<ExpenseLimitModel> getExpenseLimit(int month, int year);
 }
 
 class LocalDataSourceImpl extends LocalDataSource{
@@ -37,55 +40,74 @@ class LocalDataSourceImpl extends LocalDataSource{
 
   @override
   Future<void> deleteLog(int id) async {
-    await databaseHandler.deleteLog(id);
+    await databaseHandler.deleteExpense(id);
   }
 
   @override
-  Future<List<LogModel>> getLatestLogs() async {
-    var result = await databaseHandler.getRecentLogs();
-    return result;
+  Future<List<Map<String, dynamic>>> getDetailExpenseIntMonth(String fromDate, String untilDate) async {
+    return await databaseHandler.getDetailExpenseInMonth(fromDate, untilDate);
   }
 
   @override
-  Future<List<LogDetailModel>> getLogsDetailInMonth(int month, int year) async {
-    throw Exception('');
+  Future<List<Map<String, dynamic>>> getFundSources() async {
+    return await databaseHandler.getFundSources();
   }
 
   @override
-  Future<List<LogModel>> getLogsInMonth(int month, int year, int limit, int page) async {
-    var result = await databaseHandler.getLogsInMonth(month, year, page, limit);
-    return result;
+  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page) async {
+    return await databaseHandler.getLogsInMonth(fromDate, untilDate, limit, page);
   }
 
   @override
-  Future<int> getMonthExpense(int month, int year) async {
-    var result = await databaseHandler.getExpenseInMonth(month, year);
-    return result;
+  Future<List<Map<String, dynamic>>> getRecentLogs() async {
+    return await databaseHandler.getRecentLogs();
   }
 
   @override
-  Future<void> insertLogs(Map<String, dynamic> data) async {
-    await databaseHandler.insertLog(data);
+  Future<int> getTodayExpense(String date) async {
+    return (await databaseHandler.getTodayExpense(date)) ?? 0;
   }
 
   @override
-  Future<int> getTodayExpense(int day, int month, int year) async {
-    return await databaseHandler.getTodayExpense(day, month, year);
+  Future<int> getTodayLimit(bool isWeekend) async {
+    return (await databaseHandler.getTodayLimit(isWeekend)) ?? 0;
   }
 
   @override
-  Future<int> getTodayLimit(int month, int year, bool isWeekdays) async {
-    return await databaseHandler.getTodayLimit(isWeekdays, month, year);
+  Future<List<Map<String, dynamic>>> getTotalBasedOnCategory(String fromDate, String untilDate) async {
+    return await databaseHandler.getTotalBasedOnCategory(fromDate, untilDate);
   }
 
   @override
-  Future<void> insertExpenseLimit(Map<String, dynamic> data) async {
-    await databaseHandler.insertExpenseLimit(data);
+  Future<void> insertDummyUser() async {
+    await await databaseHandler.insertUser();
   }
 
   @override
-  Future<ExpenseLimitModel> getExpenseLimit(int month, int year) async {
-    return await databaseHandler.getExpenseLimit(month, year);
+  Future<void> insertExpense(Map<String, dynamic> log) async {
+    await databaseHandler.insertExpense(log);
   }
+
+  @override
+  Future<void> insertFundSource(Map<String, dynamic> fundSource) async {
+    await databaseHandler.insertFundSource(fundSource);
+  }
+
+  @override
+  Future<void> updateExpense(Map<String, dynamic> log) async {
+    await databaseHandler.updateExpense(log);
+  }
+
+  @override
+  Future<void> updateFundSource(Map<String, dynamic> fundSource) async {
+    await databaseHandler.updateFundSource(fundSource);
+  }
+
+  @override
+  Future<int> getExpenseInMonth(String fromDate, String untilDate) async {
+    return (await databaseHandler.getMonthlyExpense(fromDate, untilDate)) ?? 0;
+  }
+
+
 
 }

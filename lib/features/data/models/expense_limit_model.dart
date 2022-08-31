@@ -1,41 +1,52 @@
+import 'package:expense_app/core/util/date_util.dart';
 import 'package:expense_app/features/domain/entities/expense_limit.dart';
 
-class ExpenseLimitModel extends ExpenseLimit{
+class FundSourceModel extends FundSource{
 
-  final int id, weekdaysLimit, weekendLimit, balanceInMonth, month, year;
+  final int id, userId;
+  final int? dailyFund, weeklyFund, monthlyFund;
+  final String name;
 
-  const ExpenseLimitModel({
+  FundSourceModel({
     required this.id,
-    required this.weekdaysLimit,
-    required this.weekendLimit,
-    required this.balanceInMonth,
-    required this.month,
-    required this.year
+    required this.name,
+    required this.dailyFund,
+    required this.weeklyFund,
+    required this.monthlyFund,
+    required this.userId
   }):super(
     id: id,
-    weekdaysLimit: weekdaysLimit,
-    weekendLimit: weekendLimit,
-    balanceInMonth: balanceInMonth,
-    month: month,
-    year: year
+    name: name,
+    dailyFund: dailyFund,
+    weeklyFund: weeklyFund,
+    monthlyFund: monthlyFund,
+    userId: userId
   );
 
-  factory ExpenseLimitModel.fromMap(Map<String, dynamic> map){
-    return ExpenseLimitModel(id: map['id'], weekdaysLimit: map['weekdays_limit'], weekendLimit: map['weekend_limit'], balanceInMonth: map['balance_in_month'], month: map['month'], year: map['year']);
+  factory FundSourceModel.fromMap(Map<String, dynamic> map){
+    return FundSourceModel(
+        id: map['id'],
+        name: map['name'],
+        dailyFund: map['daily_fund'],
+        weeklyFund: map['weekly_fund'],
+        monthlyFund: map['monthly_fund'],
+        userId: map['user_id']
+    );
   }
 
-  static Map<String, dynamic> toMap(ExpenseLimit data){
+  static Map<String, dynamic> toMap(FundSourceModel data){
     return {
-      'id': data.id,
-      'month': data.month,
-      'year': data.year,
-      'weekdays_limit': data.weekdaysLimit,
-      'weekend_limit': data.weekendLimit,
-      'balance_in_month': data.balanceInMonth,
-      'user_id': 1
+      'id': data.id > 0 ? data.id : null,
+      'name': data.name,
+      'daily_fund': data.dailyFund,
+      'weekly_fund': data.weeklyFund,
+      'monthly_fund': data.monthlyFund,
+      'user_id': -1,
+      'created_at': DateUtil.dbFormat.format(DateTime.now()),
+      'updated_at': DateUtil.dbFormat.format(DateTime.now()),
     };
   }
 
   @override
-  List<Object?> get props => [weekdaysLimit, weekendLimit, balanceInMonth];
+  List<Object?> get props => [id, name, dailyFund, weeklyFund, monthlyFund, userId];
 }

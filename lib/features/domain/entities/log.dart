@@ -2,36 +2,40 @@ import 'package:equatable/equatable.dart';
 
 class Log extends Equatable{
   final int id;
+  final int userId;
+  final int? fundSourceId;
   final String category;
-  final String desc;
+  final String description;
   final String date;
+  final int nominal;
   final int day;
   final int month;
   final int year;
-  final int nominal;
-  final int userId;
+  final String? fundSourceName;
 
   const Log({
     required this.id,
+    required this.userId,
+    required this.fundSourceId,
     required this.category,
-    required this.desc,
+    required this.description,
     required this.date,
+    required this.nominal,
     required this.day,
     required this.month,
     required this.year,
-    required this.nominal,
-    required this.userId
+    required this.fundSourceName,
   });
 
   @override
   List<Object?> get props => [
     id,
     category,
-    desc,
+    description,
     date,
-    month,
-    year,
     nominal,
-    userId
+    userId,
+    fundSourceId,
+    fundSourceName,
   ];
 }

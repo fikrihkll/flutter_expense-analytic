@@ -16,3 +16,15 @@ class BalanceLeftError extends BalanceLeftState {
 
   BalanceLeftError({required this.message});
 }
+
+class ExpenseInMonthLoaded extends BalanceLeftState {
+  final int data;
+
+  ExpenseInMonthLoaded({required this.data});
+}
+
+class ExpenseInMonthError extends BalanceLeftState {
+  final String message;
+
+  ExpenseInMonthError({required this.message});
+}

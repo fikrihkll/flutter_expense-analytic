@@ -53,7 +53,7 @@ class LogListItemWidget extends StatelessWidget {
                   children: [
                     Text(log.category, style: _theme.textTheme.headline6,),
                     const SizedBox(height: 4,),
-                    Text(log.desc, style: _theme.textTheme.subtitle1,)
+                    Text(log.description, style: _theme.textTheme.subtitle1,)
                   ],
                 ),
               ),

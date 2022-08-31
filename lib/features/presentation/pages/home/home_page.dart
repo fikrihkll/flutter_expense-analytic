@@ -1,8 +1,9 @@
 import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/features/data/datasources/localdatasource/database_handler.dart';
-import 'package:expense_app/features/presentation/pages/home/bloc/balance_left_bloc.dart';
-import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_bloc.dart';
-import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
+import 'package:expense_app/features/injection_container.dart';
+import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/input_expense_section.dart';
 import 'package:expense_app/features/presentation/pages/home/logs_list/logs_list_section.dart';
 import 'package:expense_app/features/presentation/pages/input_expense_limit/input_expense_limit_dialog.dart';
@@ -23,8 +24,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   // Bloc or Presenter
-  late RecentLogsBloc _recentLogsBloc;
-  late ExpenseMonthBloc _expenseMonthBloc;
+  late LogsBloc _logsBloc;
   late BalanceLeftBloc _balanceLeftBloc;
 
   late ThemeData _theme;
@@ -67,8 +67,16 @@ class _HomePageState extends State<HomePage> {
           shadowEnabled: false,
           splashEnabled: true,
           onTap: ()async{
-            await showDialog(context: context, builder: (context) => InputExpenseLimitDialog());
+            await showDialog(
+                context: context, builder: (context) {
+                    return BlocProvider<FundSourceBloc>(
+                      create: (context)=> sl<FundSourceBloc>(),
+                      child: InputExpenseLimitDialog(),
+                    );
+                }
+            );
             _balanceLeftBloc.add(GetBalanceLeftEvent());
+            BlocProvider.of<FundSourceBloc>(context).add(GetFundSourceEvent());
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -77,6 +85,9 @@ class _HomePageState extends State<HomePage> {
               const Text('Balance remaining today'),
               const SizedBox(width: 16,),
               BlocBuilder<BalanceLeftBloc, BalanceLeftState>(
+                buildWhen: (context, state) => state is BalanceLeftLoaded ||
+                    state is BalanceLeftError ||
+                    state is BalanceLeftInitial,
                 builder: (context, state){
                   if(state is BalanceLeftLoaded){
                     return Text('Rp.${MoneyUtil.getReadableMoney(state.data)} 😘', style: _theme.textTheme.headline5,);
@@ -106,10 +117,13 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
-                      child: BlocBuilder<ExpenseMonthBloc, ExpenseMonthState>(
+                      child: BlocBuilder<BalanceLeftBloc, BalanceLeftState>(
+                        buildWhen: (context, state) => state is ExpenseInMonthLoaded ||
+                            state is ExpenseInMonthError ||
+                            state is BalanceLeftInitial,
                         builder: (context, state){
-                          if(state is ExpenseMonthLoaded){
-                            return Text('Rp.${MoneyUtil.getReadableMoney(state.nominal)}', style: _theme.textTheme.headline3,);
+                          if(state is ExpenseInMonthLoaded){
+                            return Text('Rp.${MoneyUtil.getReadableMoney(state.data)}', style: _theme.textTheme.headline3,);
                           }else{
                             return Text('Rp.0', style: _theme.textTheme.headline3,);
                           }
@@ -148,12 +162,11 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
-    _recentLogsBloc = BlocProvider.of<RecentLogsBloc>(context);
+    _logsBloc = BlocProvider.of<LogsBloc>(context);
     _balanceLeftBloc = BlocProvider.of<BalanceLeftBloc>(context);
-    _recentLogsBloc.add(GetRecentLogsEvent());
-    _expenseMonthBloc.add(GetExpenseMonthEvent(month: DateTime.now().month, year: DateTime.now().year));
+    _logsBloc.add(GetRecentLogsEvent());
     _balanceLeftBloc.add(GetBalanceLeftEvent());
+    _balanceLeftBloc.add(GetExpenseInMonthEvent());
   }
 
   @override
