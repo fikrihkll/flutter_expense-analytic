@@ -34,3 +34,17 @@ class DeleteLogsResult extends LogsState {
 
   DeleteLogsResult(this.isSuccess);
 }
+
+class LoadAllLogsLoading extends LogsState {}
+
+class LoadAllLogsLoaded extends LogsState {
+  List<Log> data;
+
+  LoadAllLogsLoaded(this.data);
+}
+
+class LoadAllLogsError extends LogsState {
+  String message;
+
+  LoadAllLogsError({required this.message});
+}

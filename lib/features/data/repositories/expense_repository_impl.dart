@@ -5,6 +5,7 @@ import 'package:expense_app/core/util/date_util.dart';
 import 'package:expense_app/features/data/datasources/localdatasource/localdatasource.dart';
 import 'package:expense_app/features/data/models/expense_limit_model.dart';
 import 'package:expense_app/features/data/models/fund_detail_model.dart';
+import 'package:expense_app/features/data/models/log_detail_model.dart';
 import 'package:expense_app/features/data/models/log_model.dart';
 import 'package:expense_app/features/domain/entities/expense_limit.dart';
 import 'package:expense_app/features/domain/entities/fund_detail.dart';
@@ -39,7 +40,6 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
           DateUtil.dbDateFormat.format(untilDate)
       );
       var resultMapped = result.map((e) => FundDetailModel.fromJson(e)).toList();
-
       return Right(resultMapped);
     }catch(e){
       debugPrint(e.toString());
@@ -68,6 +68,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
           limit, page
       );
       var resultMapped = result.map((e) => LogModel.fromMap(e)).toList();
+      debugPrint("LENGTH ALL LOGS => ${resultMapped.length}");
       return Right(resultMapped);
     }catch(e){
       debugPrint(e.toString());
@@ -106,7 +107,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       var result = await localDataSource.getTodayLimit(
           _isTodayWeekend(now)
       );
-      return Right(result);
+      return Right(result.toInt());
     }catch(e){
       debugPrint("TEST LIMIT " + e.toString());
       return Left(CacheFailure());
@@ -188,12 +189,43 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   @override
   Future<Either<Failure, int>> getExpenseInMonth(DateTime? fromDate, DateTime? untilDate) async {
     try{
-      DateTime now = DateTime.now();
-      String finalFromDate = fromDate != null ? DateUtil.dbDateFormat.format(fromDate) : DateUtil.dbDateFormat.format(DateTime(now.year, now.month, 1));
-      String finalUntilDate = untilDate != null ? DateUtil.dbDateFormat.format(untilDate) : DateUtil.dbDateFormat.format(DateTime(now.year, now.month, 1).add(Duration(days: DateTime(now.year, now.month, 0).day)));
-      debugPrint("${finalFromDate} - ${finalUntilDate}");
+      String finalFromDate = fromDate != null ? DateUtil.dbDateFormat.format(fromDate) : DateUtil.dbDateFormat.format(DateUtil.getFirstDateOfThisMonth());
+      String finalUntilDate = untilDate != null ? DateUtil.dbDateFormat.format(untilDate) : DateUtil.dbDateFormat.format(DateUtil.getFirstDateOfThisMonth().add(Duration(days: DateUtil.getLastDateOfThisMonth().day)));
       var result = await localDataSource.getExpenseInMonth(finalFromDate, finalUntilDate);
       return Right(result);
+    }catch(e){
+      debugPrint(e.toString());
+      return Left(CacheFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<LogDetail>>> getExpenseTotalBasedCategoryInMonth(DateTime fromDate, DateTime untilDate) async {
+    try{
+      var result = await localDataSource.getTotalBasedOnCategory(
+          DateUtil.dbDateFormat.format(fromDate),
+          DateUtil.dbDateFormat.format(untilDate)
+      );
+      var resultMapped = result.map((e) => LogDetailModel.fromJson(e)).toList();
+      return Right(resultMapped);
+    }catch(e){
+      debugPrint(e.toString());
+      return Left(CacheFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, int>> getTotalSavings(DateTime fromDate, DateTime untilDate,) async {
+    try{
+      var totalFunds = await localDataSource.getTotalFunds(
+          DateUtil.dbDateFormat.format(fromDate),
+          DateUtil.dbDateFormat.format(untilDate)
+      );
+      var totalExpense = await localDataSource.getExpenseInMonth(
+          DateUtil.dbDateFormat.format(fromDate),
+          DateUtil.dbDateFormat.format(untilDate)
+      );
+      return Right(totalFunds - totalExpense);
     }catch(e){
       debugPrint(e.toString());
       return Left(CacheFailure());

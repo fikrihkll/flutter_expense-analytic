@@ -5,6 +5,7 @@ import 'package:expense_app/features/data/models/log_model.dart';
 import 'package:expense_app/features/domain/entities/expense_limit.dart';
 import 'package:expense_app/features/domain/entities/fund_detail.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
+import 'package:expense_app/features/domain/entities/log_detail.dart';
 
 abstract class ExpenseRepository{
 
@@ -34,4 +35,7 @@ abstract class ExpenseRepository{
 
   Future<Either<Failure, bool>> deleteLog(int id);
 
+  Future<Either<Failure, List<LogDetail>>> getExpenseTotalBasedCategoryInMonth(DateTime fromDate, DateTime untilDate,);
+
+  Future<Either<Failure, int>> getTotalSavings(DateTime fromDate, DateTime untilDate,);
 }

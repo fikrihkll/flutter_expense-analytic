@@ -31,6 +31,44 @@ class _HomePageState extends State<HomePage> {
 
   final String _profileUrl = 'https://assets.pikiran-rakyat.com/crop/0x159:1080x864/x/photo/2022/04/03/941016597.jpeg';
 
+  @override
+  void initState() {
+    super.initState();
+
+    _logsBloc = BlocProvider.of<LogsBloc>(context);
+    _balanceLeftBloc = BlocProvider.of<BalanceLeftBloc>(context);
+    _logsBloc.add(GetRecentLogsEvent());
+    _balanceLeftBloc.add(GetBalanceLeftEvent());
+    _balanceLeftBloc.add(GetExpenseInMonthEvent());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _theme = Theme.of(context);
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 40,),
+              _buildHeader(),
+              const SizedBox(height: 32,),
+              _buildMoneyLeft(),
+              const SizedBox(height: 16,),
+              _buildExpenseThisMonth(),
+              const SizedBox(height: 16,),
+              const InputExpenseSection(),
+              const SizedBox(height: 32,),
+              const LogsListSection()
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildHeader(){
     return // ------------------------------- Header
       Row(
@@ -69,11 +107,11 @@ class _HomePageState extends State<HomePage> {
           onTap: ()async{
             await showDialog(
                 context: context, builder: (context) {
-                    return BlocProvider<FundSourceBloc>(
-                      create: (context)=> sl<FundSourceBloc>(),
-                      child: InputExpenseLimitDialog(),
-                    );
-                }
+              return BlocProvider<FundSourceBloc>(
+                create: (context)=> sl<FundSourceBloc>(),
+                child: InputExpenseLimitDialog(),
+              );
+            }
             );
             _balanceLeftBloc.add(GetBalanceLeftEvent());
             BlocProvider.of<FundSourceBloc>(context).add(GetFundSourceEvent());
@@ -155,44 +193,5 @@ class _HomePageState extends State<HomePage> {
           )
       );
     // ------------------------------- Expense This Month
-  }
-
-
-  @override
-  void initState() {
-    super.initState();
-
-    _logsBloc = BlocProvider.of<LogsBloc>(context);
-    _balanceLeftBloc = BlocProvider.of<BalanceLeftBloc>(context);
-    _logsBloc.add(GetRecentLogsEvent());
-    _balanceLeftBloc.add(GetBalanceLeftEvent());
-    _balanceLeftBloc.add(GetExpenseInMonthEvent());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    _theme = Theme.of(context);
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 40,),
-              _buildHeader(),
-              const SizedBox(height: 32,),
-              _buildMoneyLeft(),
-              const SizedBox(height: 16,),
-              _buildExpenseThisMonth(),
-              const SizedBox(height: 16,),
-              const InputExpenseSection(),
-              const SizedBox(height: 32,),
-              const LogsListSection()
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

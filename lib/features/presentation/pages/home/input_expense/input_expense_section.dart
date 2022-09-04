@@ -127,7 +127,6 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
                     listData: state.data,
                     onItemSelected: (item) {
                       _selectedFundSource = item;
-                      debugPrint("${item.name}");
                     }
                 );
               } else {

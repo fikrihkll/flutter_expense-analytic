@@ -14,7 +14,7 @@ abstract class LocalDataSource{
 
   Future<int> getTodayExpense(String date);
 
-  Future<int> getTodayLimit(bool isWeekend);
+  Future<double> getTodayLimit(bool isWeekend);
 
   Future<List<Map<String, dynamic>>> getRecentLogs();
 
@@ -29,6 +29,8 @@ abstract class LocalDataSource{
   Future<int> getExpenseInMonth(String fromDate, String untilDate);
 
   Future<void> deleteLog(int id);
+
+  Future<int> getTotalFunds(String fromDate, String untilDate);
 
 }
 
@@ -69,8 +71,8 @@ class LocalDataSourceImpl extends LocalDataSource{
   }
 
   @override
-  Future<int> getTodayLimit(bool isWeekend) async {
-    return (await databaseHandler.getTodayLimit(isWeekend)) ?? 0;
+  Future<double> getTodayLimit(bool isWeekend) async {
+    return (await databaseHandler.getTodayLimit(isWeekend)) ?? 0.0;
   }
 
   @override
@@ -108,6 +110,16 @@ class LocalDataSourceImpl extends LocalDataSource{
     return (await databaseHandler.getMonthlyExpense(fromDate, untilDate)) ?? 0;
   }
 
-
+  @override
+  Future<int> getTotalFunds(String fromDate, String untilDate) async {
+    var listFunds = await databaseHandler.getTotalFunds(fromDate, untilDate);
+    int totalFunds = 0;
+    listFunds.forEach((element) {
+      if (element['total_funds'] != null) {
+        totalFunds += (element['total_funds'] as double).toInt();
+      }
+    });
+    return totalFunds;
+  }
 
 }

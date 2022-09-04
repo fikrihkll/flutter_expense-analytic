@@ -47,7 +47,20 @@ Route<dynamic> controller(RouteSettings settings) {
       );
     case allLogsPage:
       return MaterialPageRoute(
-          builder: (context) => AllLogsPage()
+          builder: (context) => MultiBlocProvider(
+              providers: [
+                BlocProvider<FundSourceBloc>(
+                    create: (context) => sl<FundSourceBloc>(),
+                ),
+                BlocProvider<BalanceLeftBloc>(
+                    create: (context) => sl<BalanceLeftBloc>(),
+                ),
+                BlocProvider<LogsBloc>(
+                  create: (context) => sl<LogsBloc>(),
+                )
+              ],
+              child: const AllLogsPage()
+          )
       );
 
     default:

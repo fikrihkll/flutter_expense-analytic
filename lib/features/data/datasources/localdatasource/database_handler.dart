@@ -161,15 +161,15 @@ class DatabaseHandler{
     return queryResult.first['nominal'];
   }
 
-  Future<int?> getTodayLimit(bool isWeekend) async {
+  Future<double?> getTodayLimit(bool isWeekend) async {
     final Database db = await _getDatabase();
-    int totalLimit = 0;
+    double totalLimit = 0;
 
     if(isWeekend){
-      String queryDaily = "SELECT SUM(daily_fund) as daily_fund FROM $_tableFundSources WHERE daily_fund NOT NULL";
+      String queryDaily = "SELECT CAST(SUM(daily_fund) as DOUBLE) as daily_fund FROM $_tableFundSources WHERE daily_fund NOT NULL";
       final List<Map<String, dynamic>> queryDailyResult = await db.rawQuery(queryDaily);
 
-      String queryWeekly = "SELECT SUM(weekly_fund) as weekly_fund FROM $_tableFundSources WHERE weekly_fund NOT NULL";
+      String queryWeekly = "SELECT CAST(SUM(weekly_fund) as DOUBLE) as weekly_fund FROM $_tableFundSources WHERE weekly_fund NOT NULL";
       final List<Map<String, dynamic>> queryWeeklyResult = await db.rawQuery(queryWeekly);
 
       if (queryDailyResult.first["daily_fund"] != null && queryWeeklyResult.first["weekly_fund"] != null) {
@@ -181,7 +181,7 @@ class DatabaseHandler{
       }
 
     }else{
-      String queryDaily = "SELECT SUM(daily_fund) as daily_fund FROM $_tableFundSources WHERE daily_fund NOT NULL";
+      String queryDaily = "SELECT CAST(SUM(daily_fund) as DOUBLE) as daily_fund FROM $_tableFundSources WHERE daily_fund NOT NULL";
       final List<Map<String, dynamic>> queryDailyResult = await db.rawQuery(queryDaily);
 
       if (queryDailyResult.first["daily_fund"] != null) {
@@ -202,8 +202,8 @@ class DatabaseHandler{
   Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page) async {
     final Database db = await _getDatabase();
     int offset = (page-1) * limit;
-    String query = 'SELECT $_tableExpenses.*, $_tableFundSources.name as fund_source_name FROM $_tableExpenses LEFT JOIN $_tableFundSources ON $_tableExpenses.date >= ? AND $_tableExpenses.date <= ? AND $_tableExpenses.fund_source_id = $_tableFundSources.id ORDER BY $_tableExpenses.date DESC LIMIT ? OFFSET ?';
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery(query, [fromDate, untilDate, limit, offset]);
+    String query = "SELECT expenses.*, fund_sources.name as fund_source_name FROM expenses LEFT JOIN fund_sources ON expenses.date >= DATE('$fromDate') AND expenses.date <= DATE('$untilDate') AND expenses.fund_source_id = fund_sources.id ORDER BY expenses.date DESC LIMIT $limit OFFSET $offset";
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery(query);
     return queryResult;
   }
 
@@ -224,8 +224,17 @@ class DatabaseHandler{
 
   Future<List<Map<String, dynamic>>> getDetailExpenseInMonth(String fromDate, String untilDate) async {
     final Database db = await _getDatabase();
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery("SELECT fund_sources.id, SUM(expenses.nominal) as nominal, fund_sources.name, (fund_sources.daily_fund * (julianday('$fromDate')- julianday('$untilDate'))) as daily_fund, (fund_sources.weekly_fund * CAST(((julianday('$fromDate')- julianday('$untilDate'))/7) as INT)) as weekly_fund, fund_sources.monthly_fund, (julianday('$fromDate')- julianday('$untilDate')) as days, CAST(((julianday('$fromDate')- julianday('$untilDate'))/7) as INT) as weeks FROM expenses INNER JOIN fund_sources ON expenses.fund_source_id = fund_sources.id AND expenses.user_id = 1 AND DATE(expenses.date) >= DATE('$untilDate') AND DATE(expenses.date) <= ('$fromDate') GROUP BY fund_sources.id");
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery("SELECT fund_sources.id, SUM(expenses.nominal) as nominal,  fund_sources.daily_fund, fund_sources.weekly_fund, fund_sources.monthly_fund, fund_sources.name, (fund_sources.daily_fund * (julianday('$untilDate')- julianday('$fromDate'))) as daily_fund_total, (fund_sources.weekly_fund * CAST(((julianday('$untilDate')- julianday('$fromDate'))/7) as INT)) as weekly_fund, (fund_sources.monthly_fund *  CAST(((julianday('2022-08-31')- julianday('2022-08-01'))/28) as INT)) as monthly_fund_total, (julianday('$untilDate')- julianday('$fromDate')) as days, CAST(((julianday('$untilDate')- julianday('$fromDate'))/7) as INT) as weeks, (CAST(((julianday('2022-08-31')- julianday('2022-08-01'))/28) as INT)) as months FROM expenses INNER JOIN fund_sources ON expenses.fund_source_id = fund_sources.id AND expenses.user_id = 1 AND DATE(expenses.date) >= DATE('$fromDate') AND DATE(expenses.date) <= ('$untilDate') GROUP BY fund_sources.id");
     // Convert from map to model then will be converted to list
+    debugPrint("${queryResult}");
+    return queryResult;
+  }
+
+  Future<List<Map<String, dynamic>>> getTotalFunds(String fromDate, String untilDate) async {
+    final Database db = await _getDatabase();
+    String query = "SELECT (COALESCE(total_table.daily_fund_total, 0) + COALESCE(total_table.weekly_fund_total, 0) + COALESCE(total_table.monthly_fund_total, 0)) as total_funds, total_table.days, total_table.weeks, total_table.months FROM (SELECT (fund_sources.daily_fund * (julianday('$untilDate')- julianday('$fromDate'))) as daily_fund_total, (fund_sources.weekly_fund * CAST(((julianday('$untilDate')- julianday('$fromDate'))/7) as INT)) as weekly_fund_total,  (fund_sources.monthly_fund *  CAST(((julianday('$untilDate')- julianday('$fromDate'))/28) as INT)) as monthly_fund_total, (julianday('$untilDate')- julianday('$fromDate')) as days, CAST(((julianday('$untilDate')- julianday('$fromDate'))/7) as INT) as weeks, (CAST(((julianday('$untilDate')- julianday('$fromDate'))/28) as INT)) as months FROM expenses INNER JOIN fund_sources ON expenses.fund_source_id = fund_sources.id AND expenses.user_id = 1 AND DATE(expenses.date) >= DATE('$fromDate') AND DATE(expenses.date) <= ('$untilDate') GROUP BY fund_sources.id) as total_table";
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery(query);
+
     return queryResult;
   }
 

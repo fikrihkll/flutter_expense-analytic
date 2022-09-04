@@ -16,3 +16,10 @@ class DeleteLogEvent extends LogsEvent {
 
   DeleteLogEvent({required this.id});
 }
+
+class LoadAllLogEvent extends LogsEvent {
+  final bool isRefreshing;
+  final DateTime fromDate, untilDate;
+
+  LoadAllLogEvent({required this.isRefreshing, required this.fromDate, required this.untilDate});
+}
