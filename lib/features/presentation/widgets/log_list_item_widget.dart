@@ -2,9 +2,16 @@ import 'package:expense_app/core/util/date_util.dart';
 import 'package:expense_app/core/util/icon_util.dart';
 import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
+import 'package:expense_app/features/injection_container.dart';
+import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
+import 'package:expense_app/features/presentation/pages/edit_expense/edit_expense_widget.dart';
 import 'package:expense_app/features/presentation/widgets/confirmation_dialog.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class LogListItemWidget extends StatelessWidget {
 
@@ -38,6 +45,27 @@ class LogListItemWidget extends StatelessWidget {
       },
       key: Key(log.id.toString()),
       child: FloatingContainer(
+          onLongPress: () {
+            showMaterialModalBottomSheet(
+                context: context,
+                isDismissible: true,
+                enableDrag: true,
+                backgroundColor: Colors.transparent,
+                bounce: true,
+                closeProgressThreshold: 0.6,
+                builder: (builder) =>
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider<LogsBloc>(create: (create) => sl<LogsBloc>()),
+                    BlocProvider<BalanceLeftBloc>(create: (create) => sl<BalanceLeftBloc>()),
+                    BlocProvider<FundSourceBloc>(create: (create) => sl<FundSourceBloc>()),
+                  ],
+                  child: SingleChildScrollView(
+                    child: EditExpenseBottomSheet(log: log,),
+                  ),
+                )
+            );
+          },
           child: Row(
             children: [
               Icon(

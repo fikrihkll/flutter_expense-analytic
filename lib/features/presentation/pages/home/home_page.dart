@@ -1,5 +1,4 @@
 import 'package:expense_app/core/util/money_util.dart';
-import 'package:expense_app/features/data/datasources/localdatasource/database_handler.dart';
 import 'package:expense_app/features/injection_container.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
@@ -13,6 +12,7 @@ import 'package:expense_app/features/presentation/widgets/floating_container.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:expense_app/features/presentation/routes/route.dart' as route;
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -104,13 +104,24 @@ class _HomePageState extends State<HomePage> {
       FloatingContainer(
           shadowEnabled: false,
           splashEnabled: true,
-          onTap: ()async{
-            await showDialog(
-                context: context, builder: (context) {
-              return BlocProvider<FundSourceBloc>(
-                create: (context)=> sl<FundSourceBloc>(),
-                child: InputExpenseLimitDialog(),
-              );
+          onTap: () async {
+            await showMaterialModalBottomSheet(
+                isDismissible: true,
+                enableDrag: true,
+                closeProgressThreshold: 0.6,
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (context) {
+                return MultiBlocProvider(
+                    providers: [
+                      BlocProvider<FundSourceBloc>(
+                        create: (context)=> sl<FundSourceBloc>(),
+                      ),
+                    ],
+                    child: const SingleChildScrollView(
+                        child: InputExpenseLimitDialog()
+                    ),
+                );
             }
             );
             _balanceLeftBloc.add(GetBalanceLeftEvent());

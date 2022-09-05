@@ -48,3 +48,11 @@ class GetFundUsedDetailError extends FundSourceState {
 
   GetFundUsedDetailError({required this.message});
 }
+
+class DeleteFundSourceLoading extends FundSourceState {}
+
+class DeleteFundSourceResult extends FundSourceState {
+  final bool isSuccess;
+
+  DeleteFundSourceResult({required this.isSuccess});
+}

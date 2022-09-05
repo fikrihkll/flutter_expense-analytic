@@ -2,6 +2,7 @@ import 'package:expense_app/features/data/datasources/localdatasource/database_h
 import 'package:expense_app/features/data/datasources/localdatasource/localdatasource.dart';
 import 'package:expense_app/features/data/repositories/expense_repository_impl.dart';
 import 'package:expense_app/features/domain/repositories/expense_repository.dart';
+import 'package:expense_app/features/domain/usecases/delete_fund_source_usecase.dart';
 import 'package:expense_app/features/domain/usecases/delete_log_usecase.dart';
 import 'package:expense_app/features/domain/usecases/get_detail_fund_used_int_monh_use_case.dart';
 import 'package:expense_app/features/domain/usecases/get_expense_in_month_use_case.dart';
@@ -14,6 +15,7 @@ import 'package:expense_app/features/domain/usecases/get_total_savings_use_case.
 import 'package:expense_app/features/domain/usecases/insert_fund_source_usecase.dart';
 import 'package:expense_app/features/domain/usecases/insert_log_usecase.dart';
 import 'package:expense_app/features/domain/usecases/update_fund_source_usecase.dart';
+import 'package:expense_app/features/domain/usecases/update_log_use_case.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
@@ -28,7 +30,8 @@ Future<void> init() async {
             getRecentLogsUseCase:  sl(),
             deleteLogUseCase: sl(),
             insertLogUseCase: sl(),
-            getLogsInMonthUseCase: sl()
+            getLogsInMonthUseCase: sl(),
+            updateLogUseCase: sl()
         ),
   );
   sl.registerFactory(
@@ -44,11 +47,14 @@ Future<void> init() async {
             insertFundSourceUseCase: sl(),
             updateFundSourceUseCase: sl(),
             getFundSourcesUseCase: sl(),
-          getDetailFundUsedInMonthUseCase: sl()
+            getDetailFundUsedInMonthUseCase: sl(),
+            deleteFundSourceUseCase: sl()
         )
   );
 
   // Usecase
+  sl.registerFactory(() => DeleteFundSourceUseCase(repo: sl()));
+  sl.registerFactory(() => UpdateLogUseCase(repository: sl()));
   sl.registerFactory(() => GetTotalSavingsUseCase(repository: sl()));
   sl.registerFactory(() => GetTotalExpenseBasedOnCategoryUseCase(repository: sl()));
   sl.registerFactory(() => GetDetailFundUsedInMonthUseCase(repository: sl()));

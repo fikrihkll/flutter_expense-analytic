@@ -24,7 +24,7 @@ class GetTodayBalanceLeftUseCase extends UseCase<int, NoParams>{
       expenseToday = expenseTodayRepoResult.right;
     }
 
-    if (limitToday > 0 && expenseToday > 0) {
+    if (limitToday >= 0 && expenseToday >= 0) {
       return Right(limitToday - expenseToday);
     } else {
       return Left(CacheFailure());

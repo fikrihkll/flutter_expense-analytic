@@ -33,6 +33,7 @@ dependencies:
   path: ^1.8.0
   # Store persistence data
   sqflite: ^2.0.2
+  modal_bottom_sheet: ^2.1.0
 
 dev_dependencies:
   flutter_test:

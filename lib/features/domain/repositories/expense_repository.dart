@@ -35,6 +35,8 @@ abstract class ExpenseRepository{
 
   Future<Either<Failure, bool>> deleteLog(int id);
 
+  Future<Either<Failure, bool>> deleteFundSource(int id);
+
   Future<Either<Failure, List<LogDetail>>> getExpenseTotalBasedCategoryInMonth(DateTime fromDate, DateTime untilDate,);
 
   Future<Either<Failure, int>> getTotalSavings(DateTime fromDate, DateTime untilDate,);

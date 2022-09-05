@@ -48,15 +48,15 @@ class FundDetailModel extends FundDetail{
         id: json['id'],
         nominal: json['nominal'],
         name: json['name'],
-        dailyFundTotal: json['daily_fund_total'] != null ? (json['daily_fund_total'] as double).toInt() : -1,
-        weeklyFundTotal: json['weekly_fund_total'] != null ? (json['weekly_fund_total'] as double).toInt() : -1,
-        monthlyFundTotal: json['monthly_fund_total'] != null ? (json['monthly_fund_total'] as double).toInt() : -1,
-        days: json['days'] != null ? (json['days'] as double).toInt() : -1,
+        dailyFundTotal: json['daily_fund_total'] != null ? double.parse(json['daily_fund_total'].toString()).toInt() : null,
+        weeklyFundTotal: json['weekly_fund_total'] != null ? double.parse(json['weekly_fund_total'].toString()).toInt() : null,
+        monthlyFundTotal: json['monthly_fund_total'] != null ? double.parse(json['monthly_fund_total'].toString()).toInt() : null,
+        days: json['days'] != null ? (json['days'] as double).toInt() : 0,
         weeks: json['weeks'],
         months: json['months'],
-        dailyFund: json['daily_fund'] ?? -1,
-        weeklyFund: json['weekly_fund'] ?? -1,
-        monthlyFund: json['monthly_fund'] ?? -1,
+        dailyFund: json['daily_fund'],
+        weeklyFund: json['weekly_fund'],
+        monthlyFund: json['monthly_fund'],
     );
   }
 }

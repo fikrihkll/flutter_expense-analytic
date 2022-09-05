@@ -44,6 +44,7 @@ class FundSourceModel extends FundSource{
       'user_id': -1,
       'created_at': DateUtil.dbFormat.format(DateTime.now()),
       'updated_at': DateUtil.dbFormat.format(DateTime.now()),
+      'deleted_at': null
     };
   }
 

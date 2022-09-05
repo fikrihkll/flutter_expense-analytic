@@ -30,6 +30,8 @@ abstract class LocalDataSource{
 
   Future<void> deleteLog(int id);
 
+  Future<void> deleteFundSource(int id);
+
   Future<int> getTotalFunds(String fromDate, String untilDate);
 
 }
@@ -116,10 +118,15 @@ class LocalDataSourceImpl extends LocalDataSource{
     int totalFunds = 0;
     listFunds.forEach((element) {
       if (element['total_funds'] != null) {
-        totalFunds += (element['total_funds'] as double).toInt();
+        totalFunds += double.parse((element['total_funds'].toString())).toInt();
       }
     });
     return totalFunds;
+  }
+
+  @override
+  Future<void> deleteFundSource(int id) async {
+    await databaseHandler.deleteFundSource(id);
   }
 
 }

@@ -48,3 +48,11 @@ class LoadAllLogsError extends LogsState {
 
   LoadAllLogsError({required this.message});
 }
+
+class UpdateLogsLoading extends LogsState {}
+
+class UpdateLogsResult extends LogsState {
+  bool isSuccess;
+
+  UpdateLogsResult(this.isSuccess);
+}

@@ -39,6 +39,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
           DateUtil.dbDateFormat.format(fromDate),
           DateUtil.dbDateFormat.format(untilDate)
       );
+
       var resultMapped = result.map((e) => FundDetailModel.fromJson(e)).toList();
       return Right(resultMapped);
     }catch(e){
@@ -92,6 +93,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   Future<Either<Failure, int>> getTodayExpense() async {
     try{
       var result = await localDataSource.getTodayExpense(DateUtil.dbDateFormat.format(DateTime.now()));
+      debugPrint("TODAY EXPENSE "+result.toString());
       return Right(result.toInt());
     }catch(e){
       debugPrint("TEST "+e.toString());
@@ -107,6 +109,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       var result = await localDataSource.getTodayLimit(
           _isTodayWeekend(now)
       );
+      debugPrint("RESULT LIMIT ${result}");
       return Right(result.toInt());
     }catch(e){
       debugPrint("TEST LIMIT " + e.toString());
@@ -226,6 +229,19 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
           DateUtil.dbDateFormat.format(untilDate)
       );
       return Right(totalFunds - totalExpense);
+    }catch(e){
+      debugPrint(e.toString());
+      return Left(CacheFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteFundSource(int id) async {
+    try{
+      await localDataSource.deleteFundSource(
+          id
+      );
+      return const Right(true);
     }catch(e){
       debugPrint(e.toString());
       return Left(CacheFailure());

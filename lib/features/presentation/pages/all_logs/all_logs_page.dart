@@ -41,7 +41,7 @@ class _AllLogsPageState extends State<AllLogsPage> {
   // Params
   DateTime? _fromDate, _untilDate;
 
-  String rangeDate = "";
+  String _rangeDate = "";
 
   @override
   void initState() {
@@ -66,13 +66,18 @@ class _AllLogsPageState extends State<AllLogsPage> {
             children: [
               _buildHeader(),
               const SizedBox(height: 16,),
-              _buildLogsListSection(),
-              _buildDetail(),
-              const SizedBox(height: 32,),
-              LogsListSection(
-                isUsePaging: true,
-                controller: _logsController,
-              )
+              _fromDate != null
+                  ? Column(
+                    children: [
+                      _buildDetail(),
+                      const SizedBox(height: 32,),
+                      LogsListSection(
+                        isUsePaging: true,
+                        controller: _logsController,
+                      )
+                    ],
+                  ) :
+                  const SizedBox()
             ],
           ),
         ),
@@ -153,14 +158,15 @@ class _AllLogsPageState extends State<AllLogsPage> {
             state is FundSourceInitial,
         builder: (context, state) {
           if (state is GetFundUsedDetailLoaded) {
+            _rangeDate = "";
             if (state.listData.isNotEmpty) {
-              rangeDate = "${state.listData.first.days} day(s), ${state.listData.first.weeks} week(s), ${state.listData.first.months} month(s)";
+              _rangeDate = "${state.listData.first.days} day(s), ${state.listData.first.weeks} week(s), ${state.listData.first.months} month(s)";
             }
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  rangeDate.isNotEmpty ? Text(rangeDate) : const SizedBox(),
+                  _rangeDate.isNotEmpty ? Text(_rangeDate) : const SizedBox(),
                   const SizedBox(height: 16,),
                   const Text("Total Funds Used"),
                   const SizedBox(height: 4,),
@@ -198,57 +204,48 @@ class _AllLogsPageState extends State<AllLogsPage> {
   List<Widget> _buildListFundUsedItem(List<FundDetail> listData) {
     List<Widget> listWidget = [];
     List<Widget> nameWidget = [];
-    List<Widget> nominalWidget = [];
     listData.asMap().forEach((i, element) {
       nameWidget.add(
-          Text("${element.name} ", style: _theme.textTheme.headline4,)
-      );
-      nominalWidget.add(
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Text(
-                      "Rp.${MoneyUtil.getReadableMoney(element.nominal)}",
-                      style: _theme.textTheme.headline5,
-                    ),
-                    Flexible(
-                      child: Text(
-                        "/Rp.${MoneyUtil.getReadableMoney(FundDetail.fetchFundTotalNominal(element))}",
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 10
+              Text("${element.name} ", style: _theme.textTheme.headline4,),
+              Row(
+                children: [
+                  Text(
+                    "Rp.${MoneyUtil.getReadableMoney(element.nominal)}",
+                    style: _theme.textTheme.headline5,
+                  ),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "/Rp.${MoneyUtil.getReadableMoney(FundDetail.fetchFundTotalNominal(element))}",
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: 10
+                            ),
+                          ),
                         ),
-                      ),
+                        Text("Rp.${MoneyUtil.getReadableMoney(FundDetail.fetchFundNominal(element))}/${FundDetail.fetchFundType(element)}", style: TextStyle(fontSize: 10),)
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Text("Rp.${MoneyUtil.getReadableMoney(FundDetail.fetchFundNominal(element))}/${FundDetail.fetchFundType(element)}")
+              const SizedBox(height: 4,),
+              Container(color: Colors.white, height: 1, width: double.infinity,),
+              const SizedBox(height: 8,)
             ],
           )
       );
     });
     listWidget.add(
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ...nameWidget
-              ],
-            ),
-            const SizedBox(width: 8,),
-            Expanded(
-              child: Column(
-                children: [
-                  ...nominalWidget
-                ],
-              ),
-            ),
+            ...nameWidget
           ],
         )
     );
@@ -288,10 +285,6 @@ class _AllLogsPageState extends State<AllLogsPage> {
         )
     );
     return listWidget;
-  }
-
-  Widget _buildLogsListSection(){
-    return const SizedBox();
   }
 
 

@@ -1,9 +1,11 @@
 import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/core/util/theme_util.dart';
 import 'package:expense_app/features/data/models/expense_limit_model.dart';
+import 'package:expense_app/features/domain/entities/expense_limit.dart';
 import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/widgets/button_widget.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
+import 'package:expense_app/features/presentation/widgets/fund_source_selectable_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,38 +27,193 @@ class _InputExpenseLimitDialogState extends State<InputExpenseLimitDialog> {
   late ThemeData _theme;
 
   int _selectedFundType = 0;
+  FundSource? _selectedFundSource;
 
   // Edit Text Controller
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerNominal = TextEditingController();
 
-  void _processNominalText(String text, TextEditingController controller){
-    try{
-      String nonDecimalNominal = text.replaceAll('.', '');
-      controller.text = MoneyUtil.getReadableMoney(int.parse(nonDecimalNominal));
-      controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
-    // ignore: empty_catches
-    }catch(e){
+  final FundSourceSelectableListController _controllerFundList = FundSourceSelectableListController();
 
-    }
+  @override
+  void initState() {
+    super.initState();
+
+    _fundSourceBloc = BlocProvider.of<FundSourceBloc>(context);
+    _fundSourceBloc.add(GetFundSourceEvent());
   }
 
-  void getData() async {
-    // var result = await _insertExpenseLimitPresenter.getExpenseLimitEvent();
-    // _controllerWeekdays.text = MoneyUtil.getReadableMoney(result.weekdaysLimit);
-    // _controllerWeekend.text = MoneyUtil.getReadableMoney(result.weekendLimit);
-    // _controllerBalanceInMonth.text = MoneyUtil.getReadableMoney(result.balanceInMonth);
+  @override
+  Widget build(BuildContext context) {
+    _theme = Theme.of(context);
+    return BlocListener<FundSourceBloc, FundSourceState>(
+      listenWhen: (context, state) =>
+          state is InsertFundSourceResult ||
+          state is UpdateFundSourceResult,
+      listener: (context, state) {
+        if (state is InsertFundSourceResult) {
+          if (state.isSuccess) {
+            // Clear Edit Text
+            _controllerNominal.text = '';
+            _controllerName.text = '';
+
+            _controllerButton.hideLoading();
+            Navigator.pop(context);
+          }
+        }
+        if (state is UpdateFundSourceResult) {
+          if (state.isSuccess) {
+            // Clear Edit Text
+            _controllerNominal.text = '';
+            _controllerName.text = '';
+
+            _controllerButton.hideLoading();
+            Navigator.pop(context);
+          }
+        }
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Material(
+            color: Colors.transparent,
+            child: FloatingContainer(
+                shadowEnabled: false,
+                splashEnabled: false,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Insert your Fund'),
+                    const SizedBox(height: 16,),
+                    TextField(
+                      controller: _controllerName,
+                      style: _theme.textTheme.bodyText1,
+                      textInputAction: TextInputAction.next,
+                      decoration: const InputDecoration(
+                          labelText: 'Fund Source Name',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(12)))
+                      ),
+                    ),
+                    const SizedBox(height: 16,),
+                    TextField(
+                      controller: _controllerNominal,
+                      style: _theme.textTheme.bodyText1,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: false),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
+                      textInputAction: TextInputAction.next,
+                      onChanged: (str){
+                        _processNominalText(str, _controllerNominal);
+                      },
+                      decoration: const InputDecoration(
+                          labelText: 'Nominal',
+                          prefix: Text('Rp.'),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(12)))
+                      ),
+                    ),
+                    const SizedBox(height: 16,),
+                    RadioListTile(
+                        value: 0,
+                        groupValue: _selectedFundType,
+                        title: Text("Daily"),
+                        onChanged: (str){
+                          _selectedFundType = 0;
+                          setState(() {
+                          });
+                        }
+                    ),
+                    RadioListTile(
+                        value: 1,
+                        title: Text("Weekly"),
+                        groupValue: _selectedFundType,
+                        onChanged: (str){
+                          _selectedFundType = 1;
+                          setState(() {
+                          });
+                        }
+                    ),
+                    RadioListTile(
+                        value: 2,
+                        title: Text("Monthly"),
+                        groupValue: _selectedFundType,
+                        onChanged: (str){
+                          _selectedFundType = 2;
+                          setState(() {
+                          });
+                        }
+                    ),
+                    const SizedBox(height: 16,),
+                    _buildListFund(),
+                    const SizedBox(height: 16,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(onPressed: (){
+                          _selectedFundSource = null;
+                          _controllerName.text = "";
+                          _controllerNominal.text = "";
+                          _selectedFundType = 0;
+                          _controllerFundList.select(null);
+                          setState(() {
+                          });
+                        }, child: Text("Clear")),
+                        ButtonWidget(
+                          controller: _controllerButton,
+                          onPressed: () async => _saveExpenseData(),
+                          text: 'Save',
+                        )
+                      ],
+                    )
+                  ],
+                )
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListFund() {
+    return Material(
+      child: BlocBuilder<FundSourceBloc, FundSourceState>(
+          buildWhen: (context, state) => state is GetFundSourceLoaded,
+          builder: (context, state) {
+            if (state is GetFundSourceLoaded) {
+              return FundSourceSelectableList(
+                  showNominal: true,
+                  defaultSelected: _selectedFundSource,
+                  listData: state.data,
+                  controller: _controllerFundList,
+                  onItemSelected: (item) {
+                    _selectedFundSource = item;
+                    _controllerName.text = item.name;
+                    _selectedFundType = FundSource.fetchFundType(item);
+                    _controllerNominal.text = MoneyUtil.getReadableMoney(FundSource.fetchFundNominal(item));
+                    setState(() {
+
+                    });
+                  }
+              );
+            } else {
+              return const Text("Something Wrong");
+            }
+          }
+      ),
+    );
   }
 
   FundSourceModel _buildData(){
     String nonDecimalNominal = _controllerNominal.text.replaceAll('.', '');
     return FundSourceModel(
-      id: -1,
-      dailyFund: _selectedFundType == 0 ? int.parse(nonDecimalNominal) : null,
-      weeklyFund: _selectedFundType == 0 ? int.parse(nonDecimalNominal) : null,
-      monthlyFund: _selectedFundType == 0 ? int.parse(nonDecimalNominal) : null,
-      name: _controllerName.text,
-      userId: 1
+        id: _selectedFundSource != null ? _selectedFundSource!.id : -1,
+        dailyFund: _selectedFundType == 0 ? int.parse(nonDecimalNominal) : null,
+        weeklyFund: _selectedFundType == 1 ? int.parse(nonDecimalNominal) : null,
+        monthlyFund: _selectedFundType == 2 ? int.parse(nonDecimalNominal) : null,
+        name: _controllerName.text,
+        userId: _selectedFundSource != null ? _selectedFundSource!.userId : 1
     );
   }
 
@@ -78,135 +235,37 @@ class _InputExpenseLimitDialogState extends State<InputExpenseLimitDialog> {
     return isValid;
   }
 
+  void _processNominalText(String text, TextEditingController controller){
+    try{
+      String nonDecimalNominal = text.replaceAll('.', '');
+      controller.text = MoneyUtil.getReadableMoney(int.parse(nonDecimalNominal));
+      controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
+      // ignore: empty_catches
+    }catch(e){
+
+    }
+  }
+
+  void getData() async {
+    // var result = await _insertExpenseLimitPresenter.getExpenseLimitEvent();
+    // _controllerWeekdays.text = MoneyUtil.getReadableMoney(result.weekdaysLimit);
+    // _controllerWeekend.text = MoneyUtil.getReadableMoney(result.weekendLimit);
+    // _controllerBalanceInMonth.text = MoneyUtil.getReadableMoney(result.balanceInMonth);
+  }
+
   void _saveExpenseData()async{
     FocusManager.instance.primaryFocus?.unfocus();
     if(isInputDataValid()){
       _controllerButton.showLoading();
 
       // Insert data...
-      _fundSourceBloc.add(InsertFundSourceEvent(fundSourceModel: _buildData()));
+      if (_selectedFundSource == null) {
+        _fundSourceBloc.add(InsertFundSourceEvent(fundSourceModel: _buildData()));
+      } else {
+        _fundSourceBloc.add(UpdateFundSourceEvent(fundSourceModel: _buildData()));
+      }
     }else{
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Some fields are required'), backgroundColor: MyTheme.red,));
     }
-  }
-
-
-  @override
-  void initState() {
-    super.initState();
-
-    _fundSourceBloc = BlocProvider.of<FundSourceBloc>(context);
-    _fundSourceBloc.add(GetFundSourceEvent());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    _theme = Theme.of(context);
-    return BlocListener<FundSourceBloc, FundSourceState>(
-      listenWhen: (context, state) => state is InsertFundSourceResult,
-      listener: (context, state) {
-        if (state is InsertFundSourceResult) {
-          if (state.isSuccess) {
-            // Clear Edit Text
-            _controllerNominal.text = '';
-            _controllerName.text = '';
-
-            _controllerButton.hideLoading();
-            Navigator.pop(context);
-          }
-        }
-      },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: Material(
-              color: Colors.transparent,
-              child: FloatingContainer(
-                  shadowEnabled: false,
-                  splashEnabled: false,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Insert your expense'),
-                      const SizedBox(height: 16,),
-                      TextField(
-                        controller: _controllerName,
-                        style: _theme.textTheme.bodyText1,
-                        textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
-                            labelText: 'Fund Source Name',
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(12)))
-                        ),
-                      ),
-                      const SizedBox(height: 16,),
-                      TextField(
-                        controller: _controllerNominal,
-                        style: _theme.textTheme.bodyText1,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: false),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        textInputAction: TextInputAction.next,
-                        onChanged: (str){
-                          _processNominalText(str, _controllerNominal);
-                        },
-                        decoration: const InputDecoration(
-                            labelText: 'Nominal',
-                            prefix: Text('Rp.'),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(12)))
-                        ),
-                      ),
-                      const SizedBox(height: 16,),
-                      RadioListTile(
-                          value: 0,
-                          groupValue: _selectedFundType,
-                          title: Text("Daily"),
-                          onChanged: (str){
-                            _selectedFundType = 0;
-                            setState(() {
-                            });
-                          }
-                      ),
-                      RadioListTile(
-                          value: 1,
-                          title: Text("Weekly"),
-                          groupValue: _selectedFundType,
-                          onChanged: (str){
-                            _selectedFundType = 1;
-                            setState(() {
-                            });
-                          }
-                      ),
-                      RadioListTile(
-                          value: 2,
-                          title: Text("Monthly"),
-                          groupValue: _selectedFundType,
-                          onChanged: (str){
-                            _selectedFundType = 2;
-                            setState(() {
-                            });
-                          }
-                      ),
-                      const SizedBox(height: 16,),
-                      Align(
-                          alignment: Alignment.centerRight,
-                          child: ButtonWidget(
-                            controller: _controllerButton,
-                            onPressed: () async => _saveExpenseData(),
-                            text: 'Save',
-                          )
-                      )
-                    ],
-                  )
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

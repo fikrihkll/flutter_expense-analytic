@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class FundDetail {
   final int id;
   final int nominal;
@@ -28,26 +30,29 @@ class FundDetail {
   });
 
   static int fetchFundTotalNominal(FundDetail fundDetail) {
-    if (fundDetail.dailyFundTotal != null || fundDetail.dailyFundTotal == 0) {
+    if (fundDetail.dailyFundTotal != null) {
       return fundDetail.dailyFundTotal!;
     }
-    if (fundDetail.weeklyFundTotal != null || fundDetail.weeklyFundTotal == 0) {
+    if (fundDetail.weeklyFundTotal != null) {
       return fundDetail.weeklyFundTotal!;
     }
-    if (fundDetail.weeklyFundTotal != null || fundDetail.monthlyFundTotal == 0) {
+    if (fundDetail.weeklyFundTotal != null) {
       return fundDetail.monthlyFundTotal!;
     }
     return 0;
   }
 
   static int fetchFundNominal(FundDetail fundDetail) {
-    if (fundDetail.dailyFund != null || fundDetail.dailyFund == 0) {
+    if (fundDetail.dailyFund != null) {
+      debugPrint("HERE MAP D ${fundDetail.dailyFund}");
       return fundDetail.dailyFund!;
     }
-    if (fundDetail.weeklyFund != null || fundDetail.weeklyFund == 0) {
+    if (fundDetail.weeklyFund != null) {
+      debugPrint("HERE MAP W ${fundDetail.weeklyFund}");
       return fundDetail.weeklyFund!;
     }
-    if (fundDetail.monthlyFund != null || fundDetail.monthlyFund == 0) {
+    if (fundDetail.monthlyFund != null) {
+      debugPrint("HERE MAP M ${fundDetail.monthlyFund}");
       return fundDetail.monthlyFund!;
     }
     return 0;
@@ -61,6 +66,15 @@ class FundDetail {
       return "Weekly";
     }
     if (fundDetail.monthlyFund != null) {
+      return "Monthly";
+    }
+    if (fundDetail.dailyFundTotal != null) {
+      return "Daily";
+    }
+    if (fundDetail.weeklyFundTotal != null) {
+      return "Weekly";
+    }
+    if (fundDetail.monthlyFundTotal != null) {
       return "Monthly";
     }
     return "None Fund Type";

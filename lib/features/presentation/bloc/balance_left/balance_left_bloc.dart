@@ -6,6 +6,7 @@ import 'package:expense_app/features/domain/usecases/get_expense_in_month_use_ca
 import 'package:expense_app/features/domain/usecases/get_today_balance_left_usecase.dart';
 import 'package:expense_app/features/domain/usecases/get_total_expense_based_on_category_use_case.dart';
 import 'package:expense_app/features/domain/usecases/get_total_savings_use_case.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 part 'balance_left_event.dart';
@@ -25,9 +26,9 @@ class BalanceLeftBloc extends Bloc<BalanceLeftEvent, BalanceLeftState> {
     required this.getTotalSavingsUseCase
   }) : super(BalanceLeftInitial()) {
     on<GetBalanceLeftEvent>((event, emit) async {
-
+      debugPrint("BALANCE LEFT CALLED");
       var result = await getTodayBalanceLeftUseCase.call(NoParams());
-
+      debugPrint("RESULT ${result.isRight ? result.right : result.left.toString()}");
       emit(
         result.fold(
                 (l) => BalanceLeftError(message: l is ServerFailure ? l.msg : unexpectedFailureMessage),

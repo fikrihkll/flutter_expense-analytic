@@ -23,3 +23,9 @@ class LoadAllLogEvent extends LogsEvent {
 
   LoadAllLogEvent({required this.isRefreshing, required this.fromDate, required this.untilDate});
 }
+
+class UpdateLogEvent extends LogsEvent {
+  final LogModel log;
+
+  UpdateLogEvent({required this.log});
+}
