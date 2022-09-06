@@ -88,7 +88,7 @@ class _InputExpenseLimitDialogState extends State<InputExpenseLimitDialog> {
                     TextField(
                       controller: _controllerName,
                       style: _theme.textTheme.bodyText1,
-                      textInputAction: TextInputAction.next,
+                      textInputAction: TextInputAction.done,
                       decoration: const InputDecoration(
                           labelText: 'Fund Source Name',
                           border: OutlineInputBorder(
@@ -103,7 +103,7 @@ class _InputExpenseLimitDialogState extends State<InputExpenseLimitDialog> {
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly
                       ],
-                      textInputAction: TextInputAction.next,
+                      textInputAction: TextInputAction.done,
                       onChanged: (str){
                         _processNominalText(str, _controllerNominal);
                       },
@@ -164,9 +164,9 @@ class _InputExpenseLimitDialogState extends State<InputExpenseLimitDialog> {
                           controller: _controllerButton,
                           onPressed: () async => _saveExpenseData(),
                           text: 'Save',
-                        )
+                        ),
                       ],
-                    )
+                    ),
                   ],
                 )
             ),

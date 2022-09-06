@@ -4,6 +4,7 @@ import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
 import 'package:expense_app/features/injection_container.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/edit_expense/edit_expense_widget.dart';
@@ -59,6 +60,7 @@ class LogListItemWidget extends StatelessWidget {
                     BlocProvider<LogsBloc>(create: (create) => sl<LogsBloc>()),
                     BlocProvider<BalanceLeftBloc>(create: (create) => sl<BalanceLeftBloc>()),
                     BlocProvider<FundSourceBloc>(create: (create) => sl<FundSourceBloc>()),
+                    BlocProvider<ExpenseMonthBloc>(create: (create) => sl<ExpenseMonthBloc>()),
                   ],
                   child: SingleChildScrollView(
                     child: EditExpenseBottomSheet(log: log,),

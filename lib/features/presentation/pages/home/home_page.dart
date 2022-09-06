@@ -1,6 +1,7 @@
 import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/features/injection_container.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/input_expense_section.dart';
@@ -26,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   // Bloc or Presenter
   late LogsBloc _logsBloc;
   late BalanceLeftBloc _balanceLeftBloc;
+  late ExpenseMonthBloc _expenseMonthBloc;
 
   late ThemeData _theme;
 
@@ -37,9 +39,10 @@ class _HomePageState extends State<HomePage> {
 
     _logsBloc = BlocProvider.of<LogsBloc>(context);
     _balanceLeftBloc = BlocProvider.of<BalanceLeftBloc>(context);
+    _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
     _logsBloc.add(GetRecentLogsEvent());
     _balanceLeftBloc.add(GetBalanceLeftEvent());
-    _balanceLeftBloc.add(GetExpenseInMonthEvent());
+    _expenseMonthBloc.add(GetExpenseInMonthEvent());
   }
 
   @override
@@ -105,12 +108,9 @@ class _HomePageState extends State<HomePage> {
           shadowEnabled: false,
           splashEnabled: true,
           onTap: () async {
-            await showMaterialModalBottomSheet(
-                isDismissible: true,
-                enableDrag: true,
-                closeProgressThreshold: 0.6,
+            await showDialog(
+                barrierDismissible: true,
                 context: context,
-                backgroundColor: Colors.transparent,
                 builder: (context) {
                 return MultiBlocProvider(
                     providers: [
@@ -118,8 +118,11 @@ class _HomePageState extends State<HomePage> {
                         create: (context)=> sl<FundSourceBloc>(),
                       ),
                     ],
-                    child: const SingleChildScrollView(
-                        child: InputExpenseLimitDialog()
+                    child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: InputExpenseLimitDialog(),
+                        )
                     ),
                 );
             }
@@ -166,12 +169,14 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
-                      child: BlocBuilder<BalanceLeftBloc, BalanceLeftState>(
+                      child: BlocBuilder<ExpenseMonthBloc, ExpenseMonthState>(
                         buildWhen: (context, state) => state is ExpenseInMonthLoaded ||
                             state is ExpenseInMonthError ||
-                            state is BalanceLeftInitial,
+                            state is ExpenseMonthInitial,
                         builder: (context, state){
+                          debugPrint("BLOC UPDATED EXPENSE MONTH");
                           if(state is ExpenseInMonthLoaded){
+                            debugPrint("EM ${state.data}");
                             return Text('Rp.${MoneyUtil.getReadableMoney(state.data)}', style: _theme.textTheme.headline3,);
                           }else{
                             return Text('Rp.0', style: _theme.textTheme.headline3,);

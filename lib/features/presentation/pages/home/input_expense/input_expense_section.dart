@@ -5,6 +5,7 @@ import 'package:expense_app/features/data/models/log_model.dart';
 import 'package:expense_app/features/domain/entities/expense_categroy.dart';
 import 'package:expense_app/features/domain/entities/expense_limit.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
+import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
@@ -32,6 +33,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
   late LogsBloc _logsBloc;
   late BalanceLeftBloc _balanceLeftBloc;
   late FundSourceBloc _fundSourceBloc;
+  late ExpenseMonthBloc _expenseMonthBloc;
   FundSource? _selectedFundSource;
 
   final ButtonWidgetController _buttonController = ButtonWidgetController();
@@ -66,6 +68,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     _logsBloc = BlocProvider.of<LogsBloc>(context);
     _balanceLeftBloc = BlocProvider.of<BalanceLeftBloc>(context);
     _fundSourceBloc = BlocProvider.of<FundSourceBloc>(context);
+    _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
     _fundSourceBloc.add(GetFundSourceEvent());
 
     if (widget.log != null) {
@@ -93,7 +96,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
             // Then update Recent Log List data and others...
             _logsBloc.add(GetRecentLogsEvent());
             _balanceLeftBloc.add(GetBalanceLeftEvent());
-            _balanceLeftBloc.add(GetExpenseInMonthEvent());
+            _expenseMonthBloc.add(GetExpenseInMonthEvent());
 
             // Clear Edit Text
             _controllerNominal.text = '';
@@ -143,7 +146,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
               TextField(
                 controller: _controllerDesc,
                 style: _theme.textTheme.bodyText1,
-                textInputAction: TextInputAction.newline,
+                textInputAction: TextInputAction.done,
                 decoration: const InputDecoration(
                     labelText: 'Description',
                     border: OutlineInputBorder(

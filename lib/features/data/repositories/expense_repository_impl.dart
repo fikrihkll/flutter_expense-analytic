@@ -28,7 +28,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return const Right(true);
     }catch(e){
       debugPrint(e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -44,7 +44,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return Right(resultMapped);
     }catch(e){
       debugPrint(e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -56,7 +56,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return Right(resultMapped);
     }catch(e){
       debugPrint(e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -73,7 +73,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return Right(resultMapped);
     }catch(e){
       debugPrint(e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -85,7 +85,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return Right(resultMapped);
     }catch(e){
       debugPrint(e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -97,7 +97,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return Right(result.toInt());
     }catch(e){
       debugPrint("TEST "+e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -113,7 +113,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return Right(result.toInt());
     }catch(e){
       debugPrint("TEST LIMIT " + e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -124,7 +124,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return const Right(true);
     }catch(e){
       debugPrint(e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -137,7 +137,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return const Right(true);
     }catch(e){
       debugPrint(e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -150,7 +150,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return const Right(true);
     }catch(e){
       debugPrint(e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -163,7 +163,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return const Right(true);
     }catch(e){
       debugPrint(e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -176,7 +176,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return const Right(true);
     }catch(e){
       debugPrint(e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -193,12 +193,13 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   Future<Either<Failure, int>> getExpenseInMonth(DateTime? fromDate, DateTime? untilDate) async {
     try{
       String finalFromDate = fromDate != null ? DateUtil.dbDateFormat.format(fromDate) : DateUtil.dbDateFormat.format(DateUtil.getFirstDateOfThisMonth());
-      String finalUntilDate = untilDate != null ? DateUtil.dbDateFormat.format(untilDate) : DateUtil.dbDateFormat.format(DateUtil.getFirstDateOfThisMonth().add(Duration(days: DateUtil.getLastDateOfThisMonth().day)));
+      String finalUntilDate = untilDate != null ? DateUtil.dbDateFormat.format(untilDate) : DateUtil.dbDateFormat.format(DateUtil.getLastDateOfThisMonth());
       var result = await localDataSource.getExpenseInMonth(finalFromDate, finalUntilDate);
+      debugPrint("EXPENSE HERE ${result} $finalFromDate $finalUntilDate");
       return Right(result);
     }catch(e){
-      debugPrint(e.toString());
-      return Left(CacheFailure());
+      debugPrint("ERROR HERE " + e.toString());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -210,10 +211,11 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
           DateUtil.dbDateFormat.format(untilDate)
       );
       var resultMapped = result.map((e) => LogDetailModel.fromJson(e)).toList();
+      debugPrint("CAT HERE ${resultMapped.length}" );
       return Right(resultMapped);
     }catch(e){
-      debugPrint(e.toString());
-      return Left(CacheFailure());
+      debugPrint("ERROR HERE " + e.toString());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -231,7 +233,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return Right(totalFunds - totalExpense);
     }catch(e){
       debugPrint(e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -244,7 +246,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       return const Right(true);
     }catch(e){
       debugPrint(e.toString());
-      return Left(CacheFailure());
+      return Left(ServerFailure(e.toString()));
     }
   }
 

@@ -6,8 +6,10 @@ import 'package:expense_app/features/domain/entities/fund_detail.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
 import 'package:expense_app/features/domain/entities/log_detail.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/total_expense_month/total_expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/pages/date_selection/date_selection_bottomsheet.dart';
 import 'package:expense_app/features/presentation/pages/home/logs_list/logs_list_section.dart';
 import 'package:expense_app/features/presentation/widgets/center_padding_widget.dart';
@@ -33,6 +35,8 @@ class _AllLogsPageState extends State<AllLogsPage> {
   late FundSourceBloc _fundSourceBloc;
   late BalanceLeftBloc _balanceLeftBloc;
   late LogsBloc _logsBloc;
+  late ExpenseMonthBloc _expenseMonthBloc;
+  late TotalExpenseMonthBloc _totalExpenseMonthBloc;
 
   // Paging thingies
   final ScrollController _scrollController = ScrollController();
@@ -50,6 +54,8 @@ class _AllLogsPageState extends State<AllLogsPage> {
     _fundSourceBloc = BlocProvider.of<FundSourceBloc>(context);
     _balanceLeftBloc = BlocProvider.of<BalanceLeftBloc>(context);
     _logsBloc = BlocProvider.of<LogsBloc>(context);
+    _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
+    _totalExpenseMonthBloc = BlocProvider.of<TotalExpenseMonthBloc>(context);
   }
 
   @override
@@ -89,31 +95,36 @@ class _AllLogsPageState extends State<AllLogsPage> {
     return FloatingContainer(
         width: double.infinity,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Total Expense"),
-            const SizedBox(height: 4,),
-            _buildTotalMonthExpense(),
-            const SizedBox(height: 16,),
-            _buildListFundUsed(),
-            const SizedBox(height: 16,),
-            const Text("Total Expense Based on Category"),
-            const SizedBox(height: 4,),
-            _buildListTotalCategory(),
-            const SizedBox(height: 16,),
-            const Text("Total Savings"),
-            const SizedBox(height: 4,),
-            _buildTotalSavings(),
-          ],
-        )
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Total Expense"),
+              const SizedBox(height: 4,),
+              _buildTotalMonthExpense(),
+              const SizedBox(height: 16,),
+              _buildListFundUsed(),
+              const SizedBox(height: 16,),
+              const Text("Total Expense Based on Category"),
+              const SizedBox(height: 4,),
+              _buildListTotalCategory(),
+              const SizedBox(height: 16,),
+              const Text("Total Savings"),
+              const SizedBox(height: 4,),
+              _buildTotalSavings(),
+            ],
+          ),
     );
   }
 
   Widget _buildTotalMonthExpense() {
-    return BlocBuilder<BalanceLeftBloc, BalanceLeftState>(
+    return BlocConsumer<ExpenseMonthBloc, ExpenseMonthState>(
+        listenWhen: (context, state) => state is ExpenseInMonthError,
+        listener: (context, state) {
+          if (state is ExpenseInMonthError) {
+            debugPrint("NGNTT");
+          }
+        },
         buildWhen: (context, state) =>
-            state is ExpenseInMonthLoaded ||
-            state is ExpenseInMonthError,
+            state is ExpenseInMonthLoaded,
         builder: (context, state) {
           if (state is ExpenseInMonthLoaded) {
             return Text(
@@ -182,9 +193,14 @@ class _AllLogsPageState extends State<AllLogsPage> {
   }
 
   Widget _buildListTotalCategory() {
-    return BlocBuilder<BalanceLeftBloc, BalanceLeftState>(
-        buildWhen: (context, state) => state is TotalExpenseCategoryInMonthLoaded ||
-            state is TotalExpenseCategoryInMonthLoaded,
+    return BlocConsumer<TotalExpenseMonthBloc, TotalExpenseMonthState>(
+        listenWhen: (context, state) => state is TotalExpenseCategoryInMonthError,
+        listener: (context, state) {
+          if (state is TotalExpenseCategoryInMonthError) {
+            MyTheme.showSnackbar(state.message, context);
+          }
+        },
+        buildWhen: (context, state) => state is TotalExpenseCategoryInMonthLoaded,
         builder: (context, state) {
           if (state is TotalExpenseCategoryInMonthLoaded) {
             return SingleChildScrollView(
@@ -302,8 +318,8 @@ class _AllLogsPageState extends State<AllLogsPage> {
 
       });
       _fundSourceBloc.add(GetFundUsedDetailEvent(fromDate: _fromDate!, untilDate: _untilDate!));
-      _balanceLeftBloc.add(GetExpenseInMonthEvent(fromDate: _fromDate!, untilDate: _untilDate!));
-      _balanceLeftBloc.add(GetTotalExpenseCategoryInMonthEvent(fromDate: _fromDate!, untilDate: _untilDate!));
+      _expenseMonthBloc.add(GetExpenseInMonthEvent(fromDate: _fromDate!, untilDate: _untilDate!));
+      _totalExpenseMonthBloc.add(GetTotalExpenseCategoryInMonthEvent(fromDate: _fromDate!, untilDate: _untilDate!));
       _balanceLeftBloc.add(GetTotalSavingsInMonthEvent(fromDate: _fromDate!, untilDate: _untilDate!));
       _logsBloc.add(LoadAllLogEvent(isRefreshing: true, fromDate: _fromDate!, untilDate: _untilDate!));
     }

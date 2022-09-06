@@ -17,14 +17,26 @@ import 'package:expense_app/features/domain/usecases/insert_log_usecase.dart';
 import 'package:expense_app/features/domain/usecases/update_fund_source_usecase.dart';
 import 'package:expense_app/features/domain/usecases/update_log_use_case.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/total_expense_month/total_expense_month_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
   // Bloc
+  sl.registerFactory(
+        () => ExpenseMonthBloc(
+            getExpenseInMonthUseCase: sl(),
+        )
+  );
+  sl.registerFactory(
+          () => TotalExpenseMonthBloc(
+          getTotalExpenseBasedOnCategoryUseCase: sl()
+      )
+  );
   sl.registerFactory(
         () => LogsBloc(
             getRecentLogsUseCase:  sl(),
@@ -36,9 +48,7 @@ Future<void> init() async {
   );
   sl.registerFactory(
         () => BalanceLeftBloc(
-            getTotalExpenseBasedOnCategoryUseCase: sl(),
             getTodayBalanceLeftUseCase: sl(),
-            getExpenseInMonthUseCase: sl(),
             getTotalSavingsUseCase: sl()
         ),
   );
