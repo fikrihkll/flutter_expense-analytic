@@ -36,7 +36,7 @@ class FundDetail {
     if (fundDetail.weeklyFundTotal != null) {
       return fundDetail.weeklyFundTotal!;
     }
-    if (fundDetail.weeklyFundTotal != null) {
+    if (fundDetail.monthlyFundTotal != null) {
       return fundDetail.monthlyFundTotal!;
     }
     return 0;

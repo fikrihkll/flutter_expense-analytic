@@ -92,7 +92,10 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   @override
   Future<Either<Failure, int>> getTodayExpense() async {
     try{
-      var result = await localDataSource.getTodayExpense(DateUtil.dbDateFormat.format(DateTime.now()));
+      var result = await localDataSource.getTodayExpense(
+          DateUtil.dbDateFormat.format(DateTime.now()),
+          _isTodayWeekend(DateTime.now())
+      );
       debugPrint("TODAY EXPENSE "+result.toString());
       return Right(result.toInt());
     }catch(e){
@@ -244,6 +247,21 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
           id
       );
       return const Right(true);
+    }catch(e){
+      debugPrint(e.toString());
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, int>> getTotalFunds(DateTime fromDate, DateTime untilDate) async {
+    try{
+      var totalFunds = await localDataSource.getTotalFunds(
+          DateUtil.dbDateFormat.format(fromDate),
+          DateUtil.dbDateFormat.format(untilDate)
+      );
+
+      return Right(totalFunds);
     }catch(e){
       debugPrint(e.toString());
       return Left(ServerFailure(e.toString()));

@@ -11,6 +11,7 @@ import 'package:expense_app/features/domain/usecases/get_logs_in_month_usecase.d
 import 'package:expense_app/features/domain/usecases/get_recent_logs_usecase.dart';
 import 'package:expense_app/features/domain/usecases/get_today_balance_left_usecase.dart';
 import 'package:expense_app/features/domain/usecases/get_total_expense_based_on_category_use_case.dart';
+import 'package:expense_app/features/domain/usecases/get_total_funds_use_case.dart';
 import 'package:expense_app/features/domain/usecases/get_total_savings_use_case.dart';
 import 'package:expense_app/features/domain/usecases/insert_fund_source_usecase.dart';
 import 'package:expense_app/features/domain/usecases/insert_log_usecase.dart';
@@ -21,6 +22,7 @@ import 'package:expense_app/features/presentation/bloc/expense_month/expense_mon
 import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/total_expense_month/total_expense_month_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/total_funds/total_funds_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 final sl = GetIt.instance;
@@ -36,6 +38,11 @@ Future<void> init() async {
           () => TotalExpenseMonthBloc(
           getTotalExpenseBasedOnCategoryUseCase: sl()
       )
+  );
+  sl.registerFactory(
+          () => TotalFundsBloc(
+              getTotalFundsUseCase: sl()
+          )
   );
   sl.registerFactory(
         () => LogsBloc(
@@ -63,6 +70,7 @@ Future<void> init() async {
   );
 
   // Usecase
+  sl.registerFactory(() => GetTotalFundsUseCase(repository: sl()));
   sl.registerFactory(() => DeleteFundSourceUseCase(repo: sl()));
   sl.registerFactory(() => UpdateLogUseCase(repository: sl()));
   sl.registerFactory(() => GetTotalSavingsUseCase(repository: sl()));

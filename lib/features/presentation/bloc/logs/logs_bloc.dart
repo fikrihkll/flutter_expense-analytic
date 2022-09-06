@@ -25,7 +25,7 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
 
   List<Log> _listAllLog = [];
   int _page = 1;
-  bool _isLoadMoreAvailable = false;
+  bool _isLoadMoreAvailable = true;
   bool _isPagingLoading = false;
 
   DateTime? fromDateAllLog, untilDateAllLog;
@@ -77,15 +77,17 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
     });
 
     on<LoadAllLogEvent>((event, emit) async {
-      _isPagingLoading = true;
 
       if (event.isRefreshing) {
+        _isLoadMoreAvailable = true;
         emit(LoadAllLogsLoading());
         _listAllLog.clear();
         _page = 1;
         fromDateAllLog = event.fromDate;
         untilDateAllLog = event.untilDate;
       }
+
+      await Future.delayed(Duration(seconds: 1));
 
       var result = await getLogsInMonthUseCase.call(
         GetLogsInMonthUseCaseParams(
@@ -96,7 +98,6 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
         )
       );
       _page ++;
-      _isPagingLoading = false;
 
       emit(
           result.fold(
@@ -128,4 +129,8 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
   List<Log> get getListAllLog => _listAllLog;
   bool get isLoadMoreAvailable => _isLoadMoreAvailable;
   bool get isPagingLoading => _isPagingLoading;
+
+  void setPagingLoading(bool isLoading) {
+    _isPagingLoading = isLoading;
+  }
 }

@@ -12,7 +12,7 @@ abstract class LocalDataSource{
 
   Future<void> insertFundSource(Map<String, dynamic> fundSource);
 
-  Future<int> getTodayExpense(String date);
+  Future<int> getTodayExpense(String date, bool isWeekend);
 
   Future<double> getTodayLimit(bool isWeekend);
 
@@ -68,8 +68,8 @@ class LocalDataSourceImpl extends LocalDataSource{
   }
 
   @override
-  Future<int> getTodayExpense(String date) async {
-    return (await databaseHandler.getTodayExpense(date)) ?? 0;
+  Future<int> getTodayExpense(String date, bool isWeekend) async {
+    return (await databaseHandler.getTodayExpense(date, isWeekend)) ?? 0;
   }
 
   @override

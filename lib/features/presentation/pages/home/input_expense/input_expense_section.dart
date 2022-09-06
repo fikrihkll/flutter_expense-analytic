@@ -39,20 +39,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
   final ButtonWidgetController _buttonController = ButtonWidgetController();
 
   late ThemeData _theme;
-  final List<ExpenseCategory> _listCategory = [
-    ExpenseCategory(name: 'Meal'),
-    ExpenseCategory(name: 'Food'),
-    ExpenseCategory(name: 'Drink'),
-    ExpenseCategory(name: 'Laundry'),
-    ExpenseCategory(name: 'E-Money'),
-    ExpenseCategory(name: 'Transportation'),
-    ExpenseCategory(name: 'Tools'),
-    ExpenseCategory(name: 'Toiletries'),
-    ExpenseCategory(name: 'Electricity'),
-    ExpenseCategory(name: 'Daily Needs'),
-    ExpenseCategory(name: 'Shopping'),
-    ExpenseCategory(name: 'Others'),
-  ];
+  
   int _selectedCategoryPosition = -1;
 
   // Edit Text Controller
@@ -212,7 +199,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     }
   }
 
-  Widget _buildCategoryList(){
+  Widget _buildCategoryList() {
     return Material(
       color: Colors.transparent,
       child: Padding(
@@ -220,7 +207,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
         child: SizedBox(
           height: 50,
           child: ListView.builder(
-              itemCount: _listCategory.length,
+              itemCount: MoneyUtil.listCategory.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, position){
                 return _buildItemList(position);
@@ -237,7 +224,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
       child: CategoryListWidget(
         itemPosition: position,
         isSelected: _selectedCategoryPosition == position,
-        expenseCategory: _listCategory[position],
+        expenseCategory: MoneyUtil.listCategory[position],
         onAreaClicked: (itemPosition){
           // Change selected item
           _selectedCategoryPosition = itemPosition;
@@ -300,7 +287,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     return LogModel(
       id: widget.log != null ? widget.log!.id : -1,
       userId: 1,
-      category: _listCategory[_selectedCategoryPosition].name,
+      category: MoneyUtil.listCategory[_selectedCategoryPosition].name,
       description: _controllerDesc.text,
       date: widget.log != null ? DateUtil.dbFormat.format(_selectedDate!) : DateUtil.dbFormat.format(DateTime.now()),
       day: DateTime.now().day,
@@ -314,7 +301,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
 
   int _getSelectedCategory(String selectedCategory) {
     int selectedIndex = -1;
-    _listCategory.asMap().forEach((i, value) {
+    MoneyUtil.listCategory.asMap().forEach((i, value) {
       if (value.name.toLowerCase() == selectedCategory.toLowerCase()) {
         selectedIndex = i;
       }

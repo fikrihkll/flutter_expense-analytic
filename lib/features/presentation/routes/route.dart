@@ -3,6 +3,7 @@ import 'package:expense_app/features/injection_container.dart';
 import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/total_expense_month/total_expense_month_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/total_funds/total_funds_bloc.dart';
 import 'package:expense_app/features/presentation/pages/all_logs/all_logs_page.dart';
 import 'package:expense_app/features/presentation/pages/beta_page.dart';
 import 'package:expense_app/features/presentation/pages/date_selection/date_selection_bottomsheet.dart';
@@ -68,6 +69,9 @@ Route<dynamic> controller(RouteSettings settings) {
                 ),
                 BlocProvider<TotalExpenseMonthBloc>(
                   create: (context) => sl<TotalExpenseMonthBloc>(),
+                ),
+                BlocProvider<TotalFundsBloc>(
+                  create: (context) => sl<TotalFundsBloc>(),
                 )
               ],
               child: const AllLogsPage()

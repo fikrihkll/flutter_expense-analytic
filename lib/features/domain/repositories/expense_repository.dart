@@ -25,6 +25,8 @@ abstract class ExpenseRepository{
 
   Future<Either<Failure, int>> getTodayLimit();
 
+  Future<Either<Failure, int>> getTotalFunds(DateTime fromDate, DateTime untilDate);
+
   Future<Either<Failure, List<Log>>> getRecentLogs();
 
   Future<Either<Failure, List<Log>>> getLogsInMonth(DateTime fromDate, DateTime untilDate, int limit, int page);

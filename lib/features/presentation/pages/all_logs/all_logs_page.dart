@@ -10,12 +10,16 @@ import 'package:expense_app/features/presentation/bloc/expense_month/expense_mon
 import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/total_expense_month/total_expense_month_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/total_funds/total_funds_bloc.dart';
 import 'package:expense_app/features/presentation/pages/date_selection/date_selection_bottomsheet.dart';
+import 'package:expense_app/features/presentation/pages/home/input_expense/category_list_widget.dart';
+import 'package:expense_app/features/presentation/pages/home/input_expense/input_expense_section.dart';
 import 'package:expense_app/features/presentation/pages/home/logs_list/logs_list_section.dart';
 import 'package:expense_app/features/presentation/widgets/center_padding_widget.dart';
 import 'package:expense_app/features/presentation/widgets/confirmation_dialog.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:expense_app/features/presentation/widgets/log_list_item_widget.dart';
+import 'package:expense_app/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,6 +41,7 @@ class _AllLogsPageState extends State<AllLogsPage> {
   late LogsBloc _logsBloc;
   late ExpenseMonthBloc _expenseMonthBloc;
   late TotalExpenseMonthBloc _totalExpenseMonthBloc;
+  late TotalFundsBloc _totalFundsBloc;
 
   // Paging thingies
   final ScrollController _scrollController = ScrollController();
@@ -56,6 +61,7 @@ class _AllLogsPageState extends State<AllLogsPage> {
     _logsBloc = BlocProvider.of<LogsBloc>(context);
     _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
     _totalExpenseMonthBloc = BlocProvider.of<TotalExpenseMonthBloc>(context);
+    _totalFundsBloc = BlocProvider.of<TotalFundsBloc>(context);
   }
 
   @override
@@ -80,7 +86,7 @@ class _AllLogsPageState extends State<AllLogsPage> {
                       LogsListSection(
                         isUsePaging: true,
                         controller: _logsController,
-                      )
+                      ),
                     ],
                   ) :
                   const SizedBox()
@@ -100,6 +106,10 @@ class _AllLogsPageState extends State<AllLogsPage> {
               const Text("Total Expense"),
               const SizedBox(height: 4,),
               _buildTotalMonthExpense(),
+              const SizedBox(height: 16,),
+              const Text("Total Funds"),
+              const SizedBox(height: 4,),
+              _buildTotalFunds(),
               const SizedBox(height: 16,),
               _buildListFundUsed(),
               const SizedBox(height: 16,),
@@ -127,6 +137,29 @@ class _AllLogsPageState extends State<AllLogsPage> {
             state is ExpenseInMonthLoaded,
         builder: (context, state) {
           if (state is ExpenseInMonthLoaded) {
+            return Text(
+                "Rp.${MoneyUtil.getReadableMoney(state.data)}",
+                style: _theme.textTheme.headline5
+            );
+          } else {
+            return const CupertinoActivityIndicator();
+          }
+        }
+    );
+  }
+
+  Widget _buildTotalFunds() {
+    return BlocConsumer<TotalFundsBloc, TotalFundsState>(
+        listenWhen: (context, state) => state is TotalFundsError,
+        listener: (context, state) {
+          if (state is TotalFundsError) {
+            MyTheme.showSnackbar(state.message, context);
+          }
+        },
+        buildWhen: (context, state) =>
+        state is TotalFundsLoaded,
+        builder: (context, state) {
+          if (state is TotalFundsLoaded) {
             return Text(
                 "Rp.${MoneyUtil.getReadableMoney(state.data)}",
                 style: _theme.textTheme.headline5
@@ -308,7 +341,7 @@ class _AllLogsPageState extends State<AllLogsPage> {
     var result = await showDateRangePicker(
       context: context,
       firstDate: DateTime(2000,1,1),
-      lastDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 100)),
     );
 
     if (result != null) {
@@ -322,6 +355,7 @@ class _AllLogsPageState extends State<AllLogsPage> {
       _totalExpenseMonthBloc.add(GetTotalExpenseCategoryInMonthEvent(fromDate: _fromDate!, untilDate: _untilDate!));
       _balanceLeftBloc.add(GetTotalSavingsInMonthEvent(fromDate: _fromDate!, untilDate: _untilDate!));
       _logsBloc.add(LoadAllLogEvent(isRefreshing: true, fromDate: _fromDate!, untilDate: _untilDate!));
+      _totalFundsBloc.add(GetTotalFundsEvent(fromDate: _fromDate!, untilDate: _untilDate!));
     }
   }
 
@@ -377,6 +411,7 @@ class _AllLogsPageState extends State<AllLogsPage> {
     if(currentScroll == maxScroll){
       if(!_logsBloc.isPagingLoading && _logsBloc.isLoadMoreAvailable) {
         _logsController.bottomReach();
+        _logsBloc.setPagingLoading(true);
       }
     }
   }

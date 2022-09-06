@@ -1,3 +1,5 @@
+import 'package:expense_app/features/domain/entities/expense_categroy.dart';
+
 class MoneyUtil{
 
   static String getReadableMoney(int nominal){
@@ -16,5 +18,20 @@ class MoneyUtil{
     }
     return finalStr.split('').reversed.join('');
   }
+
+  static final List<ExpenseCategory> listCategory = [
+    ExpenseCategory(name: 'Meal'),
+    ExpenseCategory(name: 'Food'),
+    ExpenseCategory(name: 'Drink'),
+    ExpenseCategory(name: 'Laundry'),
+    ExpenseCategory(name: 'E-Money'),
+    ExpenseCategory(name: 'Transportation'),
+    ExpenseCategory(name: 'Tools'),
+    ExpenseCategory(name: 'Toiletries'),
+    ExpenseCategory(name: 'Electricity'),
+    ExpenseCategory(name: 'Daily Needs'),
+    ExpenseCategory(name: 'Shopping'),
+    ExpenseCategory(name: 'Others'),
+  ];
 
 }

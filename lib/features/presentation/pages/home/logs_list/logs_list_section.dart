@@ -2,6 +2,7 @@ import 'package:expense_app/features/domain/entities/log.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/routes/route.dart';
 import 'package:expense_app/features/presentation/widgets/log_list_item_widget.dart';
+import 'package:expense_app/features/presentation/widgets/selectable_category_list_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,64 +34,71 @@ class _LogsListSectionState extends State<LogsListSection> with LogsListSectionO
   @override
   Widget build(BuildContext context) {
     _theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.isUsePaging ? 'All Logs' : 'Recent Expenses',
-          style: _theme.textTheme.headline4,
-        ),
-        BlocBuilder<LogsBloc, LogsState>(
-            buildWhen: (context, state) =>
-                state is RecentLogsLoading ||
-                state is RecentLogsLoaded ||
-                state is RecentLogsError ||
-                state is LoadAllLogsLoading ||
-                state is LoadAllLogsLoaded ||
-                state is LoadAllLogsError,
-            builder: (context, state){
-              if(state is RecentLogsLoading || state is LoadAllLogsLoading){
-                return const CupertinoActivityIndicator();
-              }else if(state is RecentLogsLoaded || state is LoadAllLogsLoaded){
-                List<Log> listData = [];
-                if (state is RecentLogsLoaded) {
-                  listData = state.listData;
-                }
-                if (state is LoadAllLogsLoaded) {
-                  listData = state.data;
-                }
-                return ListView.builder(
-                    primary: false,
-                    shrinkWrap: true,
-                    itemCount: widget.isUsePaging && _bloc.isLoadMoreAvailable ?
-                      listData.length + 1 : listData.length,
-                    itemBuilder: (context, position){
-                      if (position < listData.length) {
-                        return _buildRecentExpenseItem(listData[position]);
-                      } else {
-                        return CupertinoActivityIndicator();
+    return Container(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.isUsePaging ? 'All Logs' : 'Recent Expenses',
+            style: _theme.textTheme.headline4,
+          ),
+          BlocBuilder<LogsBloc, LogsState>(
+              buildWhen: (context, state) =>
+                  state is RecentLogsLoading ||
+                  state is RecentLogsLoaded ||
+                  state is RecentLogsError ||
+                  state is LoadAllLogsLoading ||
+                  state is LoadAllLogsLoaded ||
+                  state is LoadAllLogsError,
+              builder: (context, state){
+                _bloc.setPagingLoading(false);
+                if(state is RecentLogsLoading || state is LoadAllLogsLoading){
+                  return const CupertinoActivityIndicator();
+                }else if(state is RecentLogsLoaded || state is LoadAllLogsLoaded){
+                  List<Log> listData = [];
+                  if (state is RecentLogsLoaded) {
+                    listData = state.listData;
+                  }
+                  if (state is LoadAllLogsLoaded) {
+                    listData = state.data;
+                  }
+                  return ListView.builder(
+                      primary: false,
+                      shrinkWrap: true,
+                      itemCount: widget.isUsePaging && _bloc.isLoadMoreAvailable ?
+                        listData.length + 1 : listData.length,
+                      itemBuilder: (context, position){
+                        if (position < listData.length) {
+                          return _buildRecentExpenseItem(listData[position]);
+                        } else {
+                          return const Center(child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: CupertinoActivityIndicator(),
+                          ));
+                        }
                       }
-                    }
-                );
-              }else if(state is RecentLogsError || state is LoadAllLogsError){
-                String message = "";
-                if (state is RecentLogsError) {
-                  message = state.message;
+                  );
+                }else if(state is RecentLogsError || state is LoadAllLogsError){
+                  String message = "";
+                  if (state is RecentLogsError) {
+                    message = state.message;
+                  }
+                  if (state is LoadAllLogsError) {
+                    message = state.message;
+                  }
+                  return Center(
+                    child: Text('There is something wrong/n$message'),
+                  );
+                }else{
+                  return const Center(
+                    child: Text(':D'),
+                  );
                 }
-                if (state is LoadAllLogsError) {
-                  message = state.message;
-                }
-                return Center(
-                  child: Text('There is something wrong/n$message'),
-                );
-              }else{
-                return const Center(
-                  child: Text(':D'),
-                );
               }
-            }
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 
@@ -110,7 +118,7 @@ class _LogsListSectionState extends State<LogsListSection> with LogsListSectionO
   void onReachedBottom() {
     // DateTime.now() is only used as dummy.
     // Because, formDate and untilDate already stored in BLOC if page 1 is already loaded
-    _bloc.add(LoadAllLogEvent(isRefreshing: true, fromDate: DateTime.now(), untilDate: DateTime.now()));
+    _bloc.add(LoadAllLogEvent(isRefreshing: false, fromDate: DateTime.now(), untilDate: DateTime.now()));
   }
 
 }
