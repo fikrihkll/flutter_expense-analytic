@@ -112,7 +112,6 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
       var result = await localDataSource.getTodayLimit(
           _isTodayWeekend(now)
       );
-      debugPrint("RESULT LIMIT ${result}");
       return Right(result.toInt());
     }catch(e){
       debugPrint("TEST LIMIT " + e.toString());
@@ -184,10 +183,10 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   }
 
   bool _isTodayWeekend(DateTime dateTime) {
+    if (dateTime.weekday == 7) return true;
     if (dateTime.weekday == 6) return true;
     if (dateTime.weekday == 5) return true;
     if (dateTime.weekday == 4) return true;
-    if (dateTime.weekday == 3) return true;
 
     return false;
   }
