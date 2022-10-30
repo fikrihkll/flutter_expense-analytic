@@ -1,4 +1,5 @@
 import 'package:expense_app/core/util/date_util.dart';
+import 'package:expense_app/features/data/datasources/localdatasource/query_handler.dart';
 import 'package:expense_app/features/data/models/expense_limit_model.dart';
 import 'package:expense_app/features/data/models/log_detail_model.dart';
 import 'package:expense_app/features/data/models/log_model.dart';
@@ -163,15 +164,8 @@ class DatabaseHandler{
   Future<int?> getTodayExpense(String date, bool isTodayWeekend) async {
     final Database db = await _getDatabase();
 
-    if (isTodayWeekend) {
-      final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT SUM(nominal) as nominal FROM expenses WHERE DATE(date) = DATE("$date") AND fund_source_id IN (SELECT id FROM fund_sources WHERE daily_fund NOT NULL OR weekly_fund NOT NULL)');
-
-      return queryResult.first['nominal'];
-    } else {
-      final List<Map<String, dynamic>> queryResult = await db.rawQuery(' SELECT SUM(nominal) as nominal FROM expenses WHERE DATE(date) = DATE("$date") AND fund_source_id IN (SELECT id FROM fund_sources WHERE daily_fund NOT NULL)');
-
-      return queryResult.first['nominal'];
-    }
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery(QueryHandler.getTodayExpense(date, isTodayWeekend));
+    return queryResult.first['nominal'];    }
   }
 
   Future<int?> getMonthlyExpense(String startDate, String endDate) async {
