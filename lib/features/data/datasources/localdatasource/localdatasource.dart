@@ -1,4 +1,5 @@
 import 'package:expense_app/features/data/datasources/localdatasource/database_handler.dart';
+import 'package:flutter/cupertino.dart';
 
 abstract class LocalDataSource{
 
@@ -59,6 +60,7 @@ class LocalDataSourceImpl extends LocalDataSource{
 
   @override
   Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page, {int? fundIdFilter, String? categoryFilter}) async {
+    debugPrint("HERE -> $fundIdFilter");
     return await databaseHandler.getLogsInMonth(fromDate, untilDate, limit, page, fundIdFilter: fundIdFilter ?? -1, categoryFilter: categoryFilter ?? "");
   }
 

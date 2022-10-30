@@ -83,18 +83,21 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
         emit(LoadAllLogsLoading());
         _listAllLog.clear();
         _page = 1;
-        fromDateAllLog = event.fromDate;
-        untilDateAllLog = event.untilDate;
+        if (!event.retainDateRange) {
+          fromDateAllLog = event.fromDate;
+          untilDateAllLog = event.untilDate;
+        }
       }
 
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
       var result = await getLogsInMonthUseCase.call(
         GetLogsInMonthUseCaseParams(
             fromDate: fromDateAllLog ?? event.fromDate,
             untilDate: untilDateAllLog ?? event.untilDate,
             limit: 20,
-            page: _page
+            page: _page,
+            fundIdFilter: event.fundIdFilter
         )
       );
       _page ++;

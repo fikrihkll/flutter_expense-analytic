@@ -207,7 +207,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
         padding: const EdgeInsets.only(top: 16, bottom: 16),
         child: SizedBox(
           height: 50,
-          child: SelectableCategoryListWidget(
+          child: SelectableCategoryListWidget<ExpenseCategory>(
             defaultSelectedItemIndex: _selectedCategoryPosition,
             onItemSelected: (selectedPosition) {
               _selectedCategoryPosition = selectedPosition;

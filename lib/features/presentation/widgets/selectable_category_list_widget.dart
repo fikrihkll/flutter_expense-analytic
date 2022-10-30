@@ -1,5 +1,8 @@
 import 'package:expense_app/core/util/money_util.dart';
+import 'package:expense_app/features/domain/entities/expense_categroy.dart';
+import 'package:expense_app/features/domain/entities/expense_limit.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/category_list_item_widget.dart';
+import 'package:expense_app/features/presentation/pages/home/input_expense/fund_list_item_widget.dart';
 import 'package:flutter/material.dart';
 
 class SelectableCategoryListWidget<Item> extends StatefulWidget {
@@ -34,7 +37,7 @@ class _SelectableCategoryListWidgetState extends State<SelectableCategoryListWid
     return Material(
       color: Colors.transparent,
       child: SizedBox(
-        height: 50,
+        height: 58,
         child: ListView.builder(
             itemCount: widget.listItem.length,
             scrollDirection: Axis.horizontal,
@@ -47,8 +50,25 @@ class _SelectableCategoryListWidgetState extends State<SelectableCategoryListWid
   }
 
   Widget _buildItemList(int position){
+    if (widget.listItem[position] is FundSource) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 4, right: 4, bottom: 8),
+        child: FundListItemWidget(
+          itemPosition: position,
+          isSelected: _selectedCategoryPosition == position,
+          expenseCategory: widget.listItem[position],
+          onAreaClicked: (itemPosition){
+            // Change selected item
+            _selectedCategoryPosition = itemPosition;
+            widget.onItemSelected(position);
+            setState(() {
+            });
+          },
+        ),
+      );
+    }
     return Padding(
-      padding: const EdgeInsets.only(left: 4, right: 4),
+      padding: const EdgeInsets.only(left: 4, right: 4, bottom: 8),
       child: CategoryListItemWidget(
         itemPosition: position,
         isSelected: _selectedCategoryPosition == position,

@@ -214,7 +214,7 @@ class DatabaseHandler{
   Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page, {int fundIdFilter = -1, String categoryFilter = ""}) async {
     final Database db = await _getDatabase();
     int offset = (page-1) * limit;
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery(QueryHandler.getLogsInMonth(fromDate, untilDate, limit, page, offset));
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery(QueryHandler.getLogsInMonth(fromDate, untilDate, limit, page, offset, fundIdFilter: fundIdFilter, categoryFilter: categoryFilter));
     return queryResult;
   }
 
