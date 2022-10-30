@@ -165,7 +165,7 @@ class DatabaseHandler{
     final Database db = await _getDatabase();
 
     final List<Map<String, dynamic>> queryResult = await db.rawQuery(QueryHandler.getTodayExpense(date, isTodayWeekend));
-    return queryResult.first['nominal'];    }
+    return queryResult.first['nominal'];
   }
 
   Future<int?> getMonthlyExpense(String startDate, String endDate) async {
