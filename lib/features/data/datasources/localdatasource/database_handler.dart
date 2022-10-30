@@ -269,39 +269,6 @@ class DatabaseHandler{
     debugPrint(log);
   }
 
-  // Future<void> insertData() async {
-  //   String data = '''shampoo clear|Toiletries|64700|2022-05-08 10:55|8|5|2022|1~sabun biore|Toiletries|12100|2022-05-08 10:55|8|5|2022|1~sendal jepit|Others|20700|2022-05-08 10:56|8|5|2022|1~totebag indomaret|Others|2500|2022-05-08 10:56|8|5|2022|1~colokan 5m|Tools|40000|2022-05-08 10:56|8|5|2022|1~nasi x2|Meal|10000|2022-05-08 10:57|8|5|2022|1~air putih|Meal|14000|2022-05-08 10:57|8|5|2022|1~sikat gigi formula|Toiletries|16800|2022-05-08 10:57|8|5|2022|1~gunting|Tools|16700|2022-05-08 10:57|8|5|2022|1~tissue|Others|3000|2022-05-08 10:58|8|5|2022|1~listrik|Electricity|100000|2022-05-08 10:58|8|5|2022|1~nasi|Meal|5000|2022-05-08 10:58|8|5|2022|1~starbucks caramel machiato|Drink|64000|2022-05-08 10:59|8|5|2022|1~topup|E-Money|21500|2022-05-08 10:59|8|5|2022|1~masker shumu|Others|51996|2022-05-08 11:00|8|5|2022|1~clayton|Others|135800|2022-05-08 11:00|8|5|2022|1~magic com|Tools|230000|2022-05-08 11:00|8|5|2022|1~nasgor + kwetiaw|Food|33000|2022-05-08 11:00|8|5|2022|1~nasi|Meal|5000|2022-05-08 11:00|8|5|2022|1~warteg telor|Meal|18000|2022-05-08 11:00|null|5|2022|1~jco caramel machiato|Drink|34000|2022-05-08 11:01|8|5|2022|1~piring, gelas, sendok & mangkok|Tools|112000|2022-05-08 11:01|8|5|2022|1~naspad ayam bakar + ayam balado|Meal|30000|2022-05-08 11:02|8|5|2022|1~gojek ke CP|Transportation|10000|2022-05-08 11:30|8|5|2022|1~gojek ke bluekos|Transportation|31000|2022-05-08 11:30|8|5|2022|1~gocar ke starbucks SenCi|Transportation|15000|2022-05-08 11:30|8|5|2022|1~galon|Daily Needs|55000|2022-05-08 11:31|8|5|2022|1~pompa galon|Tools|89000|2022-05-08 11:31|8|5|2022|1~kulkas|Tools|425000|2022-05-08 11:31|8|5|2022|1~warteg + nasi|Meal|21000|2022-05-08 11:31|8|5|2022|1~gula + cococrunch|Meal|36000|2022-05-08 11:32|8|5|2022|1~bakso|Food|5000|2022-05-08 11:32|8|5|2022|1~spoons + mama lemon + brush|Tools|61000|2022-05-08 11:32|8|5|2022|1~naspad|Meal|18000|2022-05-09 02:16|9|5|2022|1~pecel lele|Meal|19000|2022-05-09 07:55|9|5|2022|1~pisau|Tools|24000|2022-05-09 09:33|9|5|2022|1~susu |Drink|6000|2022-05-09 09:33|9|5|2022|1~mentega + kecap|Daily Needs|21000|2022-05-09 09:34|9|5|2022|1~meja|Tools|340000|2022-05-10 10:02|10|5|2022|1~keranjang|Tools|20000|2022-05-10 10:02|10|5|2022|1'''.trim();
-  //
-  //   var list = data.split('~').map((e) {
-  //     var innerData = e.split('|').toList();
-  //     var map = {
-  //       'id': null,
-  //       'desc': innerData[0],
-  //       'category': innerData[1],
-  //       'nominal': innerData[2],
-  //       'date': innerData[3],
-  //       'day': innerData[4],
-  //       'month': innerData[5],
-  //       'year': innerData[6],
-  //       'user_id': 1,
-  //     };
-  //     return map;
-  //   }).toList();
-  //
-  //   debugPrint('---- MAPPED');
-  //   debugPrint(list.toString());
-  //
-  //   var er = '';
-  //   for(int i=0; i<list.length; i++){
-  //     try{
-  //       await insertLog(list[i]);
-  //     }catch(e){
-  //       er += e.toString();
-  //     }
-  //   }
-  //   debugPrint('ERROR ${er}');
-  // }
-
   Future<void> deleteExpense(int id) async {
     final db = await _getDatabase();
     await db.delete(
