@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart';
+import 'package:either_dart/either.dart';
 import 'package:expense_app/core/error/failure.dart';
 import 'package:expense_app/core/usecase/usecase.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
@@ -12,15 +12,32 @@ class GetLogsInMonthUseCase extends UseCase<List<Log>, GetLogsInMonthUseCasePara
 
   @override
   Future<Either<Failure, List<Log>>> call(GetLogsInMonthUseCaseParams params) async {
-    return await repo.getLogsInMonth(params.month, params.year, params.limit, params.page);
+    return await repo.getLogsInMonth(
+        params.fromDate,
+        params.untilDate,
+        params.limit,
+        params.page,
+        fundIdFilter: params.fundIdFilter,
+        categoryFilter: params.categoryFilter
+    );
   }
 
 }
 
 class GetLogsInMonthUseCaseParams {
 
-  final int month, year, limit, page;
+  final DateTime fromDate, untilDate;
+  final int limit, page;
+  final String? categoryFilter;
+  final int? fundIdFilter;
 
-  GetLogsInMonthUseCaseParams({required this.month, required this.year, required this.limit, required this.page});
+  GetLogsInMonthUseCaseParams({
+    required this.fromDate,
+    required this.untilDate,
+    required this.limit,
+    required this.page,
+    this.categoryFilter,
+    this.fundIdFilter
+  });
 
 }

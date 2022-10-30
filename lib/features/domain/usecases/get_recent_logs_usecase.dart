@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart';
+import 'package:either_dart/either.dart';
 import 'package:expense_app/core/error/failure.dart';
 import 'package:expense_app/core/usecase/usecase.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
@@ -13,7 +13,7 @@ class GetRecentLogsUseCase extends UseCase<List<Log>, NoParams>{
 
   @override
   Future<Either<Failure, List<Log>>> call(NoParams params) async {
-    return await repo.getLatestLogs();
+    return await repo.getRecentLogs();
   }
 
 }

@@ -1,4 +1,5 @@
-import 'package:dartz/dartz.dart';
+
+import 'package:either_dart/either.dart';
 import 'package:expense_app/core/error/failure.dart';
 
 

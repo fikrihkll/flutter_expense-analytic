@@ -21,6 +21,11 @@ class ThemeProvider extends ChangeNotifier {
 
 
 class MyTheme {
+
+  static void showSnackbar(String text, BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  }
+
   static const primaryLight = Color(0xff75b1f6);
   static const primary = Color(0xff2F3A8F);
   static const accent = Color(0xffE5C40E);

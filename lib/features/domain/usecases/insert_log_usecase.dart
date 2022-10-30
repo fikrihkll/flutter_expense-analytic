@@ -1,24 +1,25 @@
-import 'package:dartz/dartz.dart';
+
+import 'package:either_dart/either.dart';
 import 'package:expense_app/core/error/failure.dart';
 import 'package:expense_app/core/usecase/usecase.dart';
-import 'package:expense_app/features/domain/entities/log.dart';
+import 'package:expense_app/features/data/models/log_model.dart';
 import 'package:expense_app/features/domain/repositories/expense_repository.dart';
 
-class InsertLogUseCase extends UseCase<void, InsertLogUseCaseParams>{
+class InsertLogUseCase extends UseCase<bool, InsertLogUseCaseParams>{
 
   final ExpenseRepository repo;
 
   InsertLogUseCase({required this.repo});
 
   @override
-  Future<Either<Failure, void>> call(InsertLogUseCaseParams params) async {
-    return await repo.insertLog(params.data);
+  Future<Either<Failure, bool>> call(InsertLogUseCaseParams params) async {
+    return await repo.insertExpense(params.data);
   }
 
 }
 
 class InsertLogUseCaseParams {
-  final Log data;
+  final LogModel data;
 
   InsertLogUseCaseParams({required this.data});
 }

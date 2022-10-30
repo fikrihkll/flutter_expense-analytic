@@ -1,8 +1,9 @@
 import 'package:expense_app/core/util/money_util.dart';
-import 'package:expense_app/features/data/datasources/localdatasource/database_handler.dart';
-import 'package:expense_app/features/presentation/pages/home/bloc/balance_left_bloc.dart';
-import 'package:expense_app/features/presentation/pages/home/bloc/expense_month_bloc.dart';
-import 'package:expense_app/features/presentation/pages/home/bloc/recent_logs_bloc.dart';
+import 'package:expense_app/features/injection_container.dart';
+import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/input_expense_section.dart';
 import 'package:expense_app/features/presentation/pages/home/logs_list/logs_list_section.dart';
 import 'package:expense_app/features/presentation/pages/input_expense_limit/input_expense_limit_dialog.dart';
@@ -12,6 +13,7 @@ import 'package:expense_app/features/presentation/widgets/floating_container.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:expense_app/features/presentation/routes/route.dart' as route;
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -23,13 +25,52 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   // Bloc or Presenter
-  late RecentLogsBloc _recentLogsBloc;
-  late ExpenseMonthBloc _expenseMonthBloc;
+  late LogsBloc _logsBloc;
   late BalanceLeftBloc _balanceLeftBloc;
+  late ExpenseMonthBloc _expenseMonthBloc;
 
   late ThemeData _theme;
 
   final String _profileUrl = 'https://assets.pikiran-rakyat.com/crop/0x159:1080x864/x/photo/2022/04/03/941016597.jpeg';
+
+  @override
+  void initState() {
+    super.initState();
+
+    _logsBloc = BlocProvider.of<LogsBloc>(context);
+    _balanceLeftBloc = BlocProvider.of<BalanceLeftBloc>(context);
+    _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
+    _logsBloc.add(GetRecentLogsEvent());
+    _balanceLeftBloc.add(GetBalanceLeftEvent());
+    _expenseMonthBloc.add(GetExpenseInMonthEvent());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _theme = Theme.of(context);
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 40,),
+              _buildHeader(),
+              const SizedBox(height: 32,),
+              _buildMoneyLeft(),
+              const SizedBox(height: 16,),
+              _buildExpenseThisMonth(),
+              const SizedBox(height: 16,),
+              const InputExpenseSection(),
+              const SizedBox(height: 32,),
+              const LogsListSection()
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _buildHeader(){
     return // ------------------------------- Header
@@ -66,9 +107,28 @@ class _HomePageState extends State<HomePage> {
       FloatingContainer(
           shadowEnabled: false,
           splashEnabled: true,
-          onTap: ()async{
-            await showDialog(context: context, builder: (context) => InputExpenseLimitDialog());
+          onTap: () async {
+            await showDialog(
+                barrierDismissible: true,
+                context: context,
+                builder: (context) {
+                return MultiBlocProvider(
+                    providers: [
+                      BlocProvider<FundSourceBloc>(
+                        create: (context)=> sl<FundSourceBloc>(),
+                      ),
+                    ],
+                    child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: InputExpenseLimitDialog(),
+                        )
+                    ),
+                );
+            }
+            );
             _balanceLeftBloc.add(GetBalanceLeftEvent());
+            BlocProvider.of<FundSourceBloc>(context).add(GetFundSourceEvent());
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -77,6 +137,9 @@ class _HomePageState extends State<HomePage> {
               const Text('Balance remaining today'),
               const SizedBox(width: 16,),
               BlocBuilder<BalanceLeftBloc, BalanceLeftState>(
+                buildWhen: (context, state) => state is BalanceLeftLoaded ||
+                    state is BalanceLeftError ||
+                    state is BalanceLeftInitial,
                 builder: (context, state){
                   if(state is BalanceLeftLoaded){
                     return Text('Rp.${MoneyUtil.getReadableMoney(state.data)} 😘', style: _theme.textTheme.headline5,);
@@ -107,9 +170,14 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Expanded(
                       child: BlocBuilder<ExpenseMonthBloc, ExpenseMonthState>(
+                        buildWhen: (context, state) => state is ExpenseInMonthLoaded ||
+                            state is ExpenseInMonthError ||
+                            state is ExpenseMonthInitial,
                         builder: (context, state){
-                          if(state is ExpenseMonthLoaded){
-                            return Text('Rp.${MoneyUtil.getReadableMoney(state.nominal)}', style: _theme.textTheme.headline3,);
+                          debugPrint("BLOC UPDATED EXPENSE MONTH");
+                          if(state is ExpenseInMonthLoaded){
+                            debugPrint("EM ${state.data}");
+                            return Text('Rp.${MoneyUtil.getReadableMoney(state.data)}', style: _theme.textTheme.headline3,);
                           }else{
                             return Text('Rp.0', style: _theme.textTheme.headline3,);
                           }
@@ -141,45 +209,5 @@ class _HomePageState extends State<HomePage> {
           )
       );
     // ------------------------------- Expense This Month
-  }
-
-
-  @override
-  void initState() {
-    super.initState();
-
-    _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
-    _recentLogsBloc = BlocProvider.of<RecentLogsBloc>(context);
-    _balanceLeftBloc = BlocProvider.of<BalanceLeftBloc>(context);
-    _recentLogsBloc.add(GetRecentLogsEvent());
-    _expenseMonthBloc.add(GetExpenseMonthEvent(month: DateTime.now().month, year: DateTime.now().year));
-    _balanceLeftBloc.add(GetBalanceLeftEvent());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    _theme = Theme.of(context);
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 40,),
-              _buildHeader(),
-              const SizedBox(height: 32,),
-              _buildMoneyLeft(),
-              const SizedBox(height: 16,),
-              _buildExpenseThisMonth(),
-              const SizedBox(height: 16,),
-              const InputExpenseSection(),
-              const SizedBox(height: 32,),
-              const LogsListSection()
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

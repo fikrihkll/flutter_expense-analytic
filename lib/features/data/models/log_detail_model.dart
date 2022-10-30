@@ -13,7 +13,7 @@ class LogDetailModel extends LogDetail{
     nominal: nominal
   );
 
-  factory LogDetailModel.fromMap(Map<String, dynamic> map){
+  factory LogDetailModel.fromJson(Map<String, dynamic> map){
     return LogDetailModel(
         category: map['category'],
         nominal: map['nominal']

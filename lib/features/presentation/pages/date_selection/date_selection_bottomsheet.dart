@@ -1,6 +1,6 @@
 import 'package:expense_app/core/util/date_util.dart';
 import 'package:expense_app/features/presentation/widgets/button_widget.dart';
-import 'package:expense_app/features/presentation/widgets/spinner_widget.dart';
+import 'package:expense_app/features/presentation/widgets/splash_effect_widget.dart';
 import 'package:flutter/material.dart';
 
 class DateSelectionBottomSheet extends StatefulWidget {
@@ -12,34 +12,20 @@ class DateSelectionBottomSheet extends StatefulWidget {
 
 class _DateSelectionBottomSheetState extends State<DateSelectionBottomSheet> {
 
-  int _monthSelectedValue = 1;
-  int _yearSelectedValue = 2022;
-
   late ThemeData _theme;
-  late SpinnerWidget _monthSpinner;
+  String _errorMessage = "";
+  DateTime? _fromDate, _untilDate;
+
 
   @override
   void initState() {
     super.initState();
 
-    _monthSelectedValue = DateTime.now().month;
-    _yearSelectedValue = DateTime.now().year;
   }
 
   @override
   Widget build(BuildContext context) {
     _theme = Theme.of(context);
-
-    _monthSpinner = SpinnerWidget(
-        listData: DateUtil.listMonth,
-        onItemSelectedListener: (value, index){
-          _monthSelectedValue = index+1;
-        }
-    );
-
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      _monthSpinner.updateSelectedItem(DateTime.now().month-1);
-    });
 
     return Material(
       color: Colors.transparent,
@@ -57,26 +43,48 @@ class _DateSelectionBottomSheetState extends State<DateSelectionBottomSheet> {
           children: [
             Text('Select Date', style: _theme.textTheme.headline3,),
             const SizedBox(height: 16,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _monthSpinner,
-                SpinnerWidget(
-                    listData: DateUtil.listYear,
-                    onItemSelectedListener: (value, index){
-                      _yearSelectedValue = int.parse(DateUtil.listYear[index]);
-                    }
-                )
-              ],
+            Material(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    children: [
+                      const Text("From Date"),
+                      SplashEffectWidget(
+                          onTap: _onDateRangePressed,
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                              _fromDate != null ? DateUtil.dateFormat.format(_fromDate!) : "Select",
+                              style: _theme.textTheme.headline6,
+                          )
+                      ),
+                    ],
+                  ),
+                  const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text(" - "),
+                  ),
+                  Column(
+                    children: [
+                      const Text("Until Date"),
+                      SplashEffectWidget(
+                          onTap: _onDateRangePressed,
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                              _untilDate != null ? DateUtil.dateFormat.format(_untilDate!) : "Select",
+                              style: _theme.textTheme.headline6,
+                          )
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
             const SizedBox(height: 16,),
             Align(
               alignment: Alignment.centerRight,
               child: ButtonWidget(
-                onPressed: (){
-                  debugPrint('pressed');
-                  Navigator.pop(context, MonthYearSelectionArgs(year: _yearSelectedValue, month: _monthSelectedValue));
-                },
+                onPressed: _onFinishPressed,
                 text: 'Finish',
               ),
             ),
@@ -86,13 +94,41 @@ class _DateSelectionBottomSheetState extends State<DateSelectionBottomSheet> {
       ),
     );
   }
+
+  void _onDateRangePressed() async {
+    var result = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2000,1,1),
+      lastDate: DateTime.now(),
+    );
+
+    if (result != null) {
+      _fromDate = result.start;
+      _untilDate = result.end;
+      setState(() {
+
+      });
+    }
+  }
+
+  void _onFinishPressed() {
+    if (_fromDate != null && _untilDate != null) {
+      Navigator.pop(
+          context,
+          DateSelectionArgs(
+              fromDate: _fromDate!,
+              untilDate: _untilDate!
+          )
+      );
+    }
+  }
 }
 
-class MonthYearSelectionArgs{
+class DateSelectionArgs{
 
-  final int year;
-  final int month;
+  final DateTime fromDate, untilDate;
 
-  MonthYearSelectionArgs({required this.year, required this.month});
+
+  DateSelectionArgs({required this.fromDate, required this.untilDate});
 
 }

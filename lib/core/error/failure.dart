@@ -2,8 +2,14 @@ import 'package:equatable/equatable.dart';
 
 abstract class Failure extends Equatable{
 
-  Failure([List properties = const<dynamic>[]]);
-
+  String getMessage(Failure f) {
+    if (f is ServerFailure) {
+      return f.msg;
+    } else if (f is CacheFailure) {
+      return unexpectedFailureMessage;
+    }
+    return tryRefreshMessage;
+  }
 
 }
 

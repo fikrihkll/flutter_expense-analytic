@@ -21,8 +21,8 @@ dependencies:
   flutter_bloc: ^8.0.0
   # Value equality
   equatable: ^2.0.3
-  # Functional programming thingies
-  dartz: ^0.10.0
+  # Foldable value
+  either_dart: ^0.2.0
   #http request
   dio: ^4.0.4
   #DI for Theme
@@ -33,6 +33,7 @@ dependencies:
   path: ^1.8.0
   # Store persistence data
   sqflite: ^2.0.2
+  modal_bottom_sheet: ^2.1.0
 
 dev_dependencies:
   flutter_test:

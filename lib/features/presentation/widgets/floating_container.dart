@@ -5,6 +5,7 @@ class FloatingContainer extends StatelessWidget {
 
   final Widget child;
   final Function? onTap;
+  final Function? onLongPress;
   final double? width;
   final double? height;
   final double borderRadius;
@@ -26,7 +27,8 @@ class FloatingContainer extends StatelessWidget {
     this.backgroundColor,
     this.splashColor,
     this.border,
-    this.padding
+    this.padding,
+    this.onLongPress
   }) : super(key: key);
 
   @override
@@ -54,17 +56,34 @@ class FloatingContainer extends StatelessWidget {
   }
 
   Widget _buildChildWithSplashEffect(){
-    return InkWell(
-        customBorder: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
-        splashColor: splashColor ?? MyTheme.primary,
-        onTap: (){
-          if(onTap != null){
-            onTap!();
-          }
-        },
-        child: _buildChild()
-    );
+    if (onLongPress != null) {
+      return InkWell(
+          customBorder: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
+          splashColor: splashColor ?? MyTheme.primary,
+          onTap: (){
+            if(onTap != null){
+              onTap!();
+            }
+          },
+          onLongPress: () {
+            onLongPress!();
+          },
+          child: _buildChild()
+      );
+    } else {
+      return InkWell(
+          customBorder: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
+          splashColor: splashColor ?? MyTheme.primary,
+          onTap: (){
+            if(onTap != null){
+              onTap!();
+            }
+          },
+          child: _buildChild()
+      );
+    }
   }
 
   Widget _buildChild(){
