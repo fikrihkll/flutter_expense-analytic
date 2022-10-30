@@ -9,9 +9,9 @@ import 'package:path/path.dart';
 
 class DatabaseHandler{
 
-  static const String _tableUsers = 'users';
-  static const String _tableExpenses = 'expenses';
-  static const String _tableFundSources = 'fund_sources';
+  static const String tableUsers = 'users';
+  static const String tableExpenses = 'expenses';
+  static const String tableFundSources = 'fund_sources';
 
   late Database? db=null;
 
@@ -20,12 +20,12 @@ class DatabaseHandler{
     return openDatabase(
       join(path, 'expense.db'),
       onUpgrade: (database, oldVersion, newVersion) async {
-        await database.execute("ALTER TABLE $_tableFundSources ADD COLUMN deleted_at TIMESTAMP NULL");
+        await database.execute("ALTER TABLE $tableFundSources ADD COLUMN deleted_at TIMESTAMP NULL");
       },
       onCreate: (database, version) async {
         await database.execute(
           '''
-          CREATE TABLE $_tableUsers(
+          CREATE TABLE $tableUsers(
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
           username TEXT NOT NULL, 
           pass TEXT NOT NULL, 
@@ -37,7 +37,7 @@ class DatabaseHandler{
         );
         await database.execute(
           '''
-          CREATE TABLE $_tableExpenses(
+          CREATE TABLE $tableExpenses(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           user_id INTEGER NOT NULL,
           fund_source_id INTEGER NULL, 
@@ -55,7 +55,7 @@ class DatabaseHandler{
         );
         await database.execute(
           '''
-          CREATE TABLE $_tableFundSources(
+          CREATE TABLE $tableFundSources(
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
           user_id INTEGER NOT NULL, 
           name TEXT NOT NULL, 
@@ -86,7 +86,7 @@ class DatabaseHandler{
     int result = 0;
     final Database db = await _getDatabase();
 
-    result = await db.insert(_tableUsers, {
+    result = await db.insert(tableUsers, {
       "id": null,
       "name": "Fikri Haikal",
       "username": "fikrihkl",
@@ -104,7 +104,7 @@ class DatabaseHandler{
 
     data['id'] = null;
     // Insert TodoModel to database which model that has been converted to map
-    result = await db.insert(_tableExpenses, data);
+    result = await db.insert(tableExpenses, data);
     return result;
   }
 
@@ -113,7 +113,7 @@ class DatabaseHandler{
     final Database db = await _getDatabase();
 
     result = await db.rawUpdate(
-        "UPDATE $_tableExpenses SET nominal = ?, date = ?, description = ?, category = ?, fund_source_id = ? WHERE id = ?",
+        "UPDATE $tableExpenses SET nominal = ?, date = ?, description = ?, category = ?, fund_source_id = ? WHERE id = ?",
         [
           data["nominal"],
           data["date"],
@@ -130,7 +130,7 @@ class DatabaseHandler{
     int result = 0;
     final Database db = await _getDatabase();
     await db.rawUpdate(
-        'UPDATE $_tableFundSources SET daily_fund = ?, weekly_fund = ?, monthly_fund = ?, name = ? WHERE id = ?',
+        'UPDATE $tableFundSources SET daily_fund = ?, weekly_fund = ?, monthly_fund = ?, name = ? WHERE id = ?',
         [
           data["daily_fund"],
           data["weekly_fund"],
@@ -146,7 +146,7 @@ class DatabaseHandler{
     int result = 0;
     final Database db = await _getDatabase();
 
-    result = await db.insert(_tableFundSources, data);
+    result = await db.insert(tableFundSources, data);
 
     return result;
   }
@@ -155,7 +155,7 @@ class DatabaseHandler{
     int result = 0;
     final Database db = await _getDatabase();
 
-    await db.rawQuery("UPDATE $_tableFundSources SET deleted_at = '${DateUtil.dbFormat.format(DateTime.now())}' WHERE id = $id");
+    await db.rawQuery("UPDATE $tableFundSources SET deleted_at = '${DateUtil.dbFormat.format(DateTime.now())}' WHERE id = $id");
 
     return result;
   }
@@ -177,7 +177,7 @@ class DatabaseHandler{
   Future<int?> getMonthlyExpense(String startDate, String endDate) async {
     final Database db = await _getDatabase();
     final List<Map<String, dynamic>> queryResult = await db.rawQuery(
-        'SELECT SUM(nominal) as nominal FROM $_tableExpenses WHERE DATE(date) BETWEEN DATE("$startDate") AND DATE("$endDate")'
+        'SELECT SUM(nominal) as nominal FROM $tableExpenses WHERE DATE(date) BETWEEN DATE("$startDate") AND DATE("$endDate")'
     );
 
     return queryResult.first['nominal'];
@@ -187,11 +187,11 @@ class DatabaseHandler{
     final Database db = await _getDatabase();
     double totalLimit = 0;
 
-    String queryDaily = "SELECT CAST(SUM(daily_fund) as DOUBLE) as daily_fund FROM $_tableFundSources WHERE daily_fund NOT NULL AND deleted_at NOT NULL";
+    String queryDaily = "SELECT CAST(SUM(daily_fund) as DOUBLE) as daily_fund FROM $tableFundSources WHERE daily_fund NOT NULL AND deleted_at NOT NULL";
     if(isWeekend){
       final List<Map<String, dynamic>> queryDailyResult = await db.rawQuery(queryDaily);
 
-      String queryWeekly = "SELECT CAST(SUM(weekly_fund) as DOUBLE) as weekly_fund FROM $_tableFundSources WHERE weekly_fund NOT NULL AND deleted_at NOT NULL";
+      String queryWeekly = "SELECT CAST(SUM(weekly_fund) as DOUBLE) as weekly_fund FROM $tableFundSources WHERE weekly_fund NOT NULL AND deleted_at NOT NULL";
       final List<Map<String, dynamic>> queryWeeklyResult = await db.rawQuery(queryWeekly);
 
       if (queryDailyResult.first["daily_fund"] != null && queryWeeklyResult.first["weekly_fund"] != null) {
@@ -215,7 +215,7 @@ class DatabaseHandler{
 
   Future<List<Map<String, dynamic>>> getRecentLogs() async {
     final Database db = await _getDatabase();
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT * FROM $_tableExpenses ORDER BY date DESC LIMIT 10');
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT * FROM $tableExpenses ORDER BY date DESC LIMIT 10');
     // Convert from map to model then will be converted to list
     return queryResult;
   }
@@ -230,7 +230,7 @@ class DatabaseHandler{
 
   Future<List<Map<String, dynamic>>> getFundSources() async {
     final Database db = await _getDatabase();
-    String query = 'SELECT * FROM $_tableFundSources WHERE deleted_at IS NULL ORDER BY daily_fund DESC, weekly_fund DESC, monthly_fund DESC';
+    String query = 'SELECT * FROM $tableFundSources WHERE deleted_at IS NULL ORDER BY daily_fund DESC, weekly_fund DESC, monthly_fund DESC';
     final List<Map<String, dynamic>> queryResult = await db.rawQuery(query);
     // Convert from map to model then will be converted to list
     return queryResult;
@@ -261,7 +261,7 @@ class DatabaseHandler{
 
   Future<void> printLogData() async {
     final Database db = await _getDatabase();
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT * FROM $_tableExpenses');
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT * FROM $tableExpenses');
     String log = '';
     queryResult.forEach((e) {log += '${e['desc']}|${e['category']}|${e['nominal']}|${e['date']}|${e['day']}|${e['month']}|${e['year']}|${e['user_id']}~\n';});
 
@@ -272,7 +272,7 @@ class DatabaseHandler{
   Future<void> deleteExpense(int id) async {
     final db = await _getDatabase();
     await db.delete(
-      _tableExpenses,
+      tableExpenses,
       where: "id = ?",
       whereArgs: [id],
     );
