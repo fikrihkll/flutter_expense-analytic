@@ -29,7 +29,7 @@ abstract class ExpenseRepository{
 
   Future<Either<Failure, List<Log>>> getRecentLogs();
 
-  Future<Either<Failure, List<Log>>> getLogsInMonth(DateTime fromDate, DateTime untilDate, int limit, int page);
+  Future<Either<Failure, List<Log>>> getLogsInMonth(DateTime fromDate, DateTime untilDate, int limit, int page, {int? fundIdFilter, String? categoryFilter});
 
   Future<Either<Failure, List<FundSource>>> getFundSources();
 

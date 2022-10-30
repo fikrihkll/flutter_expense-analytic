@@ -25,6 +25,8 @@ class FundSourceBloc extends Bloc<FundSourceEvent, FundSourceState> {
   final GetDetailFundUsedInMonthUseCase getDetailFundUsedInMonthUseCase;
   final DeleteFundSourceUseCase deleteFundSourceUseCase;
 
+  final List<FundSource> _listFund = [];
+
   FundSourceBloc({
     required this.getFundSourcesUseCase,
     required this.updateFundSourceUseCase,
@@ -36,6 +38,11 @@ class FundSourceBloc extends Bloc<FundSourceEvent, FundSourceState> {
       emit(GetFundSourceLoading());
 
       var result = await getFundSourcesUseCase.call(NoParams());
+
+      if (result.isRight) {
+        _listFund.clear();
+        _listFund.addAll(result.right);
+      }
 
       emit(
         result.fold(
@@ -101,4 +108,6 @@ class FundSourceBloc extends Bloc<FundSourceEvent, FundSourceState> {
       );
     });
   }
+
+  List<FundSource> get listFund => _listFund;
 }

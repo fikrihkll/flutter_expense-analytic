@@ -18,10 +18,19 @@ class DeleteLogEvent extends LogsEvent {
 }
 
 class LoadAllLogEvent extends LogsEvent {
-  final bool isRefreshing;
+  final bool isRefreshing, retainDateRange;
   final DateTime fromDate, untilDate;
+  final String? categoryFilter;
+  final int? fundIdFilter;
 
-  LoadAllLogEvent({required this.isRefreshing, required this.fromDate, required this.untilDate});
+  LoadAllLogEvent({
+    required this.isRefreshing,
+    required this.fromDate,
+    required this.untilDate,
+    this.retainDateRange = false,
+    this.categoryFilter,
+    this.fundIdFilter
+  });
 }
 
 class UpdateLogEvent extends LogsEvent {

@@ -1,4 +1,5 @@
 import 'package:expense_app/core/util/date_util.dart';
+import 'package:expense_app/features/data/datasources/localdatasource/query_handler.dart';
 import 'package:expense_app/features/data/models/expense_limit_model.dart';
 import 'package:expense_app/features/data/models/log_detail_model.dart';
 import 'package:expense_app/features/data/models/log_model.dart';
@@ -9,9 +10,9 @@ import 'package:path/path.dart';
 
 class DatabaseHandler{
 
-  static const String _tableUsers = 'users';
-  static const String _tableExpenses = 'expenses';
-  static const String _tableFundSources = 'fund_sources';
+  static const String tableUsers = 'users';
+  static const String tableExpenses = 'expenses';
+  static const String tableFundSources = 'fund_sources';
 
   late Database? db=null;
 
@@ -20,12 +21,12 @@ class DatabaseHandler{
     return openDatabase(
       join(path, 'expense.db'),
       onUpgrade: (database, oldVersion, newVersion) async {
-        await database.execute("ALTER TABLE $_tableFundSources ADD COLUMN deleted_at TIMESTAMP NULL");
+        await database.execute("ALTER TABLE $tableFundSources ADD COLUMN deleted_at TIMESTAMP NULL");
       },
       onCreate: (database, version) async {
         await database.execute(
           '''
-          CREATE TABLE $_tableUsers(
+          CREATE TABLE $tableUsers(
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
           username TEXT NOT NULL, 
           pass TEXT NOT NULL, 
@@ -37,7 +38,7 @@ class DatabaseHandler{
         );
         await database.execute(
           '''
-          CREATE TABLE $_tableExpenses(
+          CREATE TABLE $tableExpenses(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           user_id INTEGER NOT NULL,
           fund_source_id INTEGER NULL, 
@@ -55,7 +56,7 @@ class DatabaseHandler{
         );
         await database.execute(
           '''
-          CREATE TABLE $_tableFundSources(
+          CREATE TABLE $tableFundSources(
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
           user_id INTEGER NOT NULL, 
           name TEXT NOT NULL, 
@@ -86,7 +87,7 @@ class DatabaseHandler{
     int result = 0;
     final Database db = await _getDatabase();
 
-    result = await db.insert(_tableUsers, {
+    result = await db.insert(tableUsers, {
       "id": null,
       "name": "Fikri Haikal",
       "username": "fikrihkl",
@@ -104,7 +105,7 @@ class DatabaseHandler{
 
     data['id'] = null;
     // Insert TodoModel to database which model that has been converted to map
-    result = await db.insert(_tableExpenses, data);
+    result = await db.insert(tableExpenses, data);
     return result;
   }
 
@@ -113,7 +114,7 @@ class DatabaseHandler{
     final Database db = await _getDatabase();
 
     result = await db.rawUpdate(
-        "UPDATE $_tableExpenses SET nominal = ?, date = ?, description = ?, category = ?, fund_source_id = ? WHERE id = ?",
+        "UPDATE $tableExpenses SET nominal = ?, date = ?, description = ?, category = ?, fund_source_id = ? WHERE id = ?",
         [
           data["nominal"],
           data["date"],
@@ -130,7 +131,7 @@ class DatabaseHandler{
     int result = 0;
     final Database db = await _getDatabase();
     await db.rawUpdate(
-        'UPDATE $_tableFundSources SET daily_fund = ?, weekly_fund = ?, monthly_fund = ?, name = ? WHERE id = ?',
+        'UPDATE $tableFundSources SET daily_fund = ?, weekly_fund = ?, monthly_fund = ?, name = ? WHERE id = ?',
         [
           data["daily_fund"],
           data["weekly_fund"],
@@ -146,7 +147,7 @@ class DatabaseHandler{
     int result = 0;
     final Database db = await _getDatabase();
 
-    result = await db.insert(_tableFundSources, data);
+    result = await db.insert(tableFundSources, data);
 
     return result;
   }
@@ -155,7 +156,7 @@ class DatabaseHandler{
     int result = 0;
     final Database db = await _getDatabase();
 
-    await db.rawQuery("UPDATE $_tableFundSources SET deleted_at = '${DateUtil.dbFormat.format(DateTime.now())}' WHERE id = $id");
+    await db.rawQuery("UPDATE $tableFundSources SET deleted_at = '${DateUtil.dbFormat.format(DateTime.now())}' WHERE id = $id");
 
     return result;
   }
@@ -163,21 +164,14 @@ class DatabaseHandler{
   Future<int?> getTodayExpense(String date, bool isTodayWeekend) async {
     final Database db = await _getDatabase();
 
-    if (isTodayWeekend) {
-      final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT SUM(nominal) as nominal FROM expenses WHERE DATE(date) = DATE("$date") AND fund_source_id IN (SELECT id FROM fund_sources WHERE daily_fund NOT NULL OR weekly_fund NOT NULL)');
-
-      return queryResult.first['nominal'];
-    } else {
-      final List<Map<String, dynamic>> queryResult = await db.rawQuery(' SELECT SUM(nominal) as nominal FROM expenses WHERE DATE(date) = DATE("$date") AND fund_source_id IN (SELECT id FROM fund_sources WHERE daily_fund NOT NULL)');
-
-      return queryResult.first['nominal'];
-    }
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery(QueryHandler.getTodayExpense(date, isTodayWeekend));
+    return queryResult.first['nominal'];
   }
 
   Future<int?> getMonthlyExpense(String startDate, String endDate) async {
     final Database db = await _getDatabase();
     final List<Map<String, dynamic>> queryResult = await db.rawQuery(
-        'SELECT SUM(nominal) as nominal FROM $_tableExpenses WHERE DATE(date) BETWEEN DATE("$startDate") AND DATE("$endDate")'
+        QueryHandler.getMonthlyExpense(startDate, endDate)
     );
 
     return queryResult.first['nominal'];
@@ -188,11 +182,8 @@ class DatabaseHandler{
     double totalLimit = 0;
 
     if(isWeekend){
-      String queryDaily = "SELECT CAST(SUM(daily_fund) as DOUBLE) as daily_fund FROM $_tableFundSources WHERE daily_fund NOT NULL";
-      final List<Map<String, dynamic>> queryDailyResult = await db.rawQuery(queryDaily);
-
-      String queryWeekly = "SELECT CAST(SUM(weekly_fund) as DOUBLE) as weekly_fund FROM $_tableFundSources WHERE weekly_fund NOT NULL";
-      final List<Map<String, dynamic>> queryWeeklyResult = await db.rawQuery(queryWeekly);
+      final List<Map<String, dynamic>> queryDailyResult = await db.rawQuery(QueryHandler.getDailyFundLimit());
+      final List<Map<String, dynamic>> queryWeeklyResult = await db.rawQuery(QueryHandler.getWeekendFundLimit());
 
       if (queryDailyResult.first["daily_fund"] != null && queryWeeklyResult.first["weekly_fund"] != null) {
         totalLimit = queryDailyResult.first["daily_fund"] + queryWeeklyResult.first["weekly_fund"];
@@ -203,8 +194,7 @@ class DatabaseHandler{
       }
 
     }else{
-      String queryDaily = "SELECT CAST(SUM(daily_fund) as DOUBLE) as daily_fund FROM $_tableFundSources WHERE daily_fund NOT NULL";
-      final List<Map<String, dynamic>> queryDailyResult = await db.rawQuery(queryDaily);
+      final List<Map<String, dynamic>> queryDailyResult = await db.rawQuery(QueryHandler.getDailyFundLimit());
 
       if (queryDailyResult.first["daily_fund"] != null) {
         totalLimit = queryDailyResult.first["daily_fund"];
@@ -216,53 +206,53 @@ class DatabaseHandler{
 
   Future<List<Map<String, dynamic>>> getRecentLogs() async {
     final Database db = await _getDatabase();
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT * FROM $_tableExpenses ORDER BY date DESC LIMIT 10');
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery(QueryHandler.getRecentLogs());
     // Convert from map to model then will be converted to list
     return queryResult;
   }
 
-  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page) async {
+  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page, {int fundIdFilter = -1, String categoryFilter = ""}) async {
     final Database db = await _getDatabase();
     int offset = (page-1) * limit;
-    String query = "SELECT expenses.*, fund_sources.name as fund_source_name FROM expenses LEFT JOIN fund_sources ON expenses.fund_source_id = fund_sources.id WHERE DATE(expenses.date) BETWEEN DATE('$fromDate') AND DATE('$untilDate') ORDER BY expenses.date DESC LIMIT $limit OFFSET $offset";
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery(query);
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery(QueryHandler.getLogsInMonth(fromDate, untilDate, limit, page, offset, fundIdFilter: fundIdFilter, categoryFilter: categoryFilter));
+    return queryResult;
+  }
+
+  Future<List<Map<String, dynamic>>> getCategoryListFromExistingFund(String fromDate, String untilDate, int fundId) async {
+    final Database db = await _getDatabase();
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery(QueryHandler.getCategoryListFromExistingFund(fundId, fromDate, untilDate));
     return queryResult;
   }
 
   Future<List<Map<String, dynamic>>> getFundSources() async {
     final Database db = await _getDatabase();
-    String query = 'SELECT * FROM $_tableFundSources WHERE deleted_at IS NULL ORDER BY daily_fund DESC, weekly_fund DESC, monthly_fund DESC';
+    String query = QueryHandler.getFundSources();
     final List<Map<String, dynamic>> queryResult = await db.rawQuery(query);
-    // Convert from map to model then will be converted to list
     return queryResult;
   }
 
   Future<List<Map<String, dynamic>>> getTotalBasedOnCategory(String fromDate, String untilDate) async {
     final Database db = await _getDatabase();
-    String query = "SELECT category, SUM(nominal) as nominal FROM expenses WHERE DATE(date) BETWEEN DATE('$fromDate') AND DATE('$untilDate') GROUP BY category";
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery(query);
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery(QueryHandler.getTotalBasedOnCategory(fromDate, untilDate));
     return queryResult;
   }
 
   Future<List<Map<String, dynamic>>> getDetailExpenseInMonth(String fromDate, String untilDate) async {
     final Database db = await _getDatabase();
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery("SELECT fund_sources.id, SUM(expenses.nominal) as nominal,  fund_sources.daily_fund, fund_sources.weekly_fund, fund_sources.monthly_fund, fund_sources.name, (fund_sources.daily_fund * (julianday('$untilDate')- julianday('$fromDate')+1)) as daily_fund_total, (fund_sources.weekly_fund * CAST(((julianday('$untilDate')- julianday('$fromDate')+1)/7) as INT)) as weekly_fund_total, (fund_sources.monthly_fund *  CAST(((julianday('$untilDate')- julianday('$fromDate')+1)/28) as INT)) as monthly_fund_total, (julianday('$untilDate')- julianday('$fromDate')+1) as days, CAST(((julianday('$untilDate')- julianday('$fromDate')+1)/7) as INT) as weeks, (CAST(((julianday('$untilDate')- julianday('$fromDate')+1)/28) as INT)) as months FROM expenses INNER JOIN fund_sources ON expenses.fund_source_id = fund_sources.id WHERE expenses.user_id = 1 AND (DATE(expenses.date) BETWEEN DATE('$fromDate') AND ('$untilDate')) GROUP BY fund_sources.id");
-    // Convert from map to model then will be converted to list
-    debugPrint("${queryResult}");
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery(QueryHandler.getDetailExpenseInMonth(fromDate, untilDate));
     return queryResult;
   }
 
   Future<List<Map<String, dynamic>>> getTotalFunds(String fromDate, String untilDate) async {
     final Database db = await _getDatabase();
-    String query = "SELECT (COALESCE(total_table.daily_fund_total, 0) + COALESCE(total_table.weekly_fund_total, 0) + COALESCE(total_table.monthly_fund_total, 0)) as total_funds, total_table.days, total_table.weeks, total_table.months FROM (SELECT (fund_sources.daily_fund * (julianday('$untilDate')- julianday('$fromDate')+1)) as daily_fund_total, (fund_sources.weekly_fund * CAST(((julianday('$untilDate')- julianday('$fromDate')+1)/7) as INT)) as weekly_fund_total,  (fund_sources.monthly_fund *  CAST(((julianday('$untilDate')- julianday('$fromDate')+1)/28) as INT)) as monthly_fund_total, (julianday('$untilDate')- julianday('$fromDate')+1) as days, CAST(((julianday('$untilDate')- julianday('$fromDate')+1)/7) as INT) as weeks, (CAST(((julianday('$untilDate')- julianday('$fromDate')+1)/28) as INT)) as months FROM expenses INNER JOIN fund_sources ON expenses.fund_source_id = fund_sources.id AND expenses.user_id = 1 AND (DATE(expenses.date) BETWEEN DATE('$fromDate') AND ('$untilDate')) GROUP BY fund_sources.id) as total_table";
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery(query);
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery(QueryHandler.getTotalFunds(fromDate, untilDate));
 
     return queryResult;
   }
 
   Future<void> printLogData() async {
     final Database db = await _getDatabase();
-    final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT * FROM $_tableExpenses');
+    final List<Map<String, dynamic>> queryResult = await db.rawQuery('SELECT * FROM $tableExpenses');
     String log = '';
     queryResult.forEach((e) {log += '${e['desc']}|${e['category']}|${e['nominal']}|${e['date']}|${e['day']}|${e['month']}|${e['year']}|${e['user_id']}~\n';});
 
@@ -270,43 +260,10 @@ class DatabaseHandler{
     debugPrint(log);
   }
 
-  // Future<void> insertData() async {
-  //   String data = '''shampoo clear|Toiletries|64700|2022-05-08 10:55|8|5|2022|1~sabun biore|Toiletries|12100|2022-05-08 10:55|8|5|2022|1~sendal jepit|Others|20700|2022-05-08 10:56|8|5|2022|1~totebag indomaret|Others|2500|2022-05-08 10:56|8|5|2022|1~colokan 5m|Tools|40000|2022-05-08 10:56|8|5|2022|1~nasi x2|Meal|10000|2022-05-08 10:57|8|5|2022|1~air putih|Meal|14000|2022-05-08 10:57|8|5|2022|1~sikat gigi formula|Toiletries|16800|2022-05-08 10:57|8|5|2022|1~gunting|Tools|16700|2022-05-08 10:57|8|5|2022|1~tissue|Others|3000|2022-05-08 10:58|8|5|2022|1~listrik|Electricity|100000|2022-05-08 10:58|8|5|2022|1~nasi|Meal|5000|2022-05-08 10:58|8|5|2022|1~starbucks caramel machiato|Drink|64000|2022-05-08 10:59|8|5|2022|1~topup|E-Money|21500|2022-05-08 10:59|8|5|2022|1~masker shumu|Others|51996|2022-05-08 11:00|8|5|2022|1~clayton|Others|135800|2022-05-08 11:00|8|5|2022|1~magic com|Tools|230000|2022-05-08 11:00|8|5|2022|1~nasgor + kwetiaw|Food|33000|2022-05-08 11:00|8|5|2022|1~nasi|Meal|5000|2022-05-08 11:00|8|5|2022|1~warteg telor|Meal|18000|2022-05-08 11:00|null|5|2022|1~jco caramel machiato|Drink|34000|2022-05-08 11:01|8|5|2022|1~piring, gelas, sendok & mangkok|Tools|112000|2022-05-08 11:01|8|5|2022|1~naspad ayam bakar + ayam balado|Meal|30000|2022-05-08 11:02|8|5|2022|1~gojek ke CP|Transportation|10000|2022-05-08 11:30|8|5|2022|1~gojek ke bluekos|Transportation|31000|2022-05-08 11:30|8|5|2022|1~gocar ke starbucks SenCi|Transportation|15000|2022-05-08 11:30|8|5|2022|1~galon|Daily Needs|55000|2022-05-08 11:31|8|5|2022|1~pompa galon|Tools|89000|2022-05-08 11:31|8|5|2022|1~kulkas|Tools|425000|2022-05-08 11:31|8|5|2022|1~warteg + nasi|Meal|21000|2022-05-08 11:31|8|5|2022|1~gula + cococrunch|Meal|36000|2022-05-08 11:32|8|5|2022|1~bakso|Food|5000|2022-05-08 11:32|8|5|2022|1~spoons + mama lemon + brush|Tools|61000|2022-05-08 11:32|8|5|2022|1~naspad|Meal|18000|2022-05-09 02:16|9|5|2022|1~pecel lele|Meal|19000|2022-05-09 07:55|9|5|2022|1~pisau|Tools|24000|2022-05-09 09:33|9|5|2022|1~susu |Drink|6000|2022-05-09 09:33|9|5|2022|1~mentega + kecap|Daily Needs|21000|2022-05-09 09:34|9|5|2022|1~meja|Tools|340000|2022-05-10 10:02|10|5|2022|1~keranjang|Tools|20000|2022-05-10 10:02|10|5|2022|1'''.trim();
-  //
-  //   var list = data.split('~').map((e) {
-  //     var innerData = e.split('|').toList();
-  //     var map = {
-  //       'id': null,
-  //       'desc': innerData[0],
-  //       'category': innerData[1],
-  //       'nominal': innerData[2],
-  //       'date': innerData[3],
-  //       'day': innerData[4],
-  //       'month': innerData[5],
-  //       'year': innerData[6],
-  //       'user_id': 1,
-  //     };
-  //     return map;
-  //   }).toList();
-  //
-  //   debugPrint('---- MAPPED');
-  //   debugPrint(list.toString());
-  //
-  //   var er = '';
-  //   for(int i=0; i<list.length; i++){
-  //     try{
-  //       await insertLog(list[i]);
-  //     }catch(e){
-  //       er += e.toString();
-  //     }
-  //   }
-  //   debugPrint('ERROR ${er}');
-  // }
-
   Future<void> deleteExpense(int id) async {
     final db = await _getDatabase();
     await db.delete(
-      _tableExpenses,
+      tableExpenses,
       where: "id = ?",
       whereArgs: [id],
     );

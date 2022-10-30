@@ -1,16 +1,17 @@
 import 'package:expense_app/core/util/icon_util.dart';
 import 'package:expense_app/features/domain/entities/expense_categroy.dart';
+import 'package:expense_app/features/domain/entities/expense_limit.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
 
-class CategoryListWidget extends StatelessWidget {
+class FundListItemWidget extends StatelessWidget {
 
-  final ExpenseCategory expenseCategory;
+  final FundSource expenseCategory;
   final bool isSelected;
   final int itemPosition;
   final Function(int position) onAreaClicked;
 
-  CategoryListWidget({Key? key,
+  FundListItemWidget({Key? key,
     required this.expenseCategory,
     required this.isSelected,
     required this.onAreaClicked,
@@ -36,12 +37,6 @@ class CategoryListWidget extends StatelessWidget {
       ) : null,
       child: Row(
         children: [
-          Icon(
-            IconUtil.getIconFromString(expenseCategory.name),
-            color: _theme.colorScheme.onPrimary,
-            size: 16,
-          ),
-          const SizedBox(width: 8,),
           Text(expenseCategory.name, style: _theme.textTheme.subtitle1,)
         ],
       ),

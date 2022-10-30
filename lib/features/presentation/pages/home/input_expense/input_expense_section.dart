@@ -9,10 +9,11 @@ import 'package:expense_app/features/presentation/bloc/expense_month/expense_mon
 import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
-import 'package:expense_app/features/presentation/pages/home/input_expense/category_list_widget.dart';
+import 'package:expense_app/features/presentation/pages/home/input_expense/category_list_item_widget.dart';
 import 'package:expense_app/features/presentation/widgets/button_widget.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:expense_app/features/presentation/widgets/fund_source_selectable_list.dart';
+import 'package:expense_app/features/presentation/widgets/selectable_category_list_widget.dart';
 import 'package:expense_app/features/presentation/widgets/splash_effect_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -206,31 +207,14 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
         padding: const EdgeInsets.only(top: 16, bottom: 16),
         child: SizedBox(
           height: 50,
-          child: ListView.builder(
-              itemCount: MoneyUtil.listCategory.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, position){
-                return _buildItemList(position);
-              }
-          ),
+          child: SelectableCategoryListWidget<ExpenseCategory>(
+            defaultSelectedItemIndex: _selectedCategoryPosition,
+            onItemSelected: (selectedPosition) {
+              _selectedCategoryPosition = selectedPosition;
+            },
+            listItem: MoneyUtil.listCategory,
+          )
         ),
-      ),
-    );
-  }
-
-  Widget _buildItemList(int position){
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, right: 4),
-      child: CategoryListWidget(
-        itemPosition: position,
-        isSelected: _selectedCategoryPosition == position,
-        expenseCategory: MoneyUtil.listCategory[position],
-        onAreaClicked: (itemPosition){
-          // Change selected item
-          _selectedCategoryPosition = itemPosition;
-          setState(() {
-          });
-        },
       ),
     );
   }
