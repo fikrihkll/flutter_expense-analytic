@@ -61,12 +61,13 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   }
 
   @override
-  Future<Either<Failure, List<Log>>> getLogsInMonth(DateTime fromDate, DateTime untilDate, int limit, int page) async {
+  Future<Either<Failure, List<Log>>> getLogsInMonth(DateTime fromDate, DateTime untilDate, int limit, int page, {int? fundIdFilter, String? categoryFilter}) async {
     try{
       var result = await localDataSource.getLogsInMonth(
           DateUtil.dbDateFormat.format(fromDate),
           DateUtil.dbDateFormat.format(untilDate),
-          limit, page
+          limit, page, fundIdFilter: fundIdFilter,
+          categoryFilter: categoryFilter
       );
       var resultMapped = result.map((e) => LogModel.fromMap(e)).toList();
       debugPrint("LENGTH ALL LOGS => ${resultMapped.length}");

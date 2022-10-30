@@ -1,9 +1,7 @@
 import 'package:expense_app/core/util/date_util.dart';
 import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/core/util/theme_util.dart';
-import 'package:expense_app/features/data/datasources/localdatasource/database_handler.dart';
 import 'package:expense_app/features/domain/entities/fund_detail.dart';
-import 'package:expense_app/features/domain/entities/log.dart';
 import 'package:expense_app/features/domain/entities/log_detail.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
@@ -11,15 +9,8 @@ import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_b
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/total_expense_month/total_expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/total_funds/total_funds_bloc.dart';
-import 'package:expense_app/features/presentation/pages/date_selection/date_selection_bottomsheet.dart';
-import 'package:expense_app/features/presentation/pages/home/input_expense/category_list_widget.dart';
-import 'package:expense_app/features/presentation/pages/home/input_expense/input_expense_section.dart';
 import 'package:expense_app/features/presentation/pages/home/logs_list/logs_list_section.dart';
-import 'package:expense_app/features/presentation/widgets/center_padding_widget.dart';
-import 'package:expense_app/features/presentation/widgets/confirmation_dialog.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
-import 'package:expense_app/features/presentation/widgets/log_list_item_widget.dart';
-import 'package:expense_app/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -272,12 +263,12 @@ class _AllLogsPageState extends State<AllLogsPage> {
                           child: Text(
                             "/Rp.${MoneyUtil.getReadableMoney(FundDetail.fetchFundTotalNominal(element))}",
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 10
                             ),
                           ),
                         ),
-                        Text("Rp.${MoneyUtil.getReadableMoney(FundDetail.fetchFundNominal(element))}/${FundDetail.fetchFundType(element)}", style: TextStyle(fontSize: 10),)
+                        Text("Rp.${MoneyUtil.getReadableMoney(FundDetail.fetchFundNominal(element))}/${FundDetail.fetchFundType(element)}", style: const TextStyle(fontSize: 10),)
                       ],
                     ),
                   ),
@@ -341,7 +332,7 @@ class _AllLogsPageState extends State<AllLogsPage> {
     var result = await showDateRangePicker(
       context: context,
       firstDate: DateTime(2000,1,1),
-      lastDate: DateTime.now().add(Duration(days: 100)),
+      lastDate: DateTime.now().add(const Duration(days: 100)),
     );
 
     if (result != null) {

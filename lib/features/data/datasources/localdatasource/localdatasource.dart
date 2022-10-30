@@ -18,7 +18,7 @@ abstract class LocalDataSource{
 
   Future<List<Map<String, dynamic>>> getRecentLogs();
 
-  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page);
+  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page, {int? fundIdFilter, String? categoryFilter});
 
   Future<List<Map<String, dynamic>>> getFundSources();
 
@@ -58,8 +58,8 @@ class LocalDataSourceImpl extends LocalDataSource{
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page) async {
-    return await databaseHandler.getLogsInMonth(fromDate, untilDate, limit, page);
+  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page, {int? fundIdFilter, String? categoryFilter}) async {
+    return await databaseHandler.getLogsInMonth(fromDate, untilDate, limit, page, fundIdFilter: fundIdFilter ?? -1, categoryFilter: categoryFilter ?? "");
   }
 
   @override

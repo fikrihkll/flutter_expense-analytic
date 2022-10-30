@@ -3,14 +3,14 @@ import 'package:expense_app/features/domain/entities/expense_categroy.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:flutter/material.dart';
 
-class CategoryListWidget extends StatelessWidget {
+class CategoryListItemWidget extends StatelessWidget {
 
   final ExpenseCategory expenseCategory;
   final bool isSelected;
   final int itemPosition;
   final Function(int position) onAreaClicked;
 
-  CategoryListWidget({Key? key,
+  CategoryListItemWidget({Key? key,
     required this.expenseCategory,
     required this.isSelected,
     required this.onAreaClicked,

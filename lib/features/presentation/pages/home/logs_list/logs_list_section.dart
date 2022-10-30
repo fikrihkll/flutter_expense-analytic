@@ -43,6 +43,8 @@ class _LogsListSectionState extends State<LogsListSection> with LogsListSectionO
             widget.isUsePaging ? 'All Logs' : 'Recent Expenses',
             style: _theme.textTheme.headline4,
           ),
+          const SizedBox(height: 4,),
+
           BlocBuilder<LogsBloc, LogsState>(
               buildWhen: (context, state) =>
                   state is RecentLogsLoading ||
