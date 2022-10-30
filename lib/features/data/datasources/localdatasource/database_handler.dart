@@ -187,11 +187,11 @@ class DatabaseHandler{
     final Database db = await _getDatabase();
     double totalLimit = 0;
 
+    String queryDaily = "SELECT CAST(SUM(daily_fund) as DOUBLE) as daily_fund FROM $_tableFundSources WHERE daily_fund NOT NULL AND deleted_at NOT NULL";
     if(isWeekend){
-      String queryDaily = "SELECT CAST(SUM(daily_fund) as DOUBLE) as daily_fund FROM $_tableFundSources WHERE daily_fund NOT NULL";
       final List<Map<String, dynamic>> queryDailyResult = await db.rawQuery(queryDaily);
 
-      String queryWeekly = "SELECT CAST(SUM(weekly_fund) as DOUBLE) as weekly_fund FROM $_tableFundSources WHERE weekly_fund NOT NULL";
+      String queryWeekly = "SELECT CAST(SUM(weekly_fund) as DOUBLE) as weekly_fund FROM $_tableFundSources WHERE weekly_fund NOT NULL AND deleted_at NOT NULL";
       final List<Map<String, dynamic>> queryWeeklyResult = await db.rawQuery(queryWeekly);
 
       if (queryDailyResult.first["daily_fund"] != null && queryWeeklyResult.first["weekly_fund"] != null) {
@@ -203,7 +203,6 @@ class DatabaseHandler{
       }
 
     }else{
-      String queryDaily = "SELECT CAST(SUM(daily_fund) as DOUBLE) as daily_fund FROM $_tableFundSources WHERE daily_fund NOT NULL";
       final List<Map<String, dynamic>> queryDailyResult = await db.rawQuery(queryDaily);
 
       if (queryDailyResult.first["daily_fund"] != null) {
