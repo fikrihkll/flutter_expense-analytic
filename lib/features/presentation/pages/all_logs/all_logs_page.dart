@@ -5,7 +5,7 @@ import 'package:expense_app/features/domain/entities/fund_detail.dart';
 import 'package:expense_app/features/domain/entities/log_detail.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
-import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/fund_source/transaction/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/total_expense_month/total_expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/total_funds/total_funds_bloc.dart';
@@ -69,23 +69,47 @@ class _AllLogsPageState extends State<AllLogsPage> {
             children: [
               _buildHeader(),
               const SizedBox(height: 16,),
-              _fromDate != null
-                  ? Column(
-                    children: [
-                      _buildDetail(),
-                      const SizedBox(height: 32,),
-                      LogsListSection(
-                        isUsePaging: true,
-                        controller: _logsController,
-                      ),
-                    ],
-                  ) :
-                  const SizedBox()
+              _buildContent()
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildContent() {
+    if (_fromDate == null) {
+      return SizedBox(
+        height: MediaQuery.of(context).size.height - 300,
+        child: Center(
+          child: GestureDetector(
+            onTap: _onDateRangePressed,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Icon(Icons.date_range_rounded, color: _theme.primaryColor,),
+                ),
+                Text("Date is not selected yet")
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Column(
+        children: [
+          _buildDetail(),
+          const SizedBox(height: 32,),
+          LogsListSection(
+            isUsePaging: true,
+            controller: _logsController,
+          ),
+        ],
+      );
+    }
   }
 
   Widget _buildDetail() {
