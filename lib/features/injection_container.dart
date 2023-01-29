@@ -19,7 +19,8 @@ import 'package:expense_app/features/domain/usecases/update_fund_source_usecase.
 import 'package:expense_app/features/domain/usecases/update_log_use_case.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
-import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_list/fund_source_list_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/fund_source/transaction/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/total_expense_month/total_expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/total_funds/total_funds_bloc.dart';
@@ -67,6 +68,9 @@ Future<void> init() async {
             getDetailFundUsedInMonthUseCase: sl(),
             deleteFundSourceUseCase: sl()
         )
+  );
+  sl.registerFactory(
+          () => FundSourceListBloc(getFundSourcesUseCase: sl())
   );
 
   // Usecase
