@@ -28,7 +28,7 @@ class FundListItemWidget extends StatelessWidget {
       shadowEnabled: !isSelected,
       onTap: (){
         // Give callback with the item position parameter to the list
-        onAreaClicked(itemPosition);
+        onAreaClicked(isSelected ? -1 : itemPosition);
       },
       // Border will be shown if the item is selected
       border: isSelected ? Border.all(
