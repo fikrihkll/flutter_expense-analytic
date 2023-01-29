@@ -6,10 +6,9 @@ import 'package:expense_app/features/domain/entities/expense_categroy.dart';
 import 'package:expense_app/features/domain/entities/expense_limit.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
 import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
-import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/fund_source/transaction/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
-import 'package:expense_app/features/presentation/pages/home/input_expense/category_list_item_widget.dart';
 import 'package:expense_app/features/presentation/widgets/button_widget.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:expense_app/features/presentation/widgets/fund_source_selectable_list.dart';
@@ -206,8 +205,8 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
       child: Padding(
         padding: const EdgeInsets.only(top: 16, bottom: 16),
         child: SizedBox(
-          height: 50,
-          child: SelectableCategoryListWidget<ExpenseCategory>(
+          height: 60,
+          child: SelectableItemListWidget<ExpenseCategory>(
             defaultSelectedItemIndex: _selectedCategoryPosition,
             onItemSelected: (selectedPosition) {
               _selectedCategoryPosition = selectedPosition;
