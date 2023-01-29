@@ -1,23 +1,21 @@
-import 'package:expense_app/core/util/money_util.dart';
-import 'package:expense_app/features/domain/entities/expense_categroy.dart';
 import 'package:expense_app/features/domain/entities/expense_limit.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/category_list_item_widget.dart';
 import 'package:expense_app/features/presentation/pages/home/input_expense/fund_list_item_widget.dart';
 import 'package:flutter/material.dart';
 
-class SelectableCategoryListWidget<Item> extends StatefulWidget {
+class SelectableItemListWidget<Item> extends StatefulWidget {
 
   final Function(int selectedPosition) onItemSelected;
   final List<Item> listItem;
   final int? defaultSelectedItemIndex;
 
-  const SelectableCategoryListWidget({Key? key, required this.onItemSelected, required this.listItem, this.defaultSelectedItemIndex}) : super(key: key);
+  const SelectableItemListWidget({Key? key, required this.onItemSelected, required this.listItem, this.defaultSelectedItemIndex}) : super(key: key);
 
   @override
-  State<SelectableCategoryListWidget> createState() => _SelectableCategoryListWidgetState();
+  State<SelectableItemListWidget> createState() => _SelectableItemListWidgetState();
 }
 
-class _SelectableCategoryListWidgetState extends State<SelectableCategoryListWidget> {
+class _SelectableItemListWidgetState extends State<SelectableItemListWidget> {
 
   int _selectedCategoryPosition = -1;
 
@@ -37,7 +35,7 @@ class _SelectableCategoryListWidgetState extends State<SelectableCategoryListWid
     return Material(
       color: Colors.transparent,
       child: SizedBox(
-        height: 58,
+        height: 55,
         child: ListView.builder(
             itemCount: widget.listItem.length,
             scrollDirection: Axis.horizontal,
@@ -73,7 +71,7 @@ class _SelectableCategoryListWidgetState extends State<SelectableCategoryListWid
         itemPosition: position,
         isSelected: _selectedCategoryPosition == position,
         expenseCategory: widget.listItem[position],
-        onAreaClicked: (itemPosition){
+        onAreaClicked: (itemPosition) {
           // Change selected item
           _selectedCategoryPosition = itemPosition;
           widget.onItemSelected(position);

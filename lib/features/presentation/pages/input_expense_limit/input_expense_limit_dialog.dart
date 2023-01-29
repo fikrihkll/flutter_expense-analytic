@@ -2,7 +2,7 @@ import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/core/util/theme_util.dart';
 import 'package:expense_app/features/data/models/expense_limit_model.dart';
 import 'package:expense_app/features/domain/entities/expense_limit.dart';
-import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/fund_source/transaction/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/widgets/button_widget.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:expense_app/features/presentation/widgets/fund_source_selectable_list.dart';

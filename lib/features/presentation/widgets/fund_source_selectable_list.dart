@@ -1,6 +1,6 @@
 import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/features/domain/entities/expense_limit.dart';
-import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_bloc.dart';
+import 'package:expense_app/features/presentation/bloc/fund_source/transaction/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/routes/route.dart';
 import 'package:expense_app/features/presentation/widgets/confirmation_dialog.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
