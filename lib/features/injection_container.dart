@@ -61,14 +61,15 @@ Future<void> init() async {
         ),
   );
   sl.registerFactory(
-        () => FundSourceBloc(
-            insertFundSourceUseCase: sl(),
-            updateFundSourceUseCase: sl(),
-            getFundSourcesUseCase: sl(),
-            getDetailFundUsedInMonthUseCase: sl(),
-            deleteFundSourceUseCase: sl()
-        )
+          () => FundSourceBloc(
+              insertFundSourceUseCase: sl(),
+              updateFundSourceUseCase: sl(),
+              getFundSourcesUseCase: sl(),
+              getDetailFundUsedInMonthUseCase: sl(),
+              deleteFundSourceUseCase: sl()
+          )
   );
+
   sl.registerFactory(
           () => FundSourceListBloc(getFundSourcesUseCase: sl())
   );

@@ -193,7 +193,6 @@ class _LogsListSectionState extends State<LogsListSection> with LogsListSectionO
         }
     );
   }
-
 }
 
 abstract class LogsListSectionOnReachedBottomListener {
