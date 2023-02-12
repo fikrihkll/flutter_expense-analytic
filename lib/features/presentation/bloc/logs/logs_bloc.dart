@@ -26,7 +26,6 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
   List<Log> _listAllLog = [];
   int _page = 1;
   bool _isLoadMoreAvailable = true;
-  bool _isPagingLoading = false;
 
   DateTime? fromDateAllLog, untilDateAllLog;
 
@@ -77,6 +76,7 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
     });
 
     on<LoadAllLogEvent>((event, emit) async {
+      // Set to false to prevent the event invocation when the scroll view is touching it's bottom side
 
       if (event.isRefreshing) {
         _isLoadMoreAvailable = true;
@@ -131,9 +131,4 @@ class LogsBloc extends Bloc<LogsEvent, LogsState> {
 
   List<Log> get getListAllLog => _listAllLog;
   bool get isLoadMoreAvailable => _isLoadMoreAvailable;
-  bool get isPagingLoading => _isPagingLoading;
-
-  void setPagingLoading(bool isLoading) {
-    _isPagingLoading = isLoading;
-  }
 }

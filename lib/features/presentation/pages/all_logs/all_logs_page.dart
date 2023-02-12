@@ -424,9 +424,8 @@ class _AllLogsPageState extends State<AllLogsPage> {
     double currentScroll = _scrollController.position.pixels;
 
     if(currentScroll == maxScroll){
-      if(!_logsBloc.isPagingLoading && _logsBloc.isLoadMoreAvailable) {
+      if(_logsBloc.state is LoadAllLogsLoading == false && _logsBloc.isLoadMoreAvailable) {
         _logsController.bottomReach();
-        _logsBloc.setPagingLoading(true);
       }
     }
   }
