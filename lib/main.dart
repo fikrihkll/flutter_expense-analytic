@@ -1,3 +1,4 @@
+import 'package:expense_app/core/util/application_state_observer.dart';
 import 'package:expense_app/core/util/theme_util.dart';
 import 'package:expense_app/features/injection_container.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,8 @@ import 'package:expense_app/features/presentation/routes/route.dart' as route;
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
-
+  var observer = ApplicationStateObserver();
+  WidgetsBinding.instance.addObserver(observer);
   // Inject Dependencies
   await init();
 
