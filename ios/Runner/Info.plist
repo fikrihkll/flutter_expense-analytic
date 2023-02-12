@@ -43,5 +43,9 @@
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+    <string>Camera will be used to scan a bill which later can detect the total amount in the bill</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Actually, microphone is not really used. So just in case if it's required by the system.</string>
 </dict>
 </plist>
