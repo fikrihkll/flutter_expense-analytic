@@ -161,11 +161,10 @@ class _LogsListSectionState extends State<LogsListSection> with LogsListSectionO
             state is LoadAllLogsLoading ||
             state is LoadAllLogsLoaded ||
             state is LoadAllLogsError,
-        builder: (context, state){
-          _logsBloc.setPagingLoading(false);
-          if(state is RecentLogsLoading || state is LoadAllLogsLoading){
+        builder: (context, state) {
+          if(state is RecentLogsLoading || state is LoadAllLogsLoading) {
             return const CupertinoActivityIndicator();
-          }else if(state is RecentLogsLoaded || state is LoadAllLogsLoaded){
+          }else if(state is RecentLogsLoaded || state is LoadAllLogsLoaded) {
             List<Log> listData = [];
             if (state is RecentLogsLoaded) {
               listData = state.listData;
@@ -174,7 +173,7 @@ class _LogsListSectionState extends State<LogsListSection> with LogsListSectionO
               listData = state.data;
             }
             return _buildLogList(listData);
-          }else if(state is RecentLogsError || state is LoadAllLogsError){
+          }else if(state is RecentLogsError || state is LoadAllLogsError) {
             String message = "";
             if (state is RecentLogsError) {
               message = state.message;
