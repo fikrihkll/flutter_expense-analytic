@@ -6,6 +6,7 @@ import 'package:expense_app/features/presentation/bloc/total_expense_month/total
 import 'package:expense_app/features/presentation/bloc/total_funds/total_funds_bloc.dart';
 import 'package:expense_app/features/presentation/pages/all_logs/all_logs_page.dart';
 import 'package:expense_app/features/presentation/pages/beta_page.dart';
+import 'package:expense_app/features/presentation/pages/camera/camera_page.dart';
 import 'package:expense_app/features/presentation/pages/date_selection/date_selection_bottomsheet.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
@@ -17,6 +18,7 @@ const homePage = 'home_page';
 const allLogsPage = 'all_logs_page';
 const dateSelectionPage = 'date_selection_page';
 const betaPage = 'beta_page';
+const scanPage = 'scan_page';
 
 Route<dynamic> controller(RouteSettings settings) {
   switch (settings.name) {
@@ -50,6 +52,10 @@ Route<dynamic> controller(RouteSettings settings) {
               create: (context) => sl<FundSourceBloc>(),
               child: const BetaPage()
           )
+      );
+    case scanPage:
+      return MaterialPageRoute(
+          builder: (context) => const CameraPage()
       );
     case allLogsPage:
       return MaterialPageRoute(
