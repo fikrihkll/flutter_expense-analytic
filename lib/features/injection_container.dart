@@ -1,3 +1,4 @@
+import 'package:expense_app/core/util/text_recognition_handler.dart';
 import 'package:expense_app/features/data/datasources/localdatasource/database_handler.dart';
 import 'package:expense_app/features/data/datasources/localdatasource/localdatasource.dart';
 import 'package:expense_app/features/data/repositories/expense_repository_impl.dart';
@@ -72,6 +73,9 @@ Future<void> init() async {
 
   sl.registerFactory(
           () => FundSourceListBloc(getFundSourcesUseCase: sl())
+  );
+  sl.registerFactory(
+          () => TextRecognitionHandler()
   );
 
   // Usecase
