@@ -33,7 +33,16 @@ dependencies:
   path: ^1.8.0
   # Store persistence data
   sqflite: ^2.0.2
+  # modal bottomsheet
   modal_bottom_sheet: ^2.1.0
+  # api request
+  http: ^0.13.5
+  # camera
+  camera: ^0.10.3
+  # uuid
+  uuid: ^3.0.7
+  # permission_handler
+  permission_handler: ^10.2.0
 
 dev_dependencies:
   flutter_test:
@@ -43,4 +52,6 @@ dev_dependencies:
 
 flutter:
 
+  assets:
+    - assets/
   uses-material-design: true
