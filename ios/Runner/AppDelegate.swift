@@ -47,7 +47,7 @@ import Flutter
                 result(FlutterError(code: "MLKit-TextRecognition", message: errorMessage, details: nil))
                 return
             }
-            result(textResult?.text ?? "")
+            result(textResult ?? [String: Any]())
         })
     }
     
