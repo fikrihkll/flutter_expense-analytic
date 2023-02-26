@@ -32,7 +32,7 @@ dependencies:
   # Get db path or another path
   path: ^1.8.0
   # Store persistence data
-  sqflite: ^2.0.2
+  sqflite: ^2.2.4+1
   # modal bottomsheet
   modal_bottom_sheet: ^2.1.0
   # api request
