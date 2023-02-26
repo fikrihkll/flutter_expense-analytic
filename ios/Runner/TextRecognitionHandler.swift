@@ -13,7 +13,7 @@ class TextRecognitionHandler {
     
     let textRecognizer = TextRecognizer.textRecognizer()
     
-    func processImage(byteArray:  [UInt8], resulText: @escaping (String?, Text?) -> Void) {
+    func processImage(byteArray:  [UInt8], resulText: @escaping (String?, [String: Any]?) -> Void) {
         let uiImage = UIImage(data: Data(byteArray))!
         let image = VisionImage(image: uiImage)
         textRecognizer.process(image) { result, error in
@@ -21,7 +21,7 @@ class TextRecognitionHandler {
                 resulText(error?.localizedDescription, nil)
               return
             }
-            resulText(nil, result)
+            resulText(nil, TextMapper.toMap(text: result))
         }
     }
     
