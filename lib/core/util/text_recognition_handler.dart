@@ -1,4 +1,7 @@
 
+import 'dart:collection';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -7,7 +10,7 @@ class TextRecognitionHandler {
 
   static const platform = MethodChannel('com.teamdagger.expenseApp/text_recognition');
 
-  Future<String?> getTextFromImageUrl(String url) async {
+  Future<LinkedHashMap<dynamic, dynamic>?> getTextFromImageUrl(String url) async {
     Uint8List? imageBinary = await _getBytesFromUrl(url);
     if (imageBinary?.isEmpty == true) {
       return null;
@@ -15,7 +18,7 @@ class TextRecognitionHandler {
     return await processByteArray(imageBinary!);
   }
 
-  Future<String?> getTextFromImageAsset(String assetPath) async {
+  Future<LinkedHashMap<dynamic, dynamic>?> getTextFromImageAsset(String assetPath) async {
     Uint8List? imageBinary = await _getBytesFromAsset(assetPath);
     if (imageBinary?.isEmpty == true) {
       return null;
@@ -23,9 +26,11 @@ class TextRecognitionHandler {
     return await processByteArray(imageBinary!);
   }
 
-  Future<String?> processByteArray(Uint8List byteArray) async {
+  Future<LinkedHashMap<dynamic, dynamic>?> processByteArray(Uint8List byteArray) async {
     try {
-      return await platform.invokeMethod("processImage", {"process_image_byte_array" : byteArray});
+      var result = await platform.invokeMethod("processImage", {"process_image_byte_array" : byteArray});
+      debugPrint(byteArray.toString());
+      return (result as LinkedHashMap<dynamic, dynamic>);
     } catch(e) {
       debugPrint(e.toString());
       return null;
