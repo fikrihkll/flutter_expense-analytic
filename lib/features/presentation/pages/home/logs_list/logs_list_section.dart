@@ -1,7 +1,6 @@
 import 'package:expense_app/features/domain/entities/expense_limit.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
 import 'package:expense_app/features/injection_container.dart';
-import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_list/fund_source_list_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/fund_source/transaction/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/widgets/log_list_item_widget.dart';
@@ -25,16 +24,16 @@ class _LogsListSectionState extends State<LogsListSection> with LogsListSectionO
 
   late ThemeData _theme;
   late LogsBloc _logsBloc;
-  late FundSourceListBloc _fundBloc;
+  late FundSourceBloc _fundBloc;
   int _selectedFundFilterPositon = -1;
 
   @override
   void initState() {
     super.initState();
     _logsBloc = BlocProvider.of<LogsBloc>(context);
-    _fundBloc = sl<FundSourceListBloc>();
+    _fundBloc = sl<FundSourceBloc>();
     if (widget.isUsePaging) {
-      _fundBloc.add(GetFundSourceListEvent());
+      _fundBloc.add(GetFundSourceEvent());
     }
     widget.controller?.initScrollListener(this);
   }
@@ -70,7 +69,7 @@ class _LogsListSectionState extends State<LogsListSection> with LogsListSectionO
   }
 
   Widget _provideBlocProvider({required Widget child}) {
-    return BlocProvider<FundSourceListBloc>(create: (create) => _fundBloc, child: child,);
+    return BlocProvider<FundSourceBloc>(create: (create) => _fundBloc, child: child,);
   }
 
   Widget _buildRecentExpenseItem(Log log){
@@ -86,9 +85,9 @@ class _LogsListSectionState extends State<LogsListSection> with LogsListSectionO
   }
 
   Widget _buildFundingFilterListBuilder() {
-    return BlocBuilder<FundSourceListBloc, FundSourceListState>(
+    return BlocBuilder<FundSourceBloc, FundSourceState>(
         builder: (builder, state) {
-          if (state is GetFundSourceListLoaded) {
+          if (state is GetFundSourceLoaded) {
             return _buildFundingFilterList(state.data);
           } else {
             return const CupertinoActivityIndicator();
