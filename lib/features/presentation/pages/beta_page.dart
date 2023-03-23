@@ -54,8 +54,7 @@ class _BetaPageState extends State<BetaPage> {
                 builder: (context, state) {
                   if (state is GetFundSourceLoaded) {
                     return FundSourceSelectableList(
-                        listData: state.data,
-                        onItemSelected: (item) {
+                        onItemSelected: (item, position) {
 
                         }
                     );
