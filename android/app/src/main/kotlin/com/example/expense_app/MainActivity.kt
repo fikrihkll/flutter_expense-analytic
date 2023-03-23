@@ -11,6 +11,7 @@ class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.teamdagger.expenseApp/text_recognition"
     private val ACTION_PROCESS_IMAGE = "processImage"
     private val ARG_KEY_PROCESS_IMAGE_BYTE_ARRAY = "process_image_byte_array"
+    private val ARG_KEY_PROCESS_IMAGE_ROTATION = "process_image_rotation"
     private val textRecognitionHandler = TextRecognitionHandler(
         TextRecognition.getClient(
             TextRecognizerOptions.DEFAULT_OPTIONS))
@@ -21,10 +22,11 @@ class MainActivity: FlutterActivity() {
             if(call.method == ACTION_PROCESS_IMAGE) {
                 val data = call.arguments as HashMap<*, *>
                 val byteArrayArg = data[ARG_KEY_PROCESS_IMAGE_BYTE_ARRAY] as ByteArray?
+                val rotationArg = data[ARG_KEY_PROCESS_IMAGE_ROTATION] as Double?
                 byteArrayArg?.let { byteArray ->
                     textRecognitionHandler.processImage(
                         byteArray = byteArray,
-                        rotation = 0
+                        rotation = rotationArg?.toInt() ?: 0
                     ) { exception, text ->
                         if (exception != null) {
                             result.error(exception::class.java.name, exception.message, exception)
