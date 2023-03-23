@@ -185,9 +185,8 @@ class _InputExpenseLimitDialogState extends State<InputExpenseLimitDialog> {
               return FundSourceSelectableList(
                   showNominal: true,
                   defaultSelected: _selectedFundSource,
-                  listData: state.data,
                   controller: _controllerFundList,
-                  onItemSelected: (item) {
+                  onItemSelected: (item, position) {
                     _selectedFundSource = item;
                     _controllerName.text = item.name;
                     _selectedFundType = FundSource.fetchFundType(item);
