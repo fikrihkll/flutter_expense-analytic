@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:expense_app/core/util/camera_util.dart';
 import 'package:expense_app/core/util/date_util.dart';
 import 'package:expense_app/core/util/money_util.dart';
 import 'package:expense_app/core/util/regex_receipt_processor.dart';
@@ -7,6 +10,7 @@ import 'package:expense_app/features/data/models/log_model.dart';
 import 'package:expense_app/features/domain/entities/expense_categroy.dart';
 import 'package:expense_app/features/domain/entities/expense_limit.dart';
 import 'package:expense_app/features/domain/entities/log.dart';
+import 'package:expense_app/features/domain/entities/receipt_result.dart';
 import 'package:expense_app/features/injection_container.dart';
 import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/fund_source/transaction/fund_source_bloc.dart';
@@ -14,6 +18,8 @@ import 'package:expense_app/features/presentation/bloc/balance_left/balance_left
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/domain/entities/text_recognized_mapper.dart';
 import 'package:expense_app/features/presentation/pages/camera/camera_page.dart';
+import 'package:expense_app/features/presentation/pages/home/input_expense/fund_list_widget.dart';
+import 'package:expense_app/features/presentation/pages/receipt_scan_result/receipt_scan_result_bottomsheet.dart';
 import 'package:expense_app/features/presentation/widgets/button_widget.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
 import 'package:expense_app/features/presentation/widgets/fund_source_selectable_list.dart';
@@ -23,6 +29,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:expense_app/features/presentation/routes/route.dart' as route;
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class InputExpenseSection extends StatefulWidget {
@@ -43,6 +50,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
   late ExpenseMonthBloc _expenseMonthBloc;
   late ThemeData _theme;
   late TextRecognitionHandler _textRecognitionHandler;
+  late RegexReceiptProcessor _regexReceiptProcessor;
 
   final ButtonWidgetController _buttonController = ButtonWidgetController();
 
@@ -65,6 +73,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     _expenseMonthBloc = BlocProvider.of<ExpenseMonthBloc>(context);
     _fundSourceBloc.add(GetFundSourceEvent());
     _textRecognitionHandler = sl<TextRecognitionHandler>();
+    _regexReceiptProcessor = sl<RegexReceiptProcessor>();
 
     if (widget.log != null) {
       _controllerNominal.text = MoneyUtil.getReadableMoney(widget.log!.nominal);
@@ -130,7 +139,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
               _buildCategoryList(),
               const SizedBox(height: 8,),
               const Text('Fund Source'),
-              _buildListFund(),
+              _buildListFunding(),
               _buildDateSelectionWidget(),
               Align(
                   alignment: Alignment.centerRight,
@@ -241,24 +250,11 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     );
   }
 
-  Widget _buildListFund() {
-    return Material(
-      child: BlocBuilder<FundSourceBloc, FundSourceState>(
-          buildWhen: (context, state) => state is GetFundSourceLoaded,
-          builder: (context, state) {
-            if (state is GetFundSourceLoaded) {
-              return FundSourceSelectableList(
-                  listData: state.data,
-                  defaultSelected: _selectedFundSource,
-                  onItemSelected: (item) {
-                    _selectedFundSource = item;
-                  }
-              );
-            } else {
-              return const Text("Something Wrong");
-            }
-          }
-      ),
+  Widget _buildListFunding() {
+    return FundSourceSelectableList(
+        onItemSelected: (item, position) {
+          _selectedFundSource = item;
+        }
     );
   }
 
@@ -284,7 +280,6 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
 
     return isValid;
   }
-
 
   LogModel _buildData(){
     String nonDecimalNominal = _controllerNominal.text.replaceAll('.', '');
@@ -332,24 +327,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
   }
 
   Future<void> _checkPermissionAndInitialize() async {
-    var statusCamera = await Permission.camera.status;
-    var statusStorage = await Permission.storage.status;
-
-    if (statusCamera != PermissionStatus.granted) {
-      final permissionStatus = await Permission.camera.request();
-      if (!permissionStatus.isGranted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Akses kamera dibutuhkan bro")));
-      }
-    }
-
-    if (statusStorage != PermissionStatus.granted) {
-      final permissionStatus = await Permission.storage.request();
-      if (!permissionStatus.isGranted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Akses storage juga dibutuhkan bro")));
-      }
-    }
+    await CameraUtil.checkPermissionAndInitialize(context);
   }
 
   void _onScanTapped() async {
@@ -358,6 +336,28 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     if (result is ImageResult) {
       var textResult = await _textRecognitionHandler.getTextFromImageBytes(result.bytes);
       var regexResult = RegexReceiptProcessor().convertTextToReceipt(textResult?.text ?? "");
+      launchReceiptResultBottomSheet(regexResult);
+    }
+  }
+
+  void launchReceiptResultBottomSheet(List<ReceiptResult> listData) async {
+    if (Platform.isIOS) {
+      await showCupertinoModalBottomSheet(
+          context: context,
+          backgroundColor: Colors.transparent,
+          topRadius: const Radius.circular(16),
+          builder: (builder) {
+            return ReceiptScanResultBottomSheet(receiptItemList: listData);
+          }
+      );
+    } else {
+      await showMaterialModalBottomSheet(
+          context: context,
+          backgroundColor: Colors.transparent,
+          builder: (builder) {
+            return ReceiptScanResultBottomSheet(receiptItemList: listData);
+          }
+      );
     }
   }
 
