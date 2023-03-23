@@ -9,19 +9,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FundSourceSelectableList extends StatefulWidget {
 
-  List<FundSource> listData;
-  Function(FundSource item) onItemSelected;
-  FundSource? defaultSelected;
-  bool showNominal;
-  FundSourceSelectableListController? controller;
+  final Function(FundSource item, int position) onItemSelected;
+  final FundSource? defaultSelected;
+  final bool showNominal;
+  final FundSourceSelectableListController? controller;
 
-  FundSourceSelectableList({Key? key, required this.listData, required this.onItemSelected, this.defaultSelected, this.showNominal = false, this.controller}) : super(key: key);
+  const FundSourceSelectableList({Key? key,
+    required this.onItemSelected,
+    this.defaultSelected,
+    this.showNominal = false,
+    this.controller
+  }) : super(key: key);
 
   @override
   State<FundSourceSelectableList> createState() => _FundSourceSelectableListState();
 }
 
-class _FundSourceSelectableListState extends State<FundSourceSelectableList> with FundSourceSelectableListOnSelected{
+class _FundSourceSelectableListState extends State<FundSourceSelectableList> with FundSourceSelectableListOnSelected {
 
   late ThemeData _theme;
   late FundSourceBloc _bloc;
@@ -54,6 +58,22 @@ class _FundSourceSelectableListState extends State<FundSourceSelectableList> wit
   @override
   Widget build(BuildContext context) {
     _theme = Theme.of(context);
+    return Material(
+      color: Colors.transparent,
+      child: BlocBuilder<FundSourceBloc, FundSourceState>(
+          buildWhen: (context, state) => state is GetFundSourceLoaded,
+          builder: (context, state) {
+            if (state is GetFundSourceLoaded) {
+              return _buildList();
+            } else {
+              return const Text("Something Wrong");
+            }
+          }
+      ),
+    );
+  }
+
+  Widget _buildList() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -69,7 +89,7 @@ class _FundSourceSelectableListState extends State<FundSourceSelectableList> wit
       padding: const EdgeInsets.all(8),
       child: FloatingContainer(
           onTap: () {
-            widget.onItemSelected(widget.listData[position]);
+            widget.onItemSelected(_bloc.listFund[position], position);
             _selectedItem = position;
             setState(() {
             });
@@ -86,7 +106,7 @@ class _FundSourceSelectableListState extends State<FundSourceSelectableList> wit
                       )
               );
               if (res is bool && res) {
-                _bloc.add(DeleteFundSourceEvent(id: widget.listData[position].id));
+                _bloc.add(DeleteFundSourceEvent(id: _bloc.listFund[position].id));
                 Navigator.pop(context);
               }
             }
@@ -95,7 +115,7 @@ class _FundSourceSelectableListState extends State<FundSourceSelectableList> wit
           padding: const EdgeInsets.all(16),
           shadowEnabled: true,
           child: widget.showNominal ?
-              Text("$item - Rp.${MoneyUtil.getReadableMoney(FundSource.fetchFundNominal(widget.listData[position]))}") :
+              Text("$item - Rp.${MoneyUtil.getReadableMoney(FundSource.fetchFundNominal(_bloc.listFund[position]))}") :
               Text(item)
       ),
     );
@@ -104,7 +124,7 @@ class _FundSourceSelectableListState extends State<FundSourceSelectableList> wit
   List<Widget> _buildItems() {
     List<Widget> listWidget = [];
 
-    widget.listData.asMap().forEach((index, value) {
+    _bloc.listFund.asMap().forEach((index, value) {
       listWidget.add(_buildItem(index, value.name));
     });
 
@@ -113,7 +133,7 @@ class _FundSourceSelectableListState extends State<FundSourceSelectableList> wit
 
   int _getIndexFromSelected(FundSource source) {
     int selected = -1;
-    widget.listData.asMap().forEach((i, value) {
+    _bloc.listFund.asMap().forEach((i, value) {
       if (source.id == value.id) {
         selected = i;
       }
