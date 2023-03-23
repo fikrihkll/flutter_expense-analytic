@@ -1,56 +1,33 @@
-
-import 'dart:collection';
-import 'dart:convert';
-
-import 'package:flutter/material.dart';
+import 'package:expense_app/core/util/text_recognition_processor.dart';
+import 'package:expense_app/features/domain/entities/text_recognized.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+
 
 class TextRecognitionHandler {
 
-  static const platform = MethodChannel('com.teamdagger.expenseApp/text_recognition');
+  final TextRecognitionProcessor _textRecognitionProcessor = TextRecognitionProcessorImpl();
 
-  Future<LinkedHashMap<dynamic, dynamic>?> getTextFromImageUrl(String url) async {
-    Uint8List? imageBinary = await _getBytesFromUrl(url);
+  Future<TextRecognitionResult?> getTextFromImageUrl(String url, {double rotation = 0}) async {
+    Uint8List? imageBinary = await _textRecognitionProcessor.getBytesFromUrl(url);
     if (imageBinary?.isEmpty == true) {
       return null;
     }
-    return await processByteArray(imageBinary!);
+    var result = await _textRecognitionProcessor.processByteArray(imageBinary!, rotation: rotation);
+    return _textRecognitionProcessor.map(result);
   }
 
-  Future<LinkedHashMap<dynamic, dynamic>?> getTextFromImageAsset(String assetPath) async {
-    Uint8List? imageBinary = await _getBytesFromAsset(assetPath);
+  Future<TextRecognitionResult?> getTextFromImageAsset(String assetPath, {double rotation = 0}) async {
+    Uint8List? imageBinary = await _textRecognitionProcessor.getBytesFromAsset(assetPath);
     if (imageBinary?.isEmpty == true) {
       return null;
     }
-    return await processByteArray(imageBinary!);
+    var result = await _textRecognitionProcessor.processByteArray(imageBinary!, rotation: rotation);
+    return _textRecognitionProcessor.map(result);
   }
 
-  Future<LinkedHashMap<dynamic, dynamic>?> processByteArray(Uint8List byteArray) async {
-    try {
-      var result = await platform.invokeMethod("processImage", {"process_image_byte_array" : byteArray});
-      debugPrint(byteArray.toString());
-      return (result as LinkedHashMap<dynamic, dynamic>);
-    } catch(e) {
-      debugPrint(e.toString());
-      return null;
-    }
-  }
-
-  Future<Uint8List?> _getBytesFromUrl(String url) async {
-    try {
-      var response = await http.get(
-          Uri.parse(url)
-      );
-      return response.bodyBytes;
-    } catch(e) {
-      return null;
-    }
-  }
-
-  Future<Uint8List?> _getBytesFromAsset(String path) async {
-    ByteData data = await rootBundle.load("assets/$path");
-    return data.buffer.asUint8List();
+  Future<TextRecognitionResult?> getTextFromImageBytes(Uint8List bytes, {double rotation = 0}) async {
+    var result = await _textRecognitionProcessor.processByteArray(bytes, rotation: rotation);
+    return _textRecognitionProcessor.map(result);
   }
 
 }
