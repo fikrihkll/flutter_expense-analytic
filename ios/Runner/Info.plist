@@ -2,10 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Expense App</string>
+	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -44,8 +49,8 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-    <string>Camera will be used to scan a bill which later can detect the total amount in the bill</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Actually, microphone is not really used. So just in case if it's required by the system.</string>
+	<string>Camera will be used to scan a bill which later can detect the total amount in the bill</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Actually, microphone is not really used. So just in case if it&apos;s required by the system.</string>
 </dict>
 </plist>

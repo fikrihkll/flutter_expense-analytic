@@ -5,6 +5,7 @@ import Flutter
 @objc class AppDelegate: FlutterAppDelegate {
     
     let ARG_KEY_PROCESS_IMAGE_BYTE_ARRAY = "process_image_byte_array"
+    let ARG_KEY_PROCESS_IMAGE_ROTATION = "process_image_rotation"
     
   override func application(
     _ application: UIApplication,
@@ -17,18 +18,20 @@ import Flutter
           if call.method == "processImage" {
               let data = call.arguments as? Dictionary<String, Any>
               let argByteArray = data?[self.ARG_KEY_PROCESS_IMAGE_BYTE_ARRAY] as? FlutterStandardTypedData
+              let argRotation = data?[self.ARG_KEY_PROCESS_IMAGE_ROTATION] as? NSNumber
               
               var byteArray = [UInt8]()
               argByteArray?.data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                   byteArray = [UInt8](bytes)
               }
+              let rotation = CGFloat(truncating: argRotation ?? 0)
 
               guard byteArray.count > 0 else {
                   result(FlutterError(code: "MLKit-TextRecognition", message: "Failed to process image", details: nil))
                   return
               }
               
-              self.processImageToText(byteArray: byteArray, result: result)
+              self.processImageToText(byteArray: byteArray, rotation: rotation, result: result)
           } else {
               result(FlutterMethodNotImplemented)
           }
@@ -40,9 +43,9 @@ import Flutter
       return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
     
-    func processImageToText(byteArray: [UInt8], result: @escaping FlutterResult) {
+    func processImageToText(byteArray: [UInt8], rotation: CGFloat, result: @escaping FlutterResult) {
         let textRecognition = TextRecognitionHandler()
-        textRecognition.processImage(byteArray: byteArray, resulText: {(errorMessage, textResult) in
+        textRecognition.processImage(byteArray: byteArray, rotation: rotation, resulText: {(errorMessage, textResult) in
             guard errorMessage == nil else {
                 result(FlutterError(code: "MLKit-TextRecognition", message: errorMessage, details: nil))
                 return
