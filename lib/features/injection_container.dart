@@ -1,3 +1,4 @@
+import 'package:expense_app/core/util/regex_receipt_processor.dart';
 import 'package:expense_app/core/util/text_recognition_handler.dart';
 import 'package:expense_app/features/data/datasources/localdatasource/database_handler.dart';
 import 'package:expense_app/features/data/datasources/localdatasource/localdatasource.dart';
@@ -20,7 +21,6 @@ import 'package:expense_app/features/domain/usecases/update_fund_source_usecase.
 import 'package:expense_app/features/domain/usecases/update_log_use_case.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
-import 'package:expense_app/features/presentation/bloc/fund_source/fund_source_list/fund_source_list_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/fund_source/transaction/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/total_expense_month/total_expense_month_bloc.dart';
@@ -71,13 +71,6 @@ Future<void> init() async {
           )
   );
 
-  sl.registerFactory(
-          () => FundSourceListBloc(getFundSourcesUseCase: sl())
-  );
-  sl.registerFactory(
-          () => TextRecognitionHandler()
-  );
-
   // Usecase
   sl.registerFactory(() => GetTotalFundsUseCase(repository: sl()));
   sl.registerFactory(() => DeleteFundSourceUseCase(repo: sl()));
@@ -107,5 +100,11 @@ Future<void> init() async {
       ));
 
   // External
+  sl.registerLazySingleton<TextRecognitionHandler>(
+          () => TextRecognitionHandler()
+  );
+  sl.registerLazySingleton<RegexReceiptProcessor>(
+          () => RegexReceiptProcessor()
+  );
   sl.registerLazySingleton<DatabaseHandler>(() => DatabaseHandler());
 }
