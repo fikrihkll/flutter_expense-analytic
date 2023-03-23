@@ -37,7 +37,9 @@ class TextBlockMapper {
 
         return [
             TextMapper.KEY_TEXT: block.text,
-            TextMapper.KEY_RECOGNIZED_LANGUAGE: block.recognizedLanguages.first ?? "",
+            TextMapper.KEY_RECOGNIZED_LANGUAGE: block.recognizedLanguages.map({obj in
+                obj.languageCode ?? "und"
+            }).joined(separator: ", "),
             TextMapper.KEY_LINES: linesArray
         ]
     }
@@ -64,7 +66,7 @@ class ElementMapper {
     
         return [
             TextMapper.KEY_TEXT: element.text,
-            TextMapper.KEY_RECOGNIZED_LANGUAGE: "",
+            TextMapper.KEY_RECOGNIZED_LANGUAGE: element.recognizedLanguages.map{ $0.languageCode ?? "und" }.joined(separator: ","),
             TextMapper.KEY_SYMBOLS: symbolsArray,
             TextMapper.KEY_CONFIDENCE: 0.0
         ]
