@@ -1,5 +1,6 @@
 import 'package:expense_app/core/util/date_util.dart';
 import 'package:expense_app/core/util/money_util.dart';
+import 'package:expense_app/core/util/regex_receipt_processor.dart';
 import 'package:expense_app/core/util/text_recognition_handler.dart';
 import 'package:expense_app/core/util/theme_util.dart';
 import 'package:expense_app/features/data/models/log_model.dart';
@@ -11,7 +12,7 @@ import 'package:expense_app/features/presentation/bloc/expense_month/expense_mon
 import 'package:expense_app/features/presentation/bloc/fund_source/transaction/fund_source_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
-import 'package:expense_app/features/presentation/entities/text_recognized_mapper.dart';
+import 'package:expense_app/features/domain/entities/text_recognized_mapper.dart';
 import 'package:expense_app/features/presentation/pages/camera/camera_page.dart';
 import 'package:expense_app/features/presentation/widgets/button_widget.dart';
 import 'package:expense_app/features/presentation/widgets/floating_container.dart';
@@ -355,10 +356,8 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     await _checkPermissionAndInitialize();
     var result = await Navigator.pushNamed(context, route.scanPage);
     if (result is ImageResult) {
-      var textResult = await _textRecognitionHandler.processByteArray(result.bytes);
-      debugPrint("HERE\n$textResult");
-      var obj = textResult != null ? TextMapper.fromMap(textResult) : null;
-      debugPrint("OBJ result ${obj}");
+      var textResult = await _textRecognitionHandler.getTextFromImageBytes(result.bytes);
+      var regexResult = RegexReceiptProcessor().convertTextToReceipt(textResult?.text ?? "");
     }
   }
 
@@ -367,8 +366,6 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
       String nonDecimalNominal = text.replaceAll('.', '');
       _controllerNominal.text = MoneyUtil.getReadableMoney(int.parse(nonDecimalNominal));
       _controllerNominal.selection = TextSelection.fromPosition(TextPosition(offset: _controllerNominal.text.length));
-    } catch(e) {
-
-    }
+    } catch(e) {}
   }
 }
