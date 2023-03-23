@@ -1,4 +1,5 @@
 
+import 'package:expense_app/features/domain/entities/receipt_result.dart';
 import 'package:expense_app/features/injection_container.dart';
 import 'package:expense_app/features/presentation/bloc/expense_month/expense_month_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/fund_source/transaction/fund_source_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:expense_app/features/presentation/pages/date_selection/date_sele
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/home_page.dart';
+import 'package:expense_app/features/presentation/pages/receipt_scan_result/receipt_scan_result_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,6 +21,7 @@ const allLogsPage = 'all_logs_page';
 const dateSelectionPage = 'date_selection_page';
 const betaPage = 'beta_page';
 const scanPage = 'scan_page';
+const scanResultPage = 'scan_result_page';
 
 Route<dynamic> controller(RouteSettings settings) {
   switch (settings.name) {
@@ -56,6 +59,17 @@ Route<dynamic> controller(RouteSettings settings) {
     case scanPage:
       return MaterialPageRoute(
           builder: (context) => const CameraPage()
+      );
+    case scanResultPage:
+      return MaterialPageRoute(
+          builder: (context) => BlocProvider<FundSourceBloc>(
+            create: (create) => sl<FundSourceBloc>(),
+            child: ReceiptScanResultBottomSheet(receiptItemList: [
+              ReceiptResult(name: "abc", nominal: 123),
+              ReceiptResult(name: "abc", nominal: 123),
+              ReceiptResult(name: "abc", nominal: 123),
+            ],)
+          )
       );
     case allLogsPage:
       return MaterialPageRoute(
