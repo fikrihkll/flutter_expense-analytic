@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:expense_app/features/presentation/entities/text_recognized.dart';
+import 'package:expense_app/features/domain/entities/text_recognized.dart';
 
 class TextMapper {
   
