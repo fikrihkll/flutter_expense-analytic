@@ -332,12 +332,10 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
 
   void _onScanTapped() async {
     await _checkPermissionAndInitialize();
-    var result = await Navigator.pushNamed(context, route.scanPage);
-    if (result is ImageResult) {
-      var textResult = await _textRecognitionHandler.getTextFromImageBytes(result.bytes);
-      var regexResult = RegexReceiptProcessor().convertTextToReceipt(textResult?.text ?? "");
-      launchReceiptResultBottomSheet(regexResult);
-    }
+    // var result = await Navigator.pushNamed(context, route.scanPage);
+    var textResult = await _textRecognitionHandler.getTextFromImageUrl("https://www.upload.ee/image/15050755/Screenshot_2023-03-24_at_21.36.58.png");
+    var regexResult = RegexReceiptProcessor().convertTextToReceipt(textResult?.text ?? "");
+    launchReceiptResultBottomSheet(regexResult);
   }
 
   void launchReceiptResultBottomSheet(List<ReceiptResult> listData) async {
@@ -347,7 +345,10 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
           backgroundColor: Colors.transparent,
           topRadius: const Radius.circular(16),
           builder: (builder) {
-            return ReceiptScanResultBottomSheet(receiptItemList: listData);
+            return BlocProvider<FundSourceBloc>(
+                create: (create) => sl<FundSourceBloc>(),
+                child: ReceiptScanResultBottomSheet(receiptItemList: listData)
+            );
           }
       );
     } else {
@@ -355,7 +356,10 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
           context: context,
           backgroundColor: Colors.transparent,
           builder: (builder) {
-            return ReceiptScanResultBottomSheet(receiptItemList: listData);
+            return BlocProvider<FundSourceBloc>(
+                create: (create) => sl<FundSourceBloc>(),
+                child: ReceiptScanResultBottomSheet(receiptItemList: listData)
+            );
           }
       );
     }
