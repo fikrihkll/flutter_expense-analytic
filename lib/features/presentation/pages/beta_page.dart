@@ -26,7 +26,6 @@ class _BetaPageState extends State<BetaPage> {
   @override
   void initState() {
     super.initState();
-    DatabaseHandler().insertUser();
     _fundSourceBloc = BlocProvider.of<FundSourceBloc>(context);
     _fundSourceBloc.add(
         InsertFundSourceEvent(
