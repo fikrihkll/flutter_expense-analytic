@@ -2,6 +2,77 @@ import 'package:expense_app/features/data/datasources/localdatasource/database_h
 
 class QueryHandler {
 
+  static String createTableUsers() {
+    return """
+    CREATE TABLE ${DatabaseHandler.tableUsers}(
+      id INTEGER PRIMARY KEY AUTOINCREMENT, 
+      username TEXT NOT NULL, 
+      pass TEXT NOT NULL, 
+      name TEXT NOT NULL,
+      created_at TIMESTAMP NOT NULL,
+      updated_at TIMESTAMP NOT NULL
+    );
+    """;
+  }
+
+  static String createTableExpenses() {
+    return """
+    CREATE TABLE ${DatabaseHandler.tableExpenses}(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      fund_source_id INTEGER NULL, 
+      description TEXT NOT NULL, 
+      category TEXT NOT NULL,
+      nominal INTEGER NOT NULL,
+      date DATETIME NOT NULL,
+      day INTEGER NOT NULL,
+      month INTEGER NOT NULL,
+      year INTEGER NOT NULL,
+      created_at TIMESTAMP NOT NULL,
+      updated_at TIMESTAMP NOT NULL
+    );
+    """;
+  }
+
+  static String createTableFundSources() {
+    return """
+    CREATE TABLE ${DatabaseHandler.tableFundSources}(
+      id INTEGER PRIMARY KEY AUTOINCREMENT, 
+      user_id INTEGER NOT NULL, 
+      name TEXT NOT NULL, 
+      daily_fund INTEGER NULL,
+      weekly_fund INTEGER NULL,
+      monthly_fund INTEGER NULL,
+      created_at TIMESTAMP NOT NULL,
+      updated_at TIMESTAMP NOT NULL,
+      deleted_at TIMESTAMP NULL
+    );
+    """;
+  }
+
+  static String createTableBudgets() {
+    return """
+    CREATE TABLE ${DatabaseHandler.tableBudgets} (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT,
+      date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    """;
+  }
+
+  static String createTableBudgetUsers() {
+    return """
+    CREATE TABLE ${DatabaseHandler.tableBudgetUsers} (
+      id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      username TEXT NOT NULL,
+      image TEXT NULL
+    );
+    """;
+  }
+
   static String getTodayExpense(String date, bool isWeekend) {
     String query;
     if (isWeekend) {
