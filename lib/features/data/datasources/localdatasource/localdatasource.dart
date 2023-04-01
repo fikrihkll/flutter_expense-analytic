@@ -86,7 +86,7 @@ class LocalDataSourceImpl extends LocalDataSource{
 
   @override
   Future<void> insertDummyUser() async {
-    await await databaseHandler.insertUser();
+    // await databaseHandler.insertUser();
   }
 
   @override
