@@ -46,23 +46,27 @@ class _ReceiptScanResultBottomSheetState extends State<ReceiptScanResultBottomSh
   @override
   Widget build(BuildContext context) {
     _theme = Theme.of(context);
-    return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(topRight: Radius.circular(12), topLeft: Radius.circular(12))
-      ),
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 24,),
-              _buildTitle(),
-              const SizedBox(height: 16,),
-              ..._buildReceiptItems(),
-              const SizedBox(height: 24,),
-              _buildSubmitButton()
-            ],
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        decoration: BoxDecoration(
+          color: _theme.colorScheme.background,
+          borderRadius: const BorderRadius.only(topRight: Radius.circular(12), topLeft: Radius.circular(12))
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 24,),
+                _buildTitle(),
+                const SizedBox(height: 16,),
+                ..._buildReceiptItems(),
+                const SizedBox(height: 24,),
+                _buildSubmitButton()
+              ],
+            ),
           ),
         ),
       ),
