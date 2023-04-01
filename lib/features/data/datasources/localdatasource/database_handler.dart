@@ -1,9 +1,7 @@
 import 'package:expense_app/core/util/date_util.dart';
+import 'package:expense_app/features/data/datasources/localdatasource/migration_handler.dart';
 import 'package:expense_app/features/data/datasources/localdatasource/query_handler.dart';
-import 'package:expense_app/features/data/models/expense_limit_model.dart';
-import 'package:expense_app/features/data/models/log_detail_model.dart';
-import 'package:expense_app/features/data/models/log_model.dart';
-import 'package:expense_app/main.dart';
+import 'package:expense_app/features/data/models/budget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -13,6 +11,8 @@ class DatabaseHandler{
   static const String tableUsers = 'users';
   static const String tableExpenses = 'expenses';
   static const String tableFundSources = 'fund_sources';
+  static const String tableBudgets = 'budgets';
+  static const String tableBudgetUsers = 'budget_users';
 
   late Database? db=null;
 
@@ -20,61 +20,23 @@ class DatabaseHandler{
     String path = await getDatabasesPath();
     return openDatabase(
       join(path, 'expense.db'),
-      onUpgrade: (database, oldVersion, newVersion) async {
-        await database.execute("ALTER TABLE $tableFundSources ADD COLUMN deleted_at TIMESTAMP NULL");
-      },
+      onUpgrade: MigrationHandler.onUpgrade,
       onCreate: (database, version) async {
         await database.execute(
-          '''
-          CREATE TABLE $tableUsers(
-          id INTEGER PRIMARY KEY AUTOINCREMENT, 
-          username TEXT NOT NULL, 
-          pass TEXT NOT NULL, 
-          name TEXT NOT NULL,
-          created_at TIMESTAMP NOT NULL,
-          updated_at TIMESTAMP NOT NULL
-          );
-          ''',
+          QueryHandler.createTableUsers(),
         );
         await database.execute(
-          '''
-          CREATE TABLE $tableExpenses(
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          user_id INTEGER NOT NULL,
-          fund_source_id INTEGER NULL, 
-          description TEXT NOT NULL, 
-          category TEXT NOT NULL,
-          nominal INTEGER NOT NULL,
-          date DATETIME NOT NULL,
-          day INTEGER NOT NULL,
-          month INTEGER NOT NULL,
-          year INTEGER NOT NULL,
-          created_at TIMESTAMP NOT NULL,
-          updated_at TIMESTAMP NOT NULL
-          );
-          ''',
+          QueryHandler.createTableExpenses(),
         );
         await database.execute(
-          '''
-          CREATE TABLE $tableFundSources(
-          id INTEGER PRIMARY KEY AUTOINCREMENT, 
-          user_id INTEGER NOT NULL, 
-          name TEXT NOT NULL, 
-          daily_fund INTEGER NULL,
-          weekly_fund INTEGER NULL,
-          monthly_fund INTEGER NULL,
-          created_at TIMESTAMP NOT NULL,
-          updated_at TIMESTAMP NOT NULL,
-          deleted_at TIMESTAMP NULL
-          );
-          ''',
+          QueryHandler.createTableFundSources(),
         );
       },
-      version: 5,
+      version: 6,
     );
   }
 
-  Future<Database> _getDatabase()async{
+  Future<Database> _getDatabase() async {
     if(db == null){
       db = await initializeDB();
       return db!;
@@ -83,15 +45,16 @@ class DatabaseHandler{
     }
   }
 
-  Future<int> insertUser() async {
+  Future<int> insertUser(String name, String username, String email) async {
     int result = 0;
     final Database db = await _getDatabase();
 
     result = await db.insert(tableUsers, {
       "id": null,
-      "name": "Fikri Haikal",
-      "username": "fikrihkl",
-      "pass": "123",
+      "name": name,
+      "username": username,
+      "email": email,
+      "pass": ":P",
       "created_at": DateUtil.dbFormat.format(DateTime.now()),
       "updated_at": DateUtil.dbFormat.format(DateTime.now()),
     });
@@ -114,13 +77,14 @@ class DatabaseHandler{
     final Database db = await _getDatabase();
 
     result = await db.rawUpdate(
-        "UPDATE $tableExpenses SET nominal = ?, date = ?, description = ?, category = ?, fund_source_id = ? WHERE id = ?",
+        "UPDATE $tableExpenses SET nominal = ?, date = ?, description = ?, category = ?, fund_source_id = ?, budget_id = ? WHERE id = ?",
         [
           data["nominal"],
           data["date"],
           data["description"],
           data["category"],
           data["fund_source_id"],
+          data["budget_id"] ?? 1,
           data["id"]
         ]
     );
@@ -131,12 +95,13 @@ class DatabaseHandler{
     int result = 0;
     final Database db = await _getDatabase();
     await db.rawUpdate(
-        'UPDATE $tableFundSources SET daily_fund = ?, weekly_fund = ?, monthly_fund = ?, name = ? WHERE id = ?',
+        'UPDATE $tableFundSources SET daily_fund = ?, weekly_fund = ?, monthly_fund = ?, name = ?, budget_id = ? WHERE id = ?',
         [
           data["daily_fund"],
           data["weekly_fund"],
           data["monthly_fund"],
           data["name"],
+          data["budget_id"] ?? 1,
           data["id"]
         ]
     );
@@ -268,5 +233,28 @@ class DatabaseHandler{
       whereArgs: [id],
     );
   }
+
+  Future<void> insertBudget(int userId, BudgetModel entity) async {
+    final db = await _getDatabase();
+    await db.insert(
+      tableBudgets,
+      entity.toMap()
+    );
+  }
+
+  Future<void> insertBudgetUser(int id, String name, String username, String image) async {
+    final db = await _getDatabase();
+    await db.insert(
+        tableBudgets,
+        {
+          "id": id,
+          "name": name,
+          "username": username,
+          "image": image,
+        }
+    );
+  }
+
+
 
 }
