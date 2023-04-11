@@ -34,6 +34,26 @@ class QueryHandler {
     """;
   }
 
+  static String createTableNewExpenses() {
+    return """
+    CREATE TABLE ${DatabaseHandler.tableExpenses}_new(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      fund_source_id INTEGER NULL, 
+      description TEXT NOT NULL, 
+      category TEXT NOT NULL,
+      nominal DOUBLE NOT NULL,
+      date DATETIME NOT NULL,
+      day INTEGER NOT NULL,
+      month INTEGER NOT NULL,
+      year INTEGER NOT NULL,
+      budget_id INTEGER NOT NULL,
+      created_at TIMESTAMP NOT NULL,
+      updated_at TIMESTAMP NOT NULL
+    );
+    """;
+  }
+
   static String createTableFundSources() {
     return """
     CREATE TABLE ${DatabaseHandler.tableFundSources}(
@@ -50,12 +70,30 @@ class QueryHandler {
     """;
   }
 
+  static String createTableNewFundSources() {
+    return """
+    CREATE TABLE ${DatabaseHandler.tableFundSources}_new(
+      id INTEGER PRIMARY KEY AUTOINCREMENT, 
+      user_id INTEGER NOT NULL, 
+      name TEXT NOT NULL, 
+      daily_fund DOUBLE NULL,
+      weekly_fund DOUBLE NULL,
+      monthly_fund DOUBLE NULL,
+      budget_id INTEGER NOT NULL,
+      created_at TIMESTAMP NOT NULL,
+      updated_at TIMESTAMP NOT NULL,
+      deleted_at TIMESTAMP NULL
+    );
+    """;
+  }
+
   static String createTableBudgets() {
     return """
     CREATE TABLE ${DatabaseHandler.tableBudgets} (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       description TEXT,
+      currency TEXT,
       date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
@@ -138,6 +176,38 @@ class QueryHandler {
   static String getCategoryListFromExistingFund(int fundId, String fromDate, String untilDate) {
     String query = "SELECT category FROM ${DatabaseHandler.tableExpenses} WHERE fund_source_id = $fundId AND DATE(date) BETWEEN DATE('$fromDate') AND DATE('$untilDate')";
     return query;
+  }
+
+  static String moveDataExpensesToNewExpenses() {
+    return """
+    INSERT INTO ${DatabaseHandler.tableExpenses}_new (id, user_id, fund_source_id, description, category, nominal, date, day, month, year, created_at, updated_at, budget_id)
+SELECT id, user_id, fund_source_id, description, category, nominal, date, day, month, year, created_at, updated_at, budget_id
+FROM ${DatabaseHandler.tableExpenses};
+    """;
+  }
+
+  static String moveDataFundToNewFund() {
+    return """
+    INSERT INTO ${DatabaseHandler.tableFundSources}_new (id, user_id, name, daily_fund, weekly_fund, monthly_fund, created_at, updated_at, deleted_at, budget_id)
+SELECT id, user_id, name, daily_fund, weekly_fund, monthly_fund, created_at, updated_at, deleted_at, budget_id
+FROM ${DatabaseHandler.tableFundSources};
+    """;
+  }
+
+  static String dropTableExpense() {
+    return "DROP TABLE ${DatabaseHandler.tableExpenses}";
+  }
+
+  static String dropTableFundSource() {
+    return "DROP TABLE ${DatabaseHandler.tableFundSources}";
+  }
+
+  static String renameExpenseNewToExpense() {
+    return "ALTER TABLE ${DatabaseHandler.tableExpenses}_new RENAME TO ${DatabaseHandler.tableExpenses}";
+  }
+
+  static String renameFundSourceNewToFundSource() {
+    return "ALTER TABLE ${DatabaseHandler.tableFundSources}_new RENAME TO ${DatabaseHandler.tableFundSources}";
   }
 
 }
