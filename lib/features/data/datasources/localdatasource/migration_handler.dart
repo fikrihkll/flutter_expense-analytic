@@ -22,7 +22,15 @@ class MigrationHandler {
           "ALTER TABLE ${DatabaseHandler.tableUsers} ADD COLUMN image TEXT NULL",
           "ALTER TABLE ${DatabaseHandler.tableUsers} ADD COLUMN email TEXT NULL",
           "ALTER TABLE ${DatabaseHandler.tableFundSources} ADD COLUMN budget_id INTEGER NOT NULL DEFAULT 1",
-          "ALTER TABLE ${DatabaseHandler.tableExpenses} ADD COLUMN budget_id INTEGER NOT NULL DEFAULT 1"
+          "ALTER TABLE ${DatabaseHandler.tableExpenses} ADD COLUMN budget_id INTEGER NOT NULL DEFAULT 1",
+          QueryHandler.createTableNewExpenses(),
+          QueryHandler.createTableNewFundSources(),
+          QueryHandler.moveDataExpensesToNewExpenses(),
+          QueryHandler.moveDataFundToNewFund(),
+          QueryHandler.dropTableExpense(),
+          QueryHandler.dropTableFundSource(),
+          QueryHandler.renameExpenseNewToExpense(),
+          QueryHandler.renameFundSourceNewToFundSource(),
         ]
     )
   ];
