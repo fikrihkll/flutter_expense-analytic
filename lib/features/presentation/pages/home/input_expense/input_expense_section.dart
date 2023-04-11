@@ -264,7 +264,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
 
 
   LogModel _buildData(){
-    String nonDecimalNominal = _controllerNominal.text.replaceAll('.', '');
+    String nonDecimalNominal = _controllerNominal.text.replaceAll(',', '');
     debugPrint("HERE ${_selectedFundSource!.name}");
     debugPrint("HERE ${_selectedFundSource!.id}");
     return LogModel(
@@ -276,7 +276,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
       day: DateTime.now().day,
       month: DateTime.now().month,
       year: DateTime.now().year,
-      nominal: int.parse(nonDecimalNominal),
+      nominal: double.parse(nonDecimalNominal),
       fundSourceId: _selectedFundSource!.id,
       fundSourceName: _selectedFundSource!.name,
     );
@@ -313,8 +313,7 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
 
   void _processNominalText(String text){
     try{
-      String nonDecimalNominal = text.replaceAll('.', '');
-      _controllerNominal.text = MoneyUtil.getReadableMoney(int.parse(nonDecimalNominal));
+      _controllerNominal.text = MoneyUtil.getReadableMoney(double.parse(text));
       _controllerNominal.selection = TextSelection.fromPosition(TextPosition(offset: _controllerNominal.text.length));
     }catch(e){
 

@@ -4,7 +4,7 @@ import 'package:expense_app/features/domain/entities/expense_limit.dart';
 class FundSourceModel extends FundSource{
 
   final int id, userId;
-  final int? dailyFund, weeklyFund, monthlyFund;
+  final double? dailyFund, weeklyFund, monthlyFund;
   final String name;
 
   FundSourceModel({

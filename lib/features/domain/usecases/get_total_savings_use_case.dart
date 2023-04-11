@@ -3,14 +3,14 @@ import 'package:expense_app/core/error/failure.dart';
 import 'package:expense_app/core/usecase/usecase.dart';
 import 'package:expense_app/features/domain/repositories/expense_repository.dart';
 
-class GetTotalSavingsUseCase extends UseCase<int, GetTotalSavingsUseCaseParams> {
+class GetTotalSavingsUseCase extends UseCase<double, GetTotalSavingsUseCaseParams> {
 
   final ExpenseRepository repository;
 
   GetTotalSavingsUseCase({required this.repository});
 
   @override
-  Future<Either<Failure, int>> call(GetTotalSavingsUseCaseParams params) async {
+  Future<Either<Failure, double>> call(GetTotalSavingsUseCaseParams params) async {
     return await repository.getTotalSavings(params.fromDate, params.untilDate);
   }
 

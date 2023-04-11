@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 class FundSource extends Equatable{
 
   final int id, userId;
-  final int? dailyFund, weeklyFund, monthlyFund;
+  final double? dailyFund, weeklyFund, monthlyFund;
   final String name;
 
   FundSource({
@@ -19,7 +19,7 @@ class FundSource extends Equatable{
     return FundSource(id: id ?? -1, name: name ?? "", dailyFund: null, weeklyFund: null, monthlyFund: null, userId: 1);
   }
 
-  static int fetchFundNominal(FundSource fund) {
+  static double fetchFundNominal(FundSource fund) {
     if (fund.dailyFund != null && fund.dailyFund! >= 0) {
       return fund.dailyFund!;
     }

@@ -91,14 +91,14 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   }
 
   @override
-  Future<Either<Failure, int>> getTodayExpense() async {
+  Future<Either<Failure, double>> getTodayExpense() async {
     try{
       var result = await localDataSource.getTodayExpense(
           DateUtil.dbDateFormat.format(DateTime.now()),
           _isTodayWeekend(DateTime.now())
       );
       debugPrint("TODAY EXPENSE "+result.toString());
-      return Right(result.toInt());
+      return Right(result);
     }catch(e){
       debugPrint("TEST "+e.toString());
       return Left(ServerFailure(e.toString()));
@@ -106,14 +106,14 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   }
 
   @override
-  Future<Either<Failure, int>> getTodayLimit() async {
+  Future<Either<Failure, double>> getTodayLimit() async {
     try{
       var now = DateTime.now();
 
       var result = await localDataSource.getTodayLimit(
           _isTodayWeekend(now)
       );
-      return Right(result.toInt());
+      return Right(result);
     }catch(e){
       debugPrint("TEST LIMIT " + e.toString());
       return Left(ServerFailure(e.toString()));
@@ -193,7 +193,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   }
 
   @override
-  Future<Either<Failure, int>> getExpenseInMonth(DateTime? fromDate, DateTime? untilDate) async {
+  Future<Either<Failure, double>> getExpenseInMonth(DateTime? fromDate, DateTime? untilDate) async {
     try{
       String finalFromDate = fromDate != null ? DateUtil.dbDateFormat.format(fromDate) : DateUtil.dbDateFormat.format(DateUtil.getFirstDateOfThisMonth());
       String finalUntilDate = untilDate != null ? DateUtil.dbDateFormat.format(untilDate) : DateUtil.dbDateFormat.format(DateUtil.getLastDateOfThisMonth());
@@ -223,7 +223,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   }
 
   @override
-  Future<Either<Failure, int>> getTotalSavings(DateTime fromDate, DateTime untilDate,) async {
+  Future<Either<Failure, double>> getTotalSavings(DateTime fromDate, DateTime untilDate,) async {
     try{
       var totalFunds = await localDataSource.getTotalFunds(
           DateUtil.dbDateFormat.format(fromDate),
@@ -254,7 +254,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   }
 
   @override
-  Future<Either<Failure, int>> getTotalFunds(DateTime fromDate, DateTime untilDate) async {
+  Future<Either<Failure, double>> getTotalFunds(DateTime fromDate, DateTime untilDate) async {
     try{
       var totalFunds = await localDataSource.getTotalFunds(
           DateUtil.dbDateFormat.format(fromDate),

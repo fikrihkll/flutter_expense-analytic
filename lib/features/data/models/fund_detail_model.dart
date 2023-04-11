@@ -3,17 +3,17 @@ import 'package:expense_app/features/domain/entities/fund_detail.dart';
 class FundDetailModel extends FundDetail{
 
   final int id;
-  final int nominal;
+  final double nominal;
   final String name;
-  final int? dailyFundTotal;
-  final int? weeklyFundTotal;
-  final int? monthlyFundTotal;
+  final double? dailyFundTotal;
+  final double? weeklyFundTotal;
+  final double? monthlyFundTotal;
   final int days;
   final int weeks;
   final int months;
-  final int? dailyFund;
-  final int? weeklyFund;
-  final int? monthlyFund;
+  final double? dailyFund;
+  final double? weeklyFund;
+  final double? monthlyFund;
 
   FundDetailModel({
     required this.id,
@@ -48,9 +48,9 @@ class FundDetailModel extends FundDetail{
         id: json['id'],
         nominal: json['nominal'],
         name: json['name'],
-        dailyFundTotal: json['daily_fund_total'] != null ? double.parse(json['daily_fund_total'].toString()).toInt() : null,
-        weeklyFundTotal: json['weekly_fund_total'] != null ? double.parse(json['weekly_fund_total'].toString()).toInt() : null,
-        monthlyFundTotal: json['monthly_fund_total'] != null ? double.parse(json['monthly_fund_total'].toString()).toInt() : null,
+        dailyFundTotal: json['daily_fund_total'] != null ? double.parse(json['daily_fund_total'].toString()) : null,
+        weeklyFundTotal: json['weekly_fund_total'] != null ? double.parse(json['weekly_fund_total'].toString()) : null,
+        monthlyFundTotal: json['monthly_fund_total'] != null ? double.parse(json['monthly_fund_total'].toString()) : null,
         days: json['days'] != null ? (json['days'] as double).toInt() : 0,
         weeks: json['weeks'],
         months: json['months'],

@@ -95,7 +95,7 @@ class _FundSourceSelectableListState extends State<FundSourceSelectableList> wit
           padding: const EdgeInsets.all(16),
           shadowEnabled: true,
           child: widget.showNominal ?
-              Text("$item - Rp.${MoneyUtil.getReadableMoney(FundSource.fetchFundNominal(widget.listData[position]))}") :
+              Text("$item - Rp.${MoneyUtil.getReadableMoney(FundSource.fetchFundNominal(widget.listData[position]).toDouble())}") :
               Text(item)
       ),
     );

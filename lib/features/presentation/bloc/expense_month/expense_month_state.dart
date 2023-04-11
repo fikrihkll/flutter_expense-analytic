@@ -6,7 +6,7 @@ abstract class ExpenseMonthState {}
 class ExpenseMonthInitial extends ExpenseMonthState {}
 
 class ExpenseInMonthLoaded extends ExpenseMonthState {
-  final int data;
+  final double data;
 
   ExpenseInMonthLoaded({required this.data});
 }

@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 
 class FundDetail {
   final int id;
-  final int nominal;
+  final double nominal;
   final String name;
-  final int? dailyFundTotal;
-  final int? weeklyFundTotal;
-  final int? monthlyFundTotal;
+  final double? dailyFundTotal;
+  final double? weeklyFundTotal;
+  final double? monthlyFundTotal;
   final int days;
   final int weeks;
   final int months;
-  final int? dailyFund;
-  final int? weeklyFund;
-  final int? monthlyFund;
+  final double? dailyFund;
+  final double? weeklyFund;
+  final double? monthlyFund;
 
   FundDetail({
     required this.id,
@@ -29,7 +29,7 @@ class FundDetail {
     required this.monthlyFund
   });
 
-  static int fetchFundTotalNominal(FundDetail fundDetail) {
+  static double fetchFundTotalNominal(FundDetail fundDetail) {
     if (fundDetail.dailyFundTotal != null) {
       return fundDetail.dailyFundTotal!;
     }
@@ -42,7 +42,7 @@ class FundDetail {
     return 0;
   }
 
-  static int fetchFundNominal(FundDetail fundDetail) {
+  static double fetchFundNominal(FundDetail fundDetail) {
     if (fundDetail.dailyFund != null) {
       debugPrint("HERE MAP D ${fundDetail.dailyFund}");
       return fundDetail.dailyFund!;

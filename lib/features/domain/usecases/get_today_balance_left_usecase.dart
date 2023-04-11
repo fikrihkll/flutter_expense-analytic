@@ -3,7 +3,7 @@ import 'package:expense_app/core/error/failure.dart';
 import 'package:expense_app/core/usecase/usecase.dart';
 import 'package:expense_app/features/domain/repositories/expense_repository.dart';
 
-class GetTodayBalanceLeftUseCase extends UseCase<int, NoParams>{
+class GetTodayBalanceLeftUseCase extends UseCase<double, NoParams>{
 
   final ExpenseRepository repo;
 
@@ -11,9 +11,9 @@ class GetTodayBalanceLeftUseCase extends UseCase<int, NoParams>{
   GetTodayBalanceLeftUseCase({required this.repo});
 
   @override
-  Future<Either<Failure, int>> call(NoParams params) async {
-    int limitToday = -1;
-    int expenseToday = -1;
+  Future<Either<Failure, double>> call(NoParams params) async {
+    double limitToday = -1;
+    double expenseToday = -1;
     var limitRepoResult = await repo.getTodayLimit();
     var expenseTodayRepoResult = await repo.getTodayExpense();
 

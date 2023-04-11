@@ -206,12 +206,12 @@ class _InputExpenseLimitDialogState extends State<InputExpenseLimitDialog> {
   }
 
   FundSourceModel _buildData(){
-    String nonDecimalNominal = _controllerNominal.text.replaceAll('.', '');
+    String nonDecimalNominal = _controllerNominal.text.replaceAll(',', '');
     return FundSourceModel(
         id: _selectedFundSource != null ? _selectedFundSource!.id : -1,
-        dailyFund: _selectedFundType == 0 ? int.parse(nonDecimalNominal) : null,
-        weeklyFund: _selectedFundType == 1 ? int.parse(nonDecimalNominal) : null,
-        monthlyFund: _selectedFundType == 2 ? int.parse(nonDecimalNominal) : null,
+        dailyFund: _selectedFundType == 0 ? double.parse(nonDecimalNominal) : null,
+        weeklyFund: _selectedFundType == 1 ? double.parse(nonDecimalNominal) : null,
+        monthlyFund: _selectedFundType == 2 ? double.parse(nonDecimalNominal) : null,
         name: _controllerName.text,
         userId: _selectedFundSource != null ? _selectedFundSource!.userId : 1
     );
@@ -238,7 +238,7 @@ class _InputExpenseLimitDialogState extends State<InputExpenseLimitDialog> {
   void _processNominalText(String text, TextEditingController controller){
     try{
       String nonDecimalNominal = text.replaceAll('.', '');
-      controller.text = MoneyUtil.getReadableMoney(int.parse(nonDecimalNominal));
+      controller.text = MoneyUtil.getReadableMoney(double.parse(nonDecimalNominal));
       controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
       // ignore: empty_catches
     }catch(e){

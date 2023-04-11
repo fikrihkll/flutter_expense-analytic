@@ -19,13 +19,13 @@ abstract class ExpenseRepository{
 
   Future<Either<Failure, bool>> insertFundSource(FundSourceModel fundSource);
 
-  Future<Either<Failure, int>> getTodayExpense();
+  Future<Either<Failure, double>> getTodayExpense();
 
-  Future<Either<Failure, int>> getExpenseInMonth(DateTime? fromDate, DateTime? untilDate);
+  Future<Either<Failure, double>> getExpenseInMonth(DateTime? fromDate, DateTime? untilDate);
 
-  Future<Either<Failure, int>> getTodayLimit();
+  Future<Either<Failure, double>> getTodayLimit();
 
-  Future<Either<Failure, int>> getTotalFunds(DateTime fromDate, DateTime untilDate);
+  Future<Either<Failure, double>> getTotalFunds(DateTime fromDate, DateTime untilDate);
 
   Future<Either<Failure, List<Log>>> getRecentLogs();
 
@@ -41,5 +41,5 @@ abstract class ExpenseRepository{
 
   Future<Either<Failure, List<LogDetail>>> getExpenseTotalBasedCategoryInMonth(DateTime fromDate, DateTime untilDate,);
 
-  Future<Either<Failure, int>> getTotalSavings(DateTime fromDate, DateTime untilDate,);
+  Future<Either<Failure, double>> getTotalSavings(DateTime fromDate, DateTime untilDate,);
 }
