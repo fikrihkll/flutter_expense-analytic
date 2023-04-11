@@ -10,6 +10,7 @@ import 'package:expense_app/features/presentation/pages/date_selection/date_sele
 import 'package:expense_app/features/presentation/bloc/balance_left/balance_left_bloc.dart';
 import 'package:expense_app/features/presentation/bloc/logs/logs_bloc.dart';
 import 'package:expense_app/features/presentation/pages/home/home_page.dart';
+import 'package:expense_app/features/presentation/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,6 +18,7 @@ const homePage = 'home_page';
 const allLogsPage = 'all_logs_page';
 const dateSelectionPage = 'date_selection_page';
 const betaPage = 'beta_page';
+const loginPage = 'login_page';
 
 Route<dynamic> controller(RouteSettings settings) {
   switch (settings.name) {
@@ -76,6 +78,10 @@ Route<dynamic> controller(RouteSettings settings) {
               ],
               child: const AllLogsPage()
           )
+      );
+    case loginPage:
+      return MaterialPageRoute(
+          builder: (context) => const LoginPage()
       );
 
     default:
