@@ -6,7 +6,7 @@ abstract class BalanceLeftState {}
 class BalanceLeftInitial extends BalanceLeftState {}
 
 class BalanceLeftLoaded extends BalanceLeftState {
-  final int data;
+  final double data;
 
   BalanceLeftLoaded({required this.data});
 }
@@ -18,7 +18,7 @@ class BalanceLeftError extends BalanceLeftState {
 }
 
 class TotalSavingsInMonthLoaded extends BalanceLeftState {
-  final int data;
+  final double data;
 
   TotalSavingsInMonthLoaded({required this.data});
 }
