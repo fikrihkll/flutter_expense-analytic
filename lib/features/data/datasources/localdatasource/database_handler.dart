@@ -67,6 +67,9 @@ class DatabaseHandler{
     final Database db = await _getDatabase();
 
     data['id'] = null;
+    if (data['budget_id'] == null) {
+      data['budget_id'] = 1;
+    }
     // Insert TodoModel to database which model that has been converted to map
     result = await db.insert(tableExpenses, data);
     return result;
@@ -126,14 +129,14 @@ class DatabaseHandler{
     return result;
   }
 
-  Future<int?> getTodayExpense(String date, bool isTodayWeekend) async {
+  Future<double?> getTodayExpense(String date, bool isTodayWeekend) async {
     final Database db = await _getDatabase();
 
     final List<Map<String, dynamic>> queryResult = await db.rawQuery(QueryHandler.getTodayExpense(date, isTodayWeekend));
     return queryResult.first['nominal'];
   }
 
-  Future<int?> getMonthlyExpense(String startDate, String endDate) async {
+  Future<double?> getMonthlyExpense(String startDate, String endDate) async {
     final Database db = await _getDatabase();
     final List<Map<String, dynamic>> queryResult = await db.rawQuery(
         QueryHandler.getMonthlyExpense(startDate, endDate)
