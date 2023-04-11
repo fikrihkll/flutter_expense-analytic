@@ -12,7 +12,7 @@ class TotalFundsError extends TotalFundsState {
 }
 
 class TotalFundsLoaded extends TotalFundsState {
-  final int data;
+  final double data;
 
   TotalFundsLoaded({required this.data});
 }
