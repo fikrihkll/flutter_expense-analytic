@@ -3,7 +3,7 @@ import 'package:expense_app/features/domain/entities/log_detail.dart';
 class LogDetailModel extends LogDetail{
 
   final String category;
-  final int nominal;
+  final double nominal;
 
   LogDetailModel({
     required this.category,

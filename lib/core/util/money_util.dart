@@ -2,21 +2,11 @@ import 'package:expense_app/features/domain/entities/expense_categroy.dart';
 
 class MoneyUtil{
 
-  static String getReadableMoney(int nominal){
-    String nominalStr = nominal.toString();
-    String finalStr = '';
-    int counter = 0;
-    for(int i=nominalStr.length-1; i>=0; i--){
-      if(counter == 3){
-        finalStr += '.';
-        finalStr += nominalStr[i];
-        counter = 1;
-      }else{
-        finalStr += nominalStr[i];
-        counter++;
-      }
-    }
-    return finalStr.split('').reversed.join('');
+  static String getReadableMoney(double nominal){
+    String formattedValue = nominal.toStringAsFixed(0)
+        .replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+            (Match match) => '${match.group(1)},');
+    return formattedValue;
   }
 
   static final List<ExpenseCategory> listCategory = [

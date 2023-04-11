@@ -7,7 +7,7 @@ class Log extends Equatable{
   final String category;
   final String description;
   final String date;
-  final int nominal;
+  final double nominal;
   final int day;
   final int month;
   final int year;

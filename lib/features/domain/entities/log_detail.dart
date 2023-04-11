@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 class LogDetail extends Equatable{
 
   final String category;
-  final int nominal;
+  final double nominal;
 
   LogDetail({
     required this.category,

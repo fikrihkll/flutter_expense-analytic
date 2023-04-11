@@ -13,7 +13,7 @@ abstract class LocalDataSource{
 
   Future<void> insertFundSource(Map<String, dynamic> fundSource);
 
-  Future<int> getTodayExpense(String date, bool isWeekend);
+  Future<double> getTodayExpense(String date, bool isWeekend);
 
   Future<double> getTodayLimit(bool isWeekend);
 
@@ -27,13 +27,13 @@ abstract class LocalDataSource{
 
   Future<List<Map<String, dynamic>>> getDetailExpenseIntMonth(String fromDate, String untilDate);
 
-  Future<int> getExpenseInMonth(String fromDate, String untilDate);
+  Future<double> getExpenseInMonth(String fromDate, String untilDate);
 
   Future<void> deleteLog(int id);
 
   Future<void> deleteFundSource(int id);
 
-  Future<int> getTotalFunds(String fromDate, String untilDate);
+  Future<double> getTotalFunds(String fromDate, String untilDate);
 
 }
 
@@ -70,8 +70,8 @@ class LocalDataSourceImpl extends LocalDataSource{
   }
 
   @override
-  Future<int> getTodayExpense(String date, bool isWeekend) async {
-    return (await databaseHandler.getTodayExpense(date, isWeekend)) ?? 0;
+  Future<double> getTodayExpense(String date, bool isWeekend) async {
+    return (await databaseHandler.getTodayExpense(date, isWeekend)) ?? 0.0;
   }
 
   @override
@@ -110,17 +110,17 @@ class LocalDataSourceImpl extends LocalDataSource{
   }
 
   @override
-  Future<int> getExpenseInMonth(String fromDate, String untilDate) async {
+  Future<double> getExpenseInMonth(String fromDate, String untilDate) async {
     return (await databaseHandler.getMonthlyExpense(fromDate, untilDate)) ?? 0;
   }
 
   @override
-  Future<int> getTotalFunds(String fromDate, String untilDate) async {
+  Future<double> getTotalFunds(String fromDate, String untilDate) async {
     var listFunds = await databaseHandler.getTotalFunds(fromDate, untilDate);
-    int totalFunds = 0;
+    double totalFunds = 0;
     listFunds.forEach((element) {
       if (element['total_funds'] != null) {
-        totalFunds += double.parse((element['total_funds'].toString())).toInt();
+        totalFunds += double.parse((element['total_funds'].toString()));
       }
     });
     return totalFunds;

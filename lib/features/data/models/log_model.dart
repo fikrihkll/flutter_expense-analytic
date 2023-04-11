@@ -11,7 +11,7 @@ class LogModel extends Log{
   final int day;
   final int month;
   final int year;
-  final int nominal;
+  final double nominal;
   final String? fundSourceName;
 
   const LogModel({
