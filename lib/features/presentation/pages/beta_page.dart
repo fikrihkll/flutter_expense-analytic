@@ -17,7 +17,6 @@ class _BetaPageState extends State<BetaPage> {
 
   late ThemeData _theme;
 
-  List<String> listData = ["Kuntul", "Ngews", "Moan"];
   int _selectedItem = 0;
 
   late FundSourceBloc _fundSourceBloc;
@@ -27,19 +26,6 @@ class _BetaPageState extends State<BetaPage> {
   void initState() {
     super.initState();
     _fundSourceBloc = BlocProvider.of<FundSourceBloc>(context);
-    _fundSourceBloc.add(
-        InsertFundSourceEvent(
-            fundSourceModel: FundSourceModel(
-              userId: 1,
-              name: "Kuluk",
-              monthlyFund: null,
-              weeklyFund: null,
-              dailyFund: 40000,
-              id: -1
-            )
-        )
-    );
-    _fundSourceBloc.add(GetFundSourceEvent());
   }
 
   @override
@@ -86,13 +72,4 @@ class _BetaPageState extends State<BetaPage> {
     );
   }
 
-  List<Widget> _buildItems() {
-    List<Widget> listWidget = [];
-
-    listData.asMap().forEach((index, value) {
-      listWidget.add(_buildItem(index, value));
-    });
-
-    return listWidget;
-  }
 }
