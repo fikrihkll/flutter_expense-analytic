@@ -12,7 +12,7 @@ class InsertLogEvent extends LogsEvent {
 }
 
 class DeleteLogEvent extends LogsEvent {
-  final int id;
+  final String id;
 
   DeleteLogEvent({required this.id});
 }
@@ -21,7 +21,7 @@ class LoadAllLogEvent extends LogsEvent {
   final bool isRefreshing, retainDateRange;
   final DateTime fromDate, untilDate;
   final String? categoryFilter;
-  final int? fundIdFilter;
+  final String? fundIdFilter;
 
   LoadAllLogEvent({
     required this.isRefreshing,
