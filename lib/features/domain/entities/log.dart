@@ -1,9 +1,11 @@
 import 'package:equatable/equatable.dart';
 
+import '../../data/models/log_model.dart';
+
 class Log extends Equatable{
-  final int id;
-  final int userId;
-  final int? fundSourceId;
+  final String id;
+  final String userId;
+  final String? fundSourceId;
   final String category;
   final String description;
   final String date;
@@ -26,6 +28,22 @@ class Log extends Equatable{
     required this.year,
     required this.fundSourceName,
   });
+
+  static Log fromModel(LogModel model) {
+    return Log(
+      id: model.id,
+      userId: model.userId,
+      fundSourceId: model.fundSourceId,
+      category: model.category,
+      description: model.description,
+      date: model.date,
+      nominal: model.nominal,
+      day: model.day,
+      month: model.month,
+      year: model.year,
+      fundSourceName: model.fundSourceName
+    );
+  }
 
   @override
   List<Object?> get props => [
