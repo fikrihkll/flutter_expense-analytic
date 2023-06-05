@@ -29,7 +29,7 @@ class GetLogsInMonthUseCaseParams {
   final DateTime fromDate, untilDate;
   final int limit, page;
   final String? categoryFilter;
-  final int? fundIdFilter;
+  final String? fundIdFilter;
 
   GetLogsInMonthUseCaseParams({
     required this.fromDate,
