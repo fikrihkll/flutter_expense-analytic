@@ -18,7 +18,7 @@ class DeleteFundSourceUseCase extends UseCase<bool, DeleteFundSourceUseCaseParam
 }
 
 class DeleteFundSourceUseCaseParams {
-  final int id;
+  final String id;
 
   DeleteFundSourceUseCaseParams({required this.id});
 }
