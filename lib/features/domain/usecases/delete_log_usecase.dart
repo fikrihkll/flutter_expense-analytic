@@ -19,7 +19,7 @@ class DeleteLogUseCase extends UseCase<bool, DeleteLogUseCaseParams>{
 }
 
 class DeleteLogUseCaseParams {
-  final int id;
+  final String id;
 
   DeleteLogUseCaseParams({required this.id});
 }

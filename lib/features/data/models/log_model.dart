@@ -1,10 +1,13 @@
 import 'package:expense_app/core/util/date_util.dart';
-import 'package:expense_app/features/domain/entities/log.dart';
 
-class LogModel extends Log{
-  final int id;
-  final int userId;
-  final int? fundSourceId;
+
+/// LOCAL TABLE
+/// expenses
+class LogModel {
+  final String id;
+  final String userId;
+  final String? fundSourceId;
+  final String? budgetId;
   final String category;
   final String description;
   final String date;
@@ -12,12 +15,13 @@ class LogModel extends Log{
   final int month;
   final int year;
   final double nominal;
-  final String? fundSourceName;
+  final String? fundSourceName; // not part of the table
 
   const LogModel({
     required this.id,
     required this.userId,
     required this.fundSourceId,
+    required this.budgetId,
     required this.category,
     required this.description,
     required this.date,
@@ -26,25 +30,14 @@ class LogModel extends Log{
     required this.day,
     required this.month,
     required this.year
-  }):super(
-    id: id,
-    userId: userId,
-    fundSourceId: fundSourceId,
-    category: category,
-    description: description,
-    date: date,
-    nominal: nominal,
-    fundSourceName: fundSourceName,
-    day: day,
-    month: month,
-    year: year
-  );
+  });
 
   factory LogModel.fromMap(Map<String, dynamic> map){
     return LogModel(
-        id: map['id'],
-        userId: map['user_id'],
-        fundSourceId: map['fund_source_id'],
+        id: map['id'].toString(),
+        userId: map['user_id'].toString(),
+        fundSourceId: map['fund_source_id'].toString(),
+        budgetId: map['budget_id'].toString(),
         category: map['category'],
         description: map['description'],
         date: map['date'],
@@ -58,9 +51,10 @@ class LogModel extends Log{
 
   static Map<String, dynamic> toMap(LogModel data){
     return {
-      'id': data.id > 0 ? data.id : null,
+      'id': data.id.isNotEmpty ? data.id : null,
       'user_id': data.userId,
       'fund_source_id': data.fundSourceId,
+      'budget_id': data.budgetId,
       'category': data.category,
       'description': data.description,
       'date': data.date,
@@ -82,6 +76,7 @@ class LogModel extends Log{
     nominal,
     userId,
     fundSourceId,
+    budgetId,
     day,
     month,
     year

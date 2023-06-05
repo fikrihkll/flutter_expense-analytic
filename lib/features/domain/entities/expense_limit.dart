@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
+import 'package:expense_app/features/data/models/expense_limit_model.dart';
 
 class FundSource extends Equatable{
 
-  final int id, userId;
+  final String id, userId;
   final double? dailyFund, weeklyFund, monthlyFund;
   final String name;
 
@@ -15,8 +16,19 @@ class FundSource extends Equatable{
     required this.userId
   });
 
-  factory FundSource.idAndNameOnly(int? id, String? name) {
-    return FundSource(id: id ?? -1, name: name ?? "", dailyFund: null, weeklyFund: null, monthlyFund: null, userId: 1);
+  factory FundSource.idAndNameOnly(String? id, String? name) {
+    return FundSource(id: id ?? "", name: name ?? "", dailyFund: null, weeklyFund: null, monthlyFund: null, userId: "1");
+  }
+
+  static FundSource fromModel(FundSourceModel model) {
+    return FundSource(
+        id: model.id,
+        name: model.name,
+        dailyFund: model.dailyFund?.toDouble(),
+        weeklyFund: model.weeklyFund?.toDouble(),
+        monthlyFund: model.monthlyFund?.toDouble(),
+        userId: model.userId
+    );
   }
 
   static double fetchFundNominal(FundSource fund) {
