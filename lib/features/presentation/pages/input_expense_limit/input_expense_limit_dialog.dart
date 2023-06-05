@@ -208,12 +208,13 @@ class _InputExpenseLimitDialogState extends State<InputExpenseLimitDialog> {
   FundSourceModel _buildData(){
     String nonDecimalNominal = _controllerNominal.text.replaceAll(',', '');
     return FundSourceModel(
-        id: _selectedFundSource != null ? _selectedFundSource!.id : -1,
+        id: _selectedFundSource != null ? _selectedFundSource!.id : "",
+        budgetId: "",
         dailyFund: _selectedFundType == 0 ? double.parse(nonDecimalNominal) : null,
         weeklyFund: _selectedFundType == 1 ? double.parse(nonDecimalNominal) : null,
         monthlyFund: _selectedFundType == 2 ? double.parse(nonDecimalNominal) : null,
         name: _controllerName.text,
-        userId: _selectedFundSource != null ? _selectedFundSource!.userId : 1
+        userId: _selectedFundSource != null ? _selectedFundSource!.userId : "1"
     );
   }
 
