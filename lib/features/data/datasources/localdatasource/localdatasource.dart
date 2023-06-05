@@ -19,7 +19,7 @@ abstract class LocalDataSource{
 
   Future<List<Map<String, dynamic>>> getRecentLogs();
 
-  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page, {int? fundIdFilter, String? categoryFilter});
+  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page, {String? fundIdFilter, String? categoryFilter});
 
   Future<List<Map<String, dynamic>>> getFundSources();
 
@@ -29,9 +29,9 @@ abstract class LocalDataSource{
 
   Future<double> getExpenseInMonth(String fromDate, String untilDate);
 
-  Future<void> deleteLog(int id);
+  Future<void> deleteLog(String id);
 
-  Future<void> deleteFundSource(int id);
+  Future<void> deleteFundSource(String id);
 
   Future<double> getTotalFunds(String fromDate, String untilDate);
 
@@ -44,7 +44,7 @@ class LocalDataSourceImpl extends LocalDataSource{
   LocalDataSourceImpl({required this.databaseHandler});
 
   @override
-  Future<void> deleteLog(int id) async {
+  Future<void> deleteLog(String id) async {
     await databaseHandler.deleteExpense(id);
   }
 
@@ -59,9 +59,9 @@ class LocalDataSourceImpl extends LocalDataSource{
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page, {int? fundIdFilter, String? categoryFilter}) async {
+  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page, {String? fundIdFilter, String? categoryFilter}) async {
     debugPrint("HERE -> $fundIdFilter");
-    return await databaseHandler.getLogsInMonth(fromDate, untilDate, limit, page, fundIdFilter: fundIdFilter ?? -1, categoryFilter: categoryFilter ?? "");
+    return await databaseHandler.getLogsInMonth(fromDate, untilDate, limit, page, fundIdFilter: fundIdFilter ?? "", categoryFilter: categoryFilter ?? "");
   }
 
   @override
@@ -127,7 +127,7 @@ class LocalDataSourceImpl extends LocalDataSource{
   }
 
   @override
-  Future<void> deleteFundSource(int id) async {
+  Future<void> deleteFundSource(String id) async {
     await databaseHandler.deleteFundSource(id);
   }
 
