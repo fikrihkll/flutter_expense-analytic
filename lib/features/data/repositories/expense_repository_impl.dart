@@ -22,11 +22,11 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   ExpenseRepositoryImpl({required this.localDataSource});
 
   @override
-  Future<Either<Failure, bool>> deleteLog(int id) async {
-    try{
+  Future<Either<Failure, bool>> deleteLog(String id) async {
+    try {
       await localDataSource.deleteLog(id);
       return const Right(true);
-    }catch(e){
+    } catch(e) {
       debugPrint(e.toString());
       return Left(ServerFailure(e.toString()));
     }
@@ -34,7 +34,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
 
   @override
   Future<Either<Failure, List<FundDetail>>> getDetailExpenseIntMonth(DateTime fromDate, DateTime untilDate) async {
-    try{
+    try {
       var result = await localDataSource.getDetailExpenseIntMonth(
           DateUtil.dbDateFormat.format(fromDate),
           DateUtil.dbDateFormat.format(untilDate)
@@ -42,7 +42,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
 
       var resultMapped = result.map((e) => FundDetailModel.fromJson(e)).toList();
       return Right(resultMapped);
-    }catch(e){
+    } catch(e) {
       debugPrint(e.toString());
       return Left(ServerFailure(e.toString()));
     }
@@ -50,29 +50,29 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
 
   @override
   Future<Either<Failure, List<FundSource>>> getFundSources() async {
-    try{
+    try {
       var result = await localDataSource.getFundSources();
-      var resultMapped = result.map((e) => FundSourceModel.fromMap(e)).toList();
+      var resultMapped = result.map((e) => FundSource.fromModel(FundSourceModel.fromMap(e))).toList();
       return Right(resultMapped);
-    }catch(e){
+    } catch(e) {
       debugPrint(e.toString());
       return Left(ServerFailure(e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, List<Log>>> getLogsInMonth(DateTime fromDate, DateTime untilDate, int limit, int page, {int? fundIdFilter, String? categoryFilter}) async {
-    try{
+  Future<Either<Failure, List<Log>>> getLogsInMonth(DateTime fromDate, DateTime untilDate, int limit, int page, {String? fundIdFilter, String? categoryFilter}) async {
+    try {
       var result = await localDataSource.getLogsInMonth(
           DateUtil.dbDateFormat.format(fromDate),
           DateUtil.dbDateFormat.format(untilDate),
           limit, page, fundIdFilter: fundIdFilter,
           categoryFilter: categoryFilter
       );
-      var resultMapped = result.map((e) => LogModel.fromMap(e)).toList();
+      var resultMapped = result.map((e) => Log.fromModel(LogModel.fromMap(e))).toList();
       debugPrint("LENGTH ALL LOGS => ${resultMapped.length}");
       return Right(resultMapped);
-    }catch(e){
+    } catch(e) {
       debugPrint(e.toString());
       return Left(ServerFailure(e.toString()));
     }
@@ -80,11 +80,11 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
 
   @override
   Future<Either<Failure, List<Log>>> getRecentLogs() async {
-    try{
+    try {
       var result = await localDataSource.getRecentLogs();
-      var resultMapped = result.map((e) => LogModel.fromMap(e)).toList();
+      var resultMapped = result.map((e) => Log.fromModel(LogModel.fromMap(e))).toList();
       return Right(resultMapped);
-    }catch(e){
+    } catch(e) {
       debugPrint(e.toString());
       return Left(ServerFailure(e.toString()));
     }
@@ -92,14 +92,14 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
 
   @override
   Future<Either<Failure, double>> getTodayExpense() async {
-    try{
+    try {
       var result = await localDataSource.getTodayExpense(
           DateUtil.dbDateFormat.format(DateTime.now()),
           _isTodayWeekend(DateTime.now())
       );
       debugPrint("TODAY EXPENSE "+result.toString());
       return Right(result);
-    }catch(e){
+    } catch(e) {
       debugPrint("TEST "+e.toString());
       return Left(ServerFailure(e.toString()));
     }
@@ -107,14 +107,14 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
 
   @override
   Future<Either<Failure, double>> getTodayLimit() async {
-    try{
+    try {
       var now = DateTime.now();
 
       var result = await localDataSource.getTodayLimit(
           _isTodayWeekend(now)
       );
       return Right(result);
-    }catch(e){
+    } catch(e) {
       debugPrint("TEST LIMIT " + e.toString());
       return Left(ServerFailure(e.toString()));
     }
@@ -241,7 +241,7 @@ class ExpenseRepositoryImpl extends ExpenseRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> deleteFundSource(int id) async {
+  Future<Either<Failure, bool>> deleteFundSource(String id) async {
     try{
       await localDataSource.deleteFundSource(
           id

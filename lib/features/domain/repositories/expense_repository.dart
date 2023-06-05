@@ -29,15 +29,15 @@ abstract class ExpenseRepository{
 
   Future<Either<Failure, List<Log>>> getRecentLogs();
 
-  Future<Either<Failure, List<Log>>> getLogsInMonth(DateTime fromDate, DateTime untilDate, int limit, int page, {int? fundIdFilter, String? categoryFilter});
+  Future<Either<Failure, List<Log>>> getLogsInMonth(DateTime fromDate, DateTime untilDate, int limit, int page, {String? fundIdFilter, String? categoryFilter});
 
   Future<Either<Failure, List<FundSource>>> getFundSources();
 
   Future<Either<Failure, List<FundDetail>>> getDetailExpenseIntMonth(DateTime fromDate, DateTime untilDate,);
 
-  Future<Either<Failure, bool>> deleteLog(int id);
+  Future<Either<Failure, bool>> deleteLog(String id);
 
-  Future<Either<Failure, bool>> deleteFundSource(int id);
+  Future<Either<Failure, bool>> deleteFundSource(String id);
 
   Future<Either<Failure, List<LogDetail>>> getExpenseTotalBasedCategoryInMonth(DateTime fromDate, DateTime untilDate,);
 
