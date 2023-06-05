@@ -268,8 +268,9 @@ class _InputExpenseSectionState extends State<InputExpenseSection> {
     debugPrint("HERE ${_selectedFundSource!.name}");
     debugPrint("HERE ${_selectedFundSource!.id}");
     return LogModel(
-      id: widget.log != null ? widget.log!.id : -1,
-      userId: 1,
+      id: widget.log != null ? widget.log!.id : "",
+      userId: "1",
+      budgetId: "",
       category: MoneyUtil.listCategory[_selectedCategoryPosition].name,
       description: _controllerDesc.text,
       date: widget.log != null ? DateUtil.dbFormat.format(_selectedDate!) : DateUtil.dbFormat.format(DateTime.now()),
