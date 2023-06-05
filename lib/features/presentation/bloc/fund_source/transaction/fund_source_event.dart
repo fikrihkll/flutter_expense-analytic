@@ -18,7 +18,7 @@ class UpdateFundSourceEvent extends FundSourceEvent {
 }
 
 class DeleteFundSourceEvent extends FundSourceEvent {
-  final int id;
+  final String id;
 
   DeleteFundSourceEvent({required this.id});
 }
