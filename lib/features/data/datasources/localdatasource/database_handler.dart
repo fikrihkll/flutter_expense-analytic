@@ -5,8 +5,13 @@ import 'package:expense_app/features/data/models/budget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:uuid/uuid.dart';
 
-class DatabaseHandler{
+class DatabaseHandler {
+
+  // TODO manual query update for field budget_id in fund_sources, expenses
+  // TODO manual query update for field user_id in fund_sources, expenses
+  // TODO change update and insert method in this class for handling UUID id
 
   static const String tableUsers = 'users';
   static const String tableExpenses = 'expenses';
@@ -14,7 +19,7 @@ class DatabaseHandler{
   static const String tableBudgets = 'budgets';
   static const String tableBudgetUsers = 'budget_users';
 
-  late Database? db=null;
+  late Database? db = null;
 
   Future<Database> initializeDB() async {
     String path = await getDatabasesPath();
@@ -66,9 +71,10 @@ class DatabaseHandler{
     int result = 0;
     final Database db = await _getDatabase();
 
-    data['id'] = null;
+    data['id'] = const Uuid().v4();
+    data['budget_id'] = null;
     if (data['budget_id'] == null) {
-      data['budget_id'] = 1;
+     data['budget_id'] = '1';
     }
     // Insert TodoModel to database which model that has been converted to map
     result = await db.insert(tableExpenses, data);
@@ -87,7 +93,7 @@ class DatabaseHandler{
           data["description"],
           data["category"],
           data["fund_source_id"],
-          data["budget_id"] ?? 1,
+         data["budget_id"] ?? '1',
           data["id"]
         ]
     );
@@ -104,7 +110,7 @@ class DatabaseHandler{
           data["weekly_fund"],
           data["monthly_fund"],
           data["name"],
-          data["budget_id"] ?? 1,
+         data["budget_id"] ?? '1',
           data["id"]
         ]
     );
@@ -115,12 +121,18 @@ class DatabaseHandler{
     int result = 0;
     final Database db = await _getDatabase();
 
+    data['id'] = const Uuid().v4();
+    data['budget_id'] = null;
+    if (data['budget_id'] == null) {
+     data['budget_id'] = '1';
+    }
+
     result = await db.insert(tableFundSources, data);
 
     return result;
   }
 
-  Future<int> deleteFundSource(int id) async {
+  Future<int> deleteFundSource(String id) async {
     int result = 0;
     final Database db = await _getDatabase();
 
@@ -179,7 +191,7 @@ class DatabaseHandler{
     return queryResult;
   }
 
-  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page, {int fundIdFilter = -1, String categoryFilter = ""}) async {
+  Future<List<Map<String, dynamic>>> getLogsInMonth(String fromDate, String untilDate, int limit, int page, {String fundIdFilter = "", String categoryFilter = ""}) async {
     final Database db = await _getDatabase();
     int offset = (page-1) * limit;
     final List<Map<String, dynamic>> queryResult = await db.rawQuery(QueryHandler.getLogsInMonth(fromDate, untilDate, limit, page, offset, fundIdFilter: fundIdFilter, categoryFilter: categoryFilter));
@@ -228,7 +240,7 @@ class DatabaseHandler{
     debugPrint(log);
   }
 
-  Future<void> deleteExpense(int id) async {
+  Future<void> deleteExpense(String id) async {
     final db = await _getDatabase();
     await db.delete(
       tableExpenses,
@@ -237,6 +249,7 @@ class DatabaseHandler{
     );
   }
 
+  // TODO NOT UPDATED
   Future<void> insertBudget(int userId, BudgetModel entity) async {
     final db = await _getDatabase();
     await db.insert(
@@ -245,6 +258,7 @@ class DatabaseHandler{
     );
   }
 
+  // TODO NOT UPDATED
   Future<void> insertBudgetUser(int id, String name, String username, String image) async {
     final db = await _getDatabase();
     await db.insert(
