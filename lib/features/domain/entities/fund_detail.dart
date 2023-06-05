@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class FundDetail {
-  final int id;
+  final String id;
   final double nominal;
   final String name;
   final double? dailyFundTotal;
