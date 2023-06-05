@@ -37,9 +37,9 @@ class QueryHandler {
   static String createTableNewExpenses() {
     return """
     CREATE TABLE ${DatabaseHandler.tableExpenses}_new(
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      fund_source_id INTEGER NULL, 
+      id TEXT PRIMARY KEY NOT NULL,
+      user_id TEXT NOT NULL,
+      fund_source_id TEXT NULL, 
       description TEXT NOT NULL, 
       category TEXT NOT NULL,
       nominal DOUBLE NOT NULL,
@@ -47,7 +47,7 @@ class QueryHandler {
       day INTEGER NOT NULL,
       month INTEGER NOT NULL,
       year INTEGER NOT NULL,
-      budget_id INTEGER NOT NULL,
+      budget_id TEXT,
       created_at TIMESTAMP NOT NULL,
       updated_at TIMESTAMP NOT NULL
     );
@@ -73,13 +73,13 @@ class QueryHandler {
   static String createTableNewFundSources() {
     return """
     CREATE TABLE ${DatabaseHandler.tableFundSources}_new(
-      id INTEGER PRIMARY KEY AUTOINCREMENT, 
-      user_id INTEGER NOT NULL, 
+      id TEXT PRIMARY KEY NOT NULL, 
+      user_id TEXT NOT NULL, 
       name TEXT NOT NULL, 
       daily_fund DOUBLE NULL,
       weekly_fund DOUBLE NULL,
       monthly_fund DOUBLE NULL,
-      budget_id INTEGER NOT NULL,
+      budget_id TEXT,
       created_at TIMESTAMP NOT NULL,
       updated_at TIMESTAMP NOT NULL,
       deleted_at TIMESTAMP NULL
@@ -90,12 +90,13 @@ class QueryHandler {
   static String createTableBudgets() {
     return """
     CREATE TABLE ${DatabaseHandler.tableBudgets} (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id TEXT PRIMARY KEY NOT NULL,
       name TEXT NOT NULL,
       description TEXT,
       currency TEXT,
-      date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      owner_user_id TEXT NOT NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
     """;
   }
@@ -103,10 +104,13 @@ class QueryHandler {
   static String createTableBudgetUsers() {
     return """
     CREATE TABLE ${DatabaseHandler.tableBudgetUsers} (
-      id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT NOT NULL,
       name TEXT NOT NULL,
       username TEXT NOT NULL,
-      image TEXT NULL
+      budget_id TEXT NOT NULL,
+      image TEXT NULL,
+      added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY(user_id, budget_id)
     );
     """;
   }
@@ -141,14 +145,14 @@ class QueryHandler {
     return query;
   }
 
-  static String getLogsInMonth(String fromDate, String untilDate, int limit, int page, int offset, {int fundIdFilter = -1, String categoryFilter = ""}) {
+  static String getLogsInMonth(String fromDate, String untilDate, int limit, int page, int offset, {String fundIdFilter = "", String categoryFilter = ""}) {
     String query = "SELECT expenses.*, fund_sources.name as fund_source_name FROM expenses LEFT JOIN fund_sources ON expenses.fund_source_id = fund_sources.id WHERE DATE(expenses.date) BETWEEN DATE('$fromDate') AND DATE('$untilDate') ORDER BY expenses.date DESC LIMIT $limit OFFSET $offset";
-    if (fundIdFilter != -1 && categoryFilter.isEmpty) {
-      query = "SELECT expenses.*, fund_sources.name as fund_source_name FROM expenses LEFT JOIN fund_sources ON expenses.fund_source_id = fund_sources.id WHERE DATE(expenses.date) BETWEEN DATE('$fromDate') AND DATE('$untilDate') AND fund_source_id = $fundIdFilter ORDER BY expenses.date DESC LIMIT $limit OFFSET $offset";
-    } else if (fundIdFilter == -1 && categoryFilter.isNotEmpty) {
+    if (fundIdFilter.isNotEmpty && categoryFilter.isEmpty) {
+      query = "SELECT expenses.*, fund_sources.name as fund_source_name FROM expenses LEFT JOIN fund_sources ON expenses.fund_source_id = fund_sources.id WHERE DATE(expenses.date) BETWEEN DATE('$fromDate') AND DATE('$untilDate') AND fund_source_id = '$fundIdFilter' ORDER BY expenses.date DESC LIMIT $limit OFFSET $offset";
+    } else if (fundIdFilter.isEmpty && categoryFilter.isNotEmpty) {
       query = "SELECT expenses.*, fund_sources.name as fund_source_name FROM expenses LEFT JOIN fund_sources ON expenses.fund_source_id = fund_sources.id WHERE DATE(expenses.date) BETWEEN DATE('$fromDate') AND DATE('$untilDate') AND category = $categoryFilter ORDER BY expenses.date DESC LIMIT $limit OFFSET $offset";
-    } else if (fundIdFilter != -1 && categoryFilter.isNotEmpty) {
-      query = "SELECT expenses.*, fund_sources.name as fund_source_name FROM expenses LEFT JOIN fund_sources ON expenses.fund_source_id = fund_sources.id WHERE DATE(expenses.date) BETWEEN DATE('$fromDate') AND DATE('$untilDate') AND fund_source_id = $fundIdFilter AND category = $categoryFilter ORDER BY expenses.date DESC LIMIT $limit OFFSET $offset";
+    } else if (fundIdFilter.isNotEmpty && categoryFilter.isNotEmpty) {
+      query = "SELECT expenses.*, fund_sources.name as fund_source_name FROM expenses LEFT JOIN fund_sources ON expenses.fund_source_id = fund_sources.id WHERE DATE(expenses.date) BETWEEN DATE('$fromDate') AND DATE('$untilDate') AND fund_source_id = '$fundIdFilter' AND category = $categoryFilter ORDER BY expenses.date DESC LIMIT $limit OFFSET $offset";
     }
     return query;
   }
